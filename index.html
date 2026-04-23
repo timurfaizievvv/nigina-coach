@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<title>Mini App</title>
-
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<title>Mini App</title>
 
 <style>
 :root {
@@ -14,13 +14,12 @@
   --card: #1c1c1e;
   --text: #ffffff;
   --sub: #8e8e93;
-  --accent: #ffffff;
 }
 
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
@@ -30,13 +29,9 @@ body {
   padding: 20px;
 }
 
-.screen {
-  display: none;
-}
-
-.active {
-  display: block;
-}
+/* СКРИНЫ */
+.screen { display: none; }
+.active { display: block; }
 
 .title {
   text-align: center;
@@ -45,11 +40,13 @@ body {
   font-weight: 600;
 }
 
+/* БЛОКИ */
 .block {
   background: var(--card);
   padding: 14px;
   border-radius: 12px;
   margin-bottom: 12px;
+  position: relative;
 }
 
 input, select {
@@ -61,13 +58,22 @@ input, select {
   outline: none;
 }
 
-select {
-  appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 24 24' width='20'><path d='M7 10l5 5 5-5z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right center;
+/* ТРЕУГОЛЬНИК */
+.select-wrap {
+  position: relative;
 }
 
+.select-wrap::after {
+  content: "▾";
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8e8e93;
+  pointer-events: none;
+}
+
+/* КНОПКИ */
 button {
   width: 100%;
   padding: 14px;
@@ -89,8 +95,8 @@ button {
 
 .secondary {
   background: transparent;
-  color: white;
   border: 1px solid #2c2c2e;
+  color: white;
 }
 
 .note {
@@ -101,16 +107,20 @@ button {
 }
 
 .menu-btn {
-  text-align: center;
-  padding: 16px;
   background: var(--card);
+  padding: 16px;
   border-radius: 12px;
+  text-align: center;
   margin-bottom: 12px;
-  font-size: 16px;
 }
 
-.spacer {
-  height: 20px;
+.spacer { height: 20px; }
+
+/* ОТОБРАЖЕНИЕ ДАТЫ/ВРЕМЕНИ */
+.value {
+  font-size: 14px;
+  color: #8e8e93;
+  margin-top: 5px;
 }
 </style>
 </head>
@@ -123,7 +133,9 @@ button {
 
   <div class="menu-btn" onclick="openScreen('form')">Записаться</div>
   <div class="menu-btn" onclick="openScreen('faq')">FAQ</div>
+
   <div class="menu-btn" onclick="openConsult()">Консультация</div>
+  <div class="note">Если Вы не нашли ответ на вопрос в разделе FAQ, напишите мне</div>
 
   <div class="spacer"></div>
 
@@ -142,7 +154,7 @@ button {
     <input id="contact" placeholder="Введите контакты">
   </div>
 
-  <div class="block">
+  <div class="block select-wrap">
     <select id="training">
       <option value="">Выберите тренировку</option>
       <option>Пилатес</option>
@@ -151,7 +163,7 @@ button {
     </select>
   </div>
 
-  <div class="block">
+  <div class="block select-wrap">
     <select id="format">
       <option value="">Формат тренировки</option>
       <option>Онлайн</option>
@@ -162,10 +174,12 @@ button {
 
   <div class="block">
     <input type="date" id="date">
+    <div id="dateText" class="value"></div>
   </div>
 
   <div class="block">
     <input type="time" id="time">
+    <div id="timeText" class="value"></div>
   </div>
 
   <div class="spacer"></div>
@@ -194,6 +208,7 @@ button {
 const tg = window.Telegram.WebApp;
 tg.expand();
 
+/* НАВИГАЦИЯ */
 function openScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -207,8 +222,33 @@ function openInstagram() {
   window.open("https://www.instagram.com/nigina.coach", "_blank");
 }
 
-// ВАЛИДАЦИЯ
-const fields = ["name", "contact", "training", "format", "date", "time"];
+/* ДАТА */
+const dateInput = document.getElementById("date");
+dateInput.addEventListener("change", () => {
+  if (!dateInput.value) return;
+
+  const d = new Date(dateInput.value);
+  const text = d.toLocaleDateString("ru-RU", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+
+  document.getElementById("dateText").innerText = text;
+  validate();
+});
+
+/* ВРЕМЯ */
+const timeInput = document.getElementById("time");
+timeInput.addEventListener("change", () => {
+  if (!timeInput.value) return;
+
+  document.getElementById("timeText").innerText = timeInput.value;
+  validate();
+});
+
+/* ВАЛИДАЦИЯ */
+const fields = ["name", "contact", "training", "format"];
 
 fields.forEach(id => {
   document.getElementById(id).addEventListener("input", validate);
@@ -216,7 +256,13 @@ fields.forEach(id => {
 });
 
 function validate() {
-  const filled = fields.every(id => document.getElementById(id).value);
+  const filled =
+    name.value &&
+    contact.value &&
+    training.value &&
+    format.value &&
+    date.value &&
+    time.value;
 
   const btn = document.getElementById("submitBtn");
 
@@ -231,18 +277,17 @@ function validate() {
   }
 }
 
-// ОТПРАВКА
+/* ОТПРАВКА */
 function sendForm() {
-  const filled = fields.every(id => document.getElementById(id).value);
-  if (!filled) return;
+  if (document.getElementById("submitBtn").classList.contains("disabled")) return;
 
   const data = {
     name: name.value,
     contact: contact.value,
     training: training.value,
     format: format.value,
-    date: date.value,
-    time: time.value
+    date: dateText.innerText,
+    time: timeText.innerText
   };
 
   tg.sendData(JSON.stringify(data));
