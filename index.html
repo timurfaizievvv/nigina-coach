@@ -78,7 +78,6 @@ select {
   background-repeat: no-repeat;
 }
 
-/* кастомные поля */
 .fake-input {
   width: 100%;
   padding: 14px;
@@ -88,13 +87,11 @@ select {
   color: #aaa;
 }
 
-/* скрытые, но рабочие input */
+/* 🔥 фикс под ПК */
 .hidden-input {
   position: absolute;
   opacity: 0;
-  width: 100%;
-  height: 50px;
-  left: 0;
+  pointer-events: none;
 }
 
 .full {
@@ -142,7 +139,6 @@ select {
   <h2>Записаться</h2>
 
   <input id="name" placeholder="Имя">
-
   <input id="username" placeholder="Ваш Telegram (@username)">
 
   <select id="training">
@@ -156,17 +152,14 @@ select {
     <option>Онлайн</option>
   </select>
 
-  <!-- дата -->
   <div class="fake-input" onclick="openDate()">
     <span id="dateText">Выберите день</span>
   </div>
 
-  <!-- время -->
   <div class="fake-input" onclick="openTime()">
     <span id="timeText">Выберите время</span>
   </div>
 
-  <!-- реальные input -->
   <input type="date" id="date" class="hidden-input">
   <input type="time" id="time" class="hidden-input">
 
@@ -200,20 +193,35 @@ function openLink(url) {
   window.open(url, "_blank");
 }
 
-/* фикс открытия */
+/* 🔥 универсальный фикс */
 function openDate() {
   const el = document.getElementById("date");
   el.focus();
   el.click();
+
+  setTimeout(() => {
+    if (!el.matches(':focus')) {
+      el.style.position = "static";
+      el.style.opacity = "1";
+      el.style.pointerEvents = "auto";
+    }
+  }, 200);
 }
 
 function openTime() {
   const el = document.getElementById("time");
   el.focus();
   el.click();
+
+  setTimeout(() => {
+    if (!el.matches(':focus')) {
+      el.style.position = "static";
+      el.style.opacity = "1";
+      el.style.pointerEvents = "auto";
+    }
+  }, 200);
 }
 
-/* отображение выбранного */
 document.getElementById("date").addEventListener("change", function() {
   if (this.value) {
     document.getElementById("dateText").innerText = this.value;
