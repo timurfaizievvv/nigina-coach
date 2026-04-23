@@ -60,15 +60,18 @@ input, select {
   background: #1c1c1e;
   border: 1px solid #2c2c2e;
   border-radius: 12px;
-  padding: 12px 14px; /* одинаковый сверху/снизу */
+  padding: 12px 14px;
   margin-bottom: 12px;
+
+  display: flex;
+  align-items: center; /* ← ключ */
 }
 
 .faq-question {
   font-size: 16px;
   font-weight: 600;
-  line-height: 1.1;   /* ← ключевой момент */
-  margin-bottom: 8px;
+  line-height: 1.2;
+  margin: 0;
 }
 
 .faq-answer {
