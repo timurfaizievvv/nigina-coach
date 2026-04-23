@@ -78,6 +78,7 @@ select {
   background-repeat: no-repeat;
 }
 
+/* кастомные поля (мобилка) */
 .fake-input {
   width: 100%;
   padding: 14px;
@@ -87,11 +88,25 @@ select {
   color: #aaa;
 }
 
-/* 🔥 фикс под ПК */
+/* скрытые input */
 .hidden-input {
   position: absolute;
   opacity: 0;
   pointer-events: none;
+}
+
+/* 🔥 ПК версия */
+@media (min-width: 768px) {
+  .fake-input {
+    display: none;
+  }
+
+  .hidden-input {
+    position: static;
+    opacity: 1;
+    pointer-events: auto;
+    margin-bottom: 12px;
+  }
 }
 
 .full {
@@ -152,6 +167,7 @@ select {
     <option>Онлайн</option>
   </select>
 
+  <!-- мобилка -->
   <div class="fake-input" onclick="openDate()">
     <span id="dateText">Выберите день</span>
   </div>
@@ -160,6 +176,7 @@ select {
     <span id="timeText">Выберите время</span>
   </div>
 
+  <!-- реальные поля -->
   <input type="date" id="date" class="hidden-input">
   <input type="time" id="time" class="hidden-input">
 
@@ -193,35 +210,16 @@ function openLink(url) {
   window.open(url, "_blank");
 }
 
-/* 🔥 универсальный фикс */
+/* мобилка */
 function openDate() {
-  const el = document.getElementById("date");
-  el.focus();
-  el.click();
-
-  setTimeout(() => {
-    if (!el.matches(':focus')) {
-      el.style.position = "static";
-      el.style.opacity = "1";
-      el.style.pointerEvents = "auto";
-    }
-  }, 200);
+  document.getElementById("date").click();
 }
 
 function openTime() {
-  const el = document.getElementById("time");
-  el.focus();
-  el.click();
-
-  setTimeout(() => {
-    if (!el.matches(':focus')) {
-      el.style.position = "static";
-      el.style.opacity = "1";
-      el.style.pointerEvents = "auto";
-    }
-  }, 200);
+  document.getElementById("time").click();
 }
 
+/* отображение выбранного */
 document.getElementById("date").addEventListener("change", function() {
   if (this.value) {
     document.getElementById("dateText").innerText = this.value;
