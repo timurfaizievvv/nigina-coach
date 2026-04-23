@@ -55,7 +55,6 @@ h2 {
   width: 100%;
   height: 50px;
   padding: 0 12px;
-  margin-bottom: 12px;
   border-radius: 12px;
   border: none;
   background: #1a1a1a;
@@ -63,17 +62,38 @@ h2 {
   font-size: 15px;
 }
 
-/* 🔥 обновленный select */
+/* 🔥 ОБЕРТКА ДЛЯ СТРЕЛКИ */
+.select-wrap {
+  position: relative;
+  margin-bottom: 12px;
+}
+
 .select {
   appearance: none;
   -webkit-appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 24 24' width='10' height='10' stroke='gray' fill='none' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 10px;
+  color: #888;
 }
 
-/* фикс клика */
+/* 🔥 СТРЕЛКА */
+.select-wrap::after {
+  content: "";
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid #888;
+  border-bottom: 2px solid #888;
+  transform: translateY(-50%) rotate(45deg);
+  pointer-events: none;
+}
+
+/* цвет после выбора */
+.select.filled {
+  color: white;
+}
+
+/* дата/время */
 .hidden {
   position: absolute;
   opacity: 0;
@@ -86,8 +106,10 @@ h2 {
   display: flex;
   align-items: center;
   color: #aaa;
+  margin-bottom: 12px;
 }
 
+/* кнопки */
 .full {
   width: 100%;
   height: 50px;
@@ -103,7 +125,6 @@ h2 {
   background: #007b0e;
 }
 
-/* 🔥 disabled кнопка */
 .full.disabled {
   opacity: 0.4;
   pointer-events: none;
@@ -141,18 +162,24 @@ h2 {
   <input class="input" id="name" placeholder="Имя" oninput="checkForm()">
   <input class="input" id="contact" placeholder="Telegram или номер" oninput="checkForm()">
 
-  <select class="input select" id="training" onchange="checkForm()">
-    <option value="">Тренировка</option>
-    <option>Пилатес</option>
-    <option>Стретчинг</option>
-    <option>Акро</option>
-  </select>
+  <!-- ТРЕНИРОВКА -->
+  <div class="select-wrap">
+    <select class="input select" id="training" onchange="handleSelect(this); checkForm()">
+      <option value="" disabled selected>Тренировка</option>
+      <option>Пилатес</option>
+      <option>Стретчинг</option>
+      <option>Акро</option>
+    </select>
+  </div>
 
-  <select class="input select" id="type" onchange="checkForm()">
-    <option value="">Тип</option>
-    <option>Онлайн</option>
-    <option>Оффлайн</option>
-  </select>
+  <!-- ТИП -->
+  <div class="select-wrap">
+    <select class="input select" id="type" onchange="handleSelect(this); checkForm()">
+      <option value="" disabled selected>Тип</option>
+      <option>Онлайн</option>
+      <option>Оффлайн</option>
+    </select>
+  </div>
 
   <div class="input fake" onclick="openDate()">
     <span id="dateText">Выберите день</span>
@@ -181,11 +208,9 @@ h2 {
 
 <script>
 const tg = window.Telegram.WebApp;
-
 tg.ready();
 tg.expand();
 
-/* навигация */
 function show(id){
   document.getElementById("menu").style.display="none";
   document.getElementById(id).style.display="block";
@@ -200,74 +225,59 @@ function back(){
 function openChat(){ window.open("https://t.me/niginacoach"); }
 function openInstagram(){ window.open("https://www.instagram.com/nigina.coach"); }
 
-function openDate(){
-  const el=document.getElementById("date");
-  el.focus();
-  el.click();
+function openDate(){ date.click(); }
+function openTime(){ time.click(); }
+
+/* цвет select */
+function handleSelect(el){
+  if(el.value){
+    el.classList.add("filled");
+  }
 }
 
-function openTime(){
-  const el=document.getElementById("time");
-  el.focus();
-  el.click();
-}
-
-/* формат даты */
+/* дата */
 date.addEventListener("change", function(){
   if(this.value){
     const d=new Date(this.value);
     const months=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
-    document.getElementById("dateText").innerText=`${d.getDate()} ${months[d.getMonth()]}`;
+    dateText.innerText=`${d.getDate()} ${months[d.getMonth()]}`;
     checkForm();
   }
 });
 
+/* время */
 time.addEventListener("change", function(){
   if(this.value){
-    document.getElementById("timeText").innerText=this.value;
+    timeText.innerText=this.value;
     checkForm();
   }
 });
 
-/* 🔥 проверка формы */
+/* проверка */
 function checkForm(){
-  const name = document.getElementById("name").value;
-  const contact = document.getElementById("contact").value;
-  const training = document.getElementById("training").value;
-  const type = document.getElementById("type").value;
-  const date = document.getElementById("date").value;
-  const time = document.getElementById("time").value;
+  const valid =
+    name.value &&
+    contact.value &&
+    training.value &&
+    type.value &&
+    date.value &&
+    time.value;
 
-  const valid = name && contact && training && type && date && time;
-
-  const btn = document.getElementById("submitBtn");
-
-  if(valid){
-    btn.classList.remove("disabled");
-  } else {
-    btn.classList.add("disabled");
-  }
+  submitBtn.classList.toggle("disabled", !valid);
 }
 
 /* отправка */
 function sendData(){
-  if(document.getElementById("submitBtn").classList.contains("disabled")) return;
-
-  const nameEl = document.getElementById("name");
-  const contactEl = document.getElementById("contact");
-  const trainingEl = document.getElementById("training");
-  const typeEl = document.getElementById("type");
-  const dateEl = document.getElementById("date");
-  const timeEl = document.getElementById("time");
+  if(submitBtn.classList.contains("disabled")) return;
 
   const text =
 `Новая заявка:
-Имя: ${nameEl.value}
-Контакт: ${contactEl.value}
-Тренировка: ${trainingEl.value}
-Тип: ${typeEl.value}
-Дата: ${dateEl.value}
-Время: ${timeEl.value}`;
+Имя: ${name.value}
+Контакт: ${contact.value}
+Тренировка: ${training.value}
+Тип: ${type.value}
+Дата: ${date.value}
+Время: ${time.value}`;
 
   window.open(`https://t.me/timurfaizievvv?text=${encodeURIComponent(text)}`);
 }
