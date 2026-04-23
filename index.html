@@ -37,6 +37,8 @@ h2 {
   justify-content: center;
   margin-bottom: 12px;
   font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 .block:active {
@@ -51,7 +53,6 @@ h2 {
   margin-bottom: 12px;
 }
 
-/* 🔥 ВОТ ТУТ ФИКС */
 .input {
   width: 100%;
   height: 50px;
@@ -64,7 +65,6 @@ h2 {
   margin-bottom: 12px;
 }
 
-/* select */
 .select-wrap {
   position: relative;
   margin-bottom: 12px;
@@ -93,7 +93,6 @@ h2 {
   color: white;
 }
 
-/* дата */
 .hidden {
   position: absolute;
   opacity: 0;
@@ -109,7 +108,6 @@ h2 {
   margin-bottom: 12px;
 }
 
-/* кнопки */
 .full {
   width: 100%;
   height: 50px;
@@ -119,6 +117,7 @@ h2 {
   color: white;
   border: none;
   font-size: 15px;
+  transition: 0.2s;
 }
 
 .full:active {
@@ -159,11 +158,11 @@ h2 {
 <div id="form" style="display:none;">
   <h2>Записаться</h2>
 
-  <input class="input" id="name" placeholder="Имя" oninput="checkForm()">
-  <input class="input" id="contact" placeholder="Telegram или номер" oninput="checkForm()">
+  <input class="input" id="name" placeholder="Имя">
+  <input class="input" id="contact" placeholder="Telegram или номер">
 
   <div class="select-wrap">
-    <select class="input select" id="training" onchange="handleSelect(this); checkForm()">
+    <select class="input select" id="training">
       <option value="" disabled selected>Тренировка</option>
       <option>Пилатес</option>
       <option>Стретчинг</option>
@@ -172,7 +171,7 @@ h2 {
   </div>
 
   <div class="select-wrap">
-    <select class="input select" id="type" onchange="handleSelect(this); checkForm()">
+    <select class="input select" id="type">
       <option value="" disabled selected>Тип</option>
       <option>Онлайн</option>
       <option>Оффлайн</option>
@@ -190,7 +189,7 @@ h2 {
   <input type="date" id="date" class="hidden">
   <input type="time" id="time" class="hidden">
 
-  <button id="submitBtn" class="full disabled" onclick="sendData()">Отправить</button>
+  <button id="submitBtn" class="full disabled">Отправить</button>
   <button class="full" onclick="back()">Назад</button>
 
   <div class="note">После отправления заявки с Вами свяжутся!</div>
@@ -209,30 +208,53 @@ const tg = window.Telegram.WebApp;
 tg.ready();
 tg.expand();
 
+// элементы
+const nameInput = document.getElementById("name");
+const contactInput = document.getElementById("contact");
+const trainingSelect = document.getElementById("training");
+const typeSelect = document.getElementById("type");
+const dateInput = document.getElementById("date");
+const timeInput = document.getElementById("time");
+const submitBtn = document.getElementById("submitBtn");
+const dateText = document.getElementById("dateText");
+const timeText = document.getElementById("timeText");
+
+// навигация
 function show(id){
+  tg.HapticFeedback.impactOccurred("light");
   document.getElementById("menu").style.display="none";
   document.getElementById(id).style.display="block";
 }
 
 function back(){
+  tg.HapticFeedback.impactOccurred("light");
   document.getElementById("menu").style.display="block";
   document.getElementById("form").style.display="none";
   document.getElementById("faq").style.display="none";
 }
 
-function openChat(){ window.open("https://t.me/niginacoach"); }
+// ссылки
+function openChat(){ tg.openTelegramLink("https://t.me/niginacoach"); }
 function openInstagram(){ window.open("https://www.instagram.com/nigina.coach"); }
 
-function openDate(){ date.click(); }
-function openTime(){ time.click(); }
+// дата/время
+function openDate(){ dateInput.click(); }
+function openTime(){ timeInput.click(); }
 
-function handleSelect(el){
+trainingSelect.addEventListener("change", handleSelect);
+typeSelect.addEventListener("change", handleSelect);
+
+function handleSelect(e){
+  const el = e.target;
   if(el.value){
     el.classList.add("filled");
+  } else {
+    el.classList.remove("filled");
   }
+  checkForm();
 }
 
-date.addEventListener("change", function(){
+dateInput.addEventListener("change", function(){
   if(this.value){
     const d=new Date(this.value);
     const months=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
@@ -241,38 +263,82 @@ date.addEventListener("change", function(){
   }
 });
 
-time.addEventListener("change", function(){
+timeInput.addEventListener("change", function(){
   if(this.value){
     timeText.innerText=this.value;
     checkForm();
   }
 });
 
+// валидация
 function checkForm(){
+  const contactValid = contactInput.value.length >= 5;
+
   const valid =
-    name.value &&
-    contact.value &&
-    training.value &&
-    type.value &&
-    date.value &&
-    time.value;
+    nameInput.value &&
+    contactValid &&
+    trainingSelect.value &&
+    typeSelect.value &&
+    dateInput.value &&
+    timeInput.value;
 
   submitBtn.classList.toggle("disabled", !valid);
 }
 
+// события input
+[nameInput, contactInput].forEach(el=>{
+  el.addEventListener("input", checkForm);
+});
+
+// отправка
+submitBtn.addEventListener("click", sendData);
+
 function sendData(){
   if(submitBtn.classList.contains("disabled")) return;
 
-  const text =
-`Новая заявка:
-Имя: ${name.value}
-Контакт: ${contact.value}
-Тренировка: ${training.value}
-Тип: ${type.value}
-Дата: ${date.value}
-Время: ${time.value}`;
+  const data = {
+    name: nameInput.value,
+    contact: contactInput.value,
+    training: trainingSelect.value,
+    type: typeSelect.value,
+    date: dateText.innerText,
+    time: timeText.innerText
+  };
 
-  window.open(`https://t.me/timurfaizievvv?text=${encodeURIComponent(text)}`);
+  try {
+    tg.sendData(JSON.stringify(data));
+  } catch(e){
+    const text =
+`Новая заявка:
+Имя: ${data.name}
+Контакт: ${data.contact}
+Тренировка: ${data.training}
+Тип: ${data.type}
+Дата: ${data.date}
+Время: ${data.time}`;
+
+    tg.openTelegramLink(`https://t.me/timurfaizievvv?text=${encodeURIComponent(text)}`);
+  }
+
+  resetForm();
+}
+
+// reset
+function resetForm(){
+  nameInput.value = "";
+  contactInput.value = "";
+  trainingSelect.value = "";
+  typeSelect.value = "";
+  dateInput.value = "";
+  timeInput.value = "";
+
+  trainingSelect.classList.remove("filled");
+  typeSelect.classList.remove("filled");
+
+  dateText.innerText = "Выберите день";
+  timeText.innerText = "Выберите время";
+
+  submitBtn.classList.add("disabled");
 }
 </script>
 
