@@ -63,14 +63,17 @@ h2 {
   font-size: 15px;
 }
 
+/* 🔥 обновленный select */
 .select {
   appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg stroke='gray' fill='none' stroke-width='2' viewBox='0 0 24 24' width='12'><polyline points='6 9 12 15 18 9'/></svg>");
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 24 24' width='10' height='10' stroke='gray' fill='none' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat: no-repeat;
   background-position: right 12px center;
+  background-size: 10px;
 }
 
-/* 🔥 фикс клика */
+/* фикс клика */
 .hidden {
   position: absolute;
   opacity: 0;
@@ -98,6 +101,12 @@ h2 {
 
 .full:active {
   background: #007b0e;
+}
+
+/* 🔥 disabled кнопка */
+.full.disabled {
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 .note {
@@ -129,17 +138,17 @@ h2 {
 <div id="form" style="display:none;">
   <h2>Записаться</h2>
 
-  <input class="input" id="name" placeholder="Имя">
-  <input class="input" id="contact" placeholder="Telegram или номер">
+  <input class="input" id="name" placeholder="Имя" oninput="checkForm()">
+  <input class="input" id="contact" placeholder="Telegram или номер" oninput="checkForm()">
 
-  <select class="input select" id="training">
+  <select class="input select" id="training" onchange="checkForm()">
     <option value="">Тренировка</option>
     <option>Пилатес</option>
     <option>Стретчинг</option>
     <option>Акро</option>
   </select>
 
-  <select class="input select" id="type">
+  <select class="input select" id="type" onchange="checkForm()">
     <option value="">Тип</option>
     <option>Онлайн</option>
     <option>Оффлайн</option>
@@ -156,7 +165,7 @@ h2 {
   <input type="date" id="date" class="hidden">
   <input type="time" id="time" class="hidden">
 
-  <button class="full" onclick="sendData()">Отправить</button>
+  <button id="submitBtn" class="full disabled" onclick="sendData()">Отправить</button>
   <button class="full" onclick="back()">Назад</button>
 
   <div class="note">После отправления заявки с Вами свяжутся!</div>
@@ -204,33 +213,52 @@ function openTime(){
 }
 
 /* формат даты */
-document.getElementById("date").addEventListener("change",function(){
+date.addEventListener("change", function(){
   if(this.value){
     const d=new Date(this.value);
     const months=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
     document.getElementById("dateText").innerText=`${d.getDate()} ${months[d.getMonth()]}`;
+    checkForm();
   }
 });
 
-document.getElementById("time").addEventListener("change",function(){
+time.addEventListener("change", function(){
   if(this.value){
     document.getElementById("timeText").innerText=this.value;
+    checkForm();
   }
 });
+
+/* 🔥 проверка формы */
+function checkForm(){
+  const name = document.getElementById("name").value;
+  const contact = document.getElementById("contact").value;
+  const training = document.getElementById("training").value;
+  const type = document.getElementById("type").value;
+  const date = document.getElementById("date").value;
+  const time = document.getElementById("time").value;
+
+  const valid = name && contact && training && type && date && time;
+
+  const btn = document.getElementById("submitBtn");
+
+  if(valid){
+    btn.classList.remove("disabled");
+  } else {
+    btn.classList.add("disabled");
+  }
+}
 
 /* отправка */
 function sendData(){
+  if(document.getElementById("submitBtn").classList.contains("disabled")) return;
+
   const nameEl = document.getElementById("name");
   const contactEl = document.getElementById("contact");
   const trainingEl = document.getElementById("training");
   const typeEl = document.getElementById("type");
   const dateEl = document.getElementById("date");
   const timeEl = document.getElementById("time");
-
-  if(!nameEl.value || !contactEl.value || !trainingEl.value || !typeEl.value || !dateEl.value || !timeEl.value){
-    alert("Заполните все поля");
-    return;
-  }
 
   const text =
 `Новая заявка:
