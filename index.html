@@ -6,141 +6,145 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  font-family: -apple-system, sans-serif;
-  color: white;
-  background: radial-gradient(circle at top right, #5c7fa3, #0e1a2b 60%);
+:root{
+  --bg1:#0E1A2F;
+  --bg2:#1B2C48;
+  --accent1:#6967FB;
+  --accent2:#C8F904;
+  --text:#FFFFFF;
+  --sub:#A0A7B5;
 }
 
-/* контейнер */
-.container {
-  padding: 16px;
-  max-width: 500px;
-  margin: auto;
+*{box-sizing:border-box;}
+
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+  color:var(--text);
+  background: linear-gradient(160deg, var(--bg1), var(--bg2));
 }
 
-/* заголовок */
-.header {
-  margin-bottom: 20px;
+.container{
+  max-width:500px;
+  margin:auto;
+  padding:20px 16px 30px;
 }
 
-.title {
-  font-size: 22px;
-  font-weight: 600;
+.title{
+  font-size:22px;
+  font-weight:600;
+  margin-bottom:4px;
 }
 
-.subtitle {
-  color: #aaa;
-  font-size: 13px;
+.subtitle{
+  font-size:13px;
+  color:var(--sub);
+  margin-bottom:20px;
 }
 
-/* карточки */
-.card {
-  border-radius: 18px;
-  padding: 16px;
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  backdrop-filter: blur(20px);
-  background: linear-gradient(135deg, rgba(105,103,251,0.4), rgba(14,26,47,0.4));
-  border: 1px solid rgba(255,255,255,0.08);
-  cursor: pointer;
-  transition: 0.2s;
+.card{
+  padding:16px;
+  border-radius:16px;
+  margin-bottom:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background: rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(12px);
+  transition:.15s;
 }
 
-.card:active {
-  transform: scale(0.98);
+.card:active{
+  transform:scale(0.98);
 }
 
-.card.green {
-  background: linear-gradient(135deg, rgba(200,249,4,0.4), rgba(14,26,47,0.4));
+.card-title{
+  font-size:15px;
+  font-weight:500;
 }
 
-.card.blue {
-  background: linear-gradient(135deg, rgba(105,103,251,0.4), rgba(14,26,47,0.4));
+.card-sub{
+  font-size:13px;
+  color:var(--sub);
+  margin-top:2px;
 }
 
-.card-content {
-  display: flex;
-  flex-direction: column;
+.input{
+  width:100%;
+  height:48px;
+  border-radius:12px;
+  border:none;
+  padding:0 12px;
+  margin-bottom:10px;
+  background: rgba(255,255,255,0.04);
+  color:var(--text);
+  font-size:14px;
 }
 
-.card-title {
-  font-size: 16px;
-  font-weight: 500;
+select{
+  appearance:none;
+  color:var(--sub);
 }
 
-.card-sub {
-  font-size: 13px;
-  color: #ccc;
-  margin-top: 4px;
+select.filled{
+  color:var(--text);
 }
 
-/* форма */
-.input {
-  width: 100%;
-  height: 50px;
-  border-radius: 14px;
-  border: none;
-  padding: 0 12px;
-  margin-bottom: 12px;
-  background: rgba(255,255,255,0.05);
-  color: white;
+.fake{
+  height:48px;
+  border-radius:12px;
+  background: rgba(255,255,255,0.04);
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+  margin-bottom:10px;
+  position:relative;
+  font-size:14px;
+  color:var(--sub);
 }
 
-/* select */
-.select {
-  color: #aaa;
+.hidden{
+  position:absolute;
+  inset:0;
+  opacity:0.01;
 }
 
-.select.filled {
-  color: white;
+.button{
+  width:100%;
+  height:48px;
+  border:none;
+  border-radius:12px;
+  font-size:14px;
 }
 
-/* дата/время */
-.fake {
-  height: 50px;
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.05);
-  margin-bottom: 12px;
-  position: relative;
+.button.primary{
+  background: linear-gradient(90deg, var(--accent1), var(--accent2));
+  color:#000;
+  font-weight:600;
 }
 
-.hidden {
-  position: absolute;
-  inset: 0;
-  opacity: 0.01;
+.button.secondary{
+  background: rgba(255,255,255,0.06);
+  color:var(--text);
+  font-weight:500;
+  margin-top:8px;
 }
 
-/* кнопка */
-.button {
-  width: 100%;
-  height: 50px;
-  border-radius: 14px;
-  border: none;
-  margin-top: 10px;
-  font-size: 15px;
-  color: white;
-  background: linear-gradient(90deg, #6967FB, #C8F904);
+.button.disabled{
+  opacity:.4;
+  pointer-events:none;
 }
 
-.button.disabled {
-  opacity: 0.4;
-  pointer-events: none;
+.spacer-lg{
+  height:20px;
 }
 
-.note {
-  text-align: center;
-  font-size: 13px;
-  color: #aaa;
-  margin-top: 10px;
+.note{
+  margin-top:12px;
+  font-size:12px;
+  color:var(--sub);
+  text-align:center;
 }
 </style>
 </head>
@@ -149,54 +153,51 @@ body {
 <div class="container">
 
 <div id="menu">
-  <div class="header">
-    <div class="title">Nigina Coach</div>
-    <div class="subtitle">мини-приложение</div>
-  </div>
+  <div class="title">Nigina Coach</div>
+  <div class="subtitle">мини-приложение</div>
 
-  <div class="card blue" onclick="show('form')">
-    <div class="card-content">
+  <div class="card" onclick="show('form')">
+    <div>
       <div class="card-title">Записаться</div>
       <div class="card-sub">Запись на тренировку</div>
     </div>
   </div>
 
-  <div class="card blue" onclick="show('faq')">
-    <div class="card-content">
+  <div class="card" onclick="show('faq')">
+    <div>
       <div class="card-title">FAQ</div>
       <div class="card-sub">Ответы на вопросы</div>
     </div>
   </div>
 
   <div class="card" onclick="openChat()">
-    <div class="card-content">
+    <div>
       <div class="card-title">Консультация</div>
       <div class="card-sub">Написать в Telegram</div>
     </div>
   </div>
 
-  <div class="card green" onclick="openInstagram()">
-    <div class="card-content">
+  <div class="card" onclick="openInstagram()">
+    <div>
       <div class="card-title">Instagram</div>
       <div class="card-sub">Следите за мной</div>
     </div>
   </div>
 </div>
 
-<!-- форма -->
 <div id="form" style="display:none;">
 
   <input class="input" id="name" placeholder="Имя">
   <input class="input" id="contact" placeholder="Telegram или номер">
 
-  <select class="input select" id="training">
+  <select class="input" id="training">
     <option value="" disabled selected>Тренировка</option>
     <option>Пилатес</option>
     <option>Стретчинг</option>
     <option>Акро</option>
   </select>
 
-  <select class="input select" id="type">
+  <select class="input" id="type">
     <option value="" disabled selected>Тип</option>
     <option>Онлайн</option>
     <option>Оффлайн</option>
@@ -212,15 +213,18 @@ body {
     <input type="time" id="time" class="hidden">
   </div>
 
-  <button id="submitBtn" class="button disabled">Отправить</button>
-  <button class="button" onclick="back()">Назад</button>
+  <!-- двойной отступ -->
+  <div class="spacer-lg"></div>
 
-  <div class="note">После отправления заявки с Вами свяжутся</div>
+  <button id="submitBtn" class="button primary disabled">Отправить</button>
+  <button class="button secondary" onclick="back()">Назад</button>
+
+  <div class="note">После отправки заявки с вами свяжутся</div>
 </div>
 
 <div id="faq" style="display:none;">
   <div class="note">Скоро будет информация</div>
-  <button class="button" onclick="back()">Назад</button>
+  <button class="button secondary" onclick="back()">Назад</button>
 </div>
 
 </div>
@@ -254,43 +258,52 @@ function back(){
 function openChat(){ tg.openTelegramLink("https://t.me/niginacoach"); }
 function openInstagram(){ window.open("https://instagram.com"); }
 
-training.onchange = type.onchange = checkForm;
-nameInput.oninput = contactInput.oninput = checkForm;
+[training,type].forEach(el=>{
+  el.onchange=()=>{
+    if(el.value) el.classList.add("filled");
+    checkForm();
+  }
+});
 
-date.onchange = () => {
-  const d = new Date(date.value);
-  dateText.innerText = d.getDate() + " число";
+date.onchange=()=>{
+  const d=new Date(date.value);
+  const m=["янв","фев","мар","апр","май","июн","июл","авг","сен","окт","ноя","дек"];
+  dateText.innerText=`${d.getDate()} ${m[d.getMonth()]}`;
+  dateText.style.color="white";
   checkForm();
 };
 
-time.onchange = () => {
-  timeText.innerText = time.value;
+time.onchange=()=>{
+  timeText.innerText=time.value;
+  timeText.style.color="white";
   checkForm();
 };
+
+[nameInput,contactInput].forEach(el=>{
+  el.oninput=checkForm;
+});
 
 function checkForm(){
-  const valid =
+  const valid=
     nameInput.value &&
-    contactInput.value.length >= 5 &&
+    contactInput.value.length>=5 &&
     training.value &&
     type.value &&
     date.value &&
     time.value;
 
-  submitBtn.classList.toggle("disabled", !valid);
+  submitBtn.classList.toggle("disabled",!valid);
 }
 
-submitBtn.onclick = () => {
-  const data = {
-    name: nameInput.value,
-    contact: contactInput.value,
-    training: training.value,
-    type: type.value,
-    date: dateText.innerText,
-    time: timeText.innerText
-  };
-
-  tg.sendData(JSON.stringify(data));
+submitBtn.onclick=()=>{
+  tg.sendData(JSON.stringify({
+    name:nameInput.value,
+    contact:contactInput.value,
+    training:training.value,
+    type:type.value,
+    date:dateText.innerText,
+    time:timeText.innerText
+  }));
 };
 </script>
 
