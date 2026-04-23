@@ -6,9 +6,7 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -24,15 +22,10 @@ body {
 }
 
 @media (max-width: 600px) {
-  .container {
-    padding: 16px 14px;
-  }
+  .container { padding: 16px 14px; }
 }
 
-h2 {
-  text-align: center;
-  margin-bottom: 20px;
-}
+h2 { text-align: center; margin-bottom: 20px; }
 
 .grid {
   display: grid;
@@ -64,21 +57,9 @@ input, select {
   background: #1a1a1a;
   color: white;
   font-size: 16px;
-
   appearance: none;
-  -webkit-appearance: none;
 }
 
-select {
-  background-image: linear-gradient(45deg, transparent 50%, white 50%),
-                    linear-gradient(135deg, white 50%, transparent 50%);
-  background-position: calc(100% - 20px) calc(50% - 3px),
-                       calc(100% - 15px) calc(50% - 3px);
-  background-size: 5px 5px, 5px 5px;
-  background-repeat: no-repeat;
-}
-
-/* кастомные поля (мобилка) */
 .fake-input {
   width: 100%;
   padding: 14px;
@@ -88,19 +69,15 @@ select {
   color: #aaa;
 }
 
-/* скрытые input */
 .hidden-input {
   position: absolute;
   opacity: 0;
   pointer-events: none;
 }
 
-/* 🔥 ПК версия */
+/* ПК */
 @media (min-width: 768px) {
-  .fake-input {
-    display: none;
-  }
-
+  .fake-input { display: none; }
   .hidden-input {
     position: static;
     opacity: 1;
@@ -109,23 +86,34 @@ select {
   }
 }
 
-.full {
-  width: 100%;
-  margin-top: 10px;
+/* СЛОТЫ */
+.slots {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
 }
 
-.card {
-  margin-bottom: 12px;
+.slot {
+  padding: 12px;
+  text-align: center;
+  border-radius: 10px;
+  background: #1f1f1f;
 }
+
+.slot.active { background: #007b0e; }
+.slot.disabled { background: #333; opacity: 0.4; }
+
+.full { width: 100%; margin-top: 10px; }
+.card { margin-bottom: 12px; }
 </style>
 </head>
 
 <body>
 <div class="container">
 
+<!-- MENU -->
 <div id="menu">
   <h2>Меню</h2>
-
   <div class="grid">
     <button onclick="show('schedule')">Расписание</button>
     <button onclick="openChat()">Консультация</button>
@@ -134,22 +122,27 @@ select {
   </div>
 </div>
 
+<!-- SCHEDULE -->
 <div id="schedule" style="display:none;">
   <h2>Расписание</h2>
-  <div class="card">Здесь будет календарь</div>
+
+  <input type="date" id="scheduleDate">
+
+  <div class="slots" id="slots"></div>
+
   <button class="full" onclick="back()">Назад</button>
 </div>
 
+<!-- CONTACTS -->
 <div id="contacts" style="display:none;">
   <h2>Контакты</h2>
-
   <button class="full" onclick="openLink('https://www.instagram.com/nigina.coach')">Instagram</button>
   <button class="full" onclick="openLink('https://t.me/niginacoach')">Telegram</button>
   <button class="full" onclick="openLink('mailto:niginacoach@gmail.com')">Gmail</button>
-
   <button class="full" onclick="back()">Назад</button>
 </div>
 
+<!-- FORM -->
 <div id="form" style="display:none;">
   <h2>Записаться</h2>
 
@@ -167,7 +160,6 @@ select {
     <option>Онлайн</option>
   </select>
 
-  <!-- мобилка -->
   <div class="fake-input" onclick="openDate()">
     <span id="dateText">Выберите день</span>
   </div>
@@ -176,7 +168,6 @@ select {
     <span id="timeText">Выберите время</span>
   </div>
 
-  <!-- реальные поля -->
   <input type="date" id="date" class="hidden-input">
   <input type="time" id="time" class="hidden-input">
 
@@ -190,6 +181,10 @@ select {
 const tg = window.Telegram.WebApp;
 tg.expand();
 
+const TIMES = ["12:00","13:00","14:00","15:00","16:00","17:00","18:00"];
+let selectedDate = null;
+
+/* навигация */
 function show(id) {
   document.getElementById("menu").style.display = "none";
   document.getElementById(id).style.display = "block";
@@ -202,36 +197,67 @@ function back() {
   document.getElementById("form").style.display = "none";
 }
 
-function openChat() {
-  window.open("https://t.me/niginacoach", "_blank");
+function openChat() { window.open("https://t.me/niginacoach"); }
+function openLink(url) { window.open(url); }
+
+/* хранение */
+function getBusy() {
+  return JSON.parse(localStorage.getItem("busy") || "{}");
 }
 
-function openLink(url) {
-  window.open(url, "_blank");
+function saveBusy(data) {
+  localStorage.setItem("busy", JSON.stringify(data));
 }
+
+/* рендер слотов */
+function renderSlots(date) {
+  const container = document.getElementById("slots");
+  container.innerHTML = "";
+
+  const busy = getBusy();
+  const dayBusy = busy[date] || [];
+
+  TIMES.forEach(time => {
+    const div = document.createElement("div");
+    div.className = "slot";
+    div.innerText = time;
+
+    if (dayBusy.includes(time)) {
+      div.classList.add("disabled");
+    } else {
+      div.onclick = () => {
+        document.getElementById("date").value = date;
+        document.getElementById("time").value = time;
+        document.getElementById("dateText").innerText = date;
+        document.getElementById("timeText").innerText = time;
+        show("form");
+      };
+    }
+
+    container.appendChild(div);
+  });
+}
+
+/* выбор даты в расписании */
+document.getElementById("scheduleDate").addEventListener("change", function() {
+  selectedDate = this.value;
+  renderSlots(selectedDate);
+});
 
 /* мобилка */
-function openDate() {
-  document.getElementById("date").click();
-}
+function openDate() { document.getElementById("date").click(); }
+function openTime() { document.getElementById("time").click(); }
 
-function openTime() {
-  document.getElementById("time").click();
-}
-
-/* отображение выбранного */
+/* обновление текста */
 document.getElementById("date").addEventListener("change", function() {
-  if (this.value) {
-    document.getElementById("dateText").innerText = this.value;
-  }
+  document.getElementById("dateText").innerText = this.value;
 });
 
 document.getElementById("time").addEventListener("change", function() {
-  if (this.value) {
-    document.getElementById("timeText").innerText = this.value;
-  }
+  document.getElementById("timeText").innerText = this.value;
 });
 
+/* отправка */
 function sendData() {
   const name = document.getElementById("name").value;
   const training = document.getElementById("training").value;
@@ -239,6 +265,11 @@ function sendData() {
   const date = document.getElementById("date").value;
   const time = document.getElementById("time").value;
   const username = document.getElementById("username").value;
+
+  const busy = getBusy();
+  if (!busy[date]) busy[date] = [];
+  busy[date].push(time);
+  saveBusy(busy);
 
   const text =
 `Новая заявка:
@@ -249,8 +280,7 @@ function sendData() {
 Время: ${time}
 Telegram: ${username}`;
 
-  const url = `https://t.me/timurfaizievvv?text=${encodeURIComponent(text)}`;
-  window.open(url, "_blank");
+  window.open(`https://t.me/timurfaizievvv?text=${encodeURIComponent(text)}`);
 }
 </script>
 
