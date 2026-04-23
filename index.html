@@ -60,11 +60,12 @@ input, select {
   background: #1c1c1e;
   border: 1px solid #2c2c2e;
   border-radius: 12px;
-  padding: 12px 14px;
+
+  padding: 12px 14px 10px 14px; /* ← снизу меньше */
   margin-bottom: 12px;
 
   display: flex;
-  flex-direction: column; /* ← ВАЖНО */
+  flex-direction: column;
 }
 
 .faq-question {
@@ -77,7 +78,7 @@ input, select {
 .faq-answer {
   font-size: 13px;
   color: #8e8e93;
-  line-height: 1.4;
+  line-height: 1.35;
   margin: 0;
 }
 
