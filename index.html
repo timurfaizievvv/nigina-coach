@@ -17,10 +17,18 @@ body {
   color: white;
 }
 
+/* 🔥 ВАЖНО — ОТСТУПЫ */
 .container {
-  padding: 20px;
+  padding: 16px;
   max-width: 500px;
   margin: auto;
+}
+
+/* чтобы не липло к краям */
+@media (max-width: 600px) {
+  .container {
+    padding: 16px 14px;
+  }
 }
 
 h2 {
@@ -35,7 +43,7 @@ h2 {
 }
 
 button {
-  padding: 20px;
+  padding: 18px;
   border: none;
   border-radius: 16px;
   background: #1f1f1f;
@@ -49,6 +57,7 @@ button:active {
   transform: scale(0.97);
 }
 
+/* 🔥 УНИФИКАЦИЯ ПОЛЕЙ */
 input, select {
   width: 100%;
   padding: 14px;
@@ -63,6 +72,25 @@ input, select {
   -webkit-appearance: none;
 }
 
+/* 🔥 ФИКС ДЛЯ DATE / TIME */
+input[type="date"],
+input[type="time"] {
+  display: block;
+  width: 100%;
+}
+
+/* 🔥 СВЕТЛЫЕ ИКОНКИ */
+:root {
+  color-scheme: dark;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.8;
+}
+
+/* select стрелка */
 select {
   background-image: linear-gradient(45deg, transparent 50%, white 50%),
                     linear-gradient(135deg, white 50%, transparent 50%);
@@ -81,27 +109,12 @@ select {
   margin-bottom: 12px;
 }
 
-@media (max-width: 480px) {
-  .container {
-    padding: 15px;
-  }
-
-  button {
-    padding: 16px;
-    font-size: 15px;
-  }
-
-  input, select {
-    font-size: 16px;
-  }
-}
 </style>
 </head>
 
 <body>
 <div class="container">
 
-<!-- MENU -->
 <div id="menu">
   <h2>Меню</h2>
 
@@ -113,14 +126,12 @@ select {
   </div>
 </div>
 
-<!-- SCHEDULE -->
 <div id="schedule" style="display:none;">
   <h2>Расписание</h2>
   <div class="card">Здесь будет календарь</div>
   <button class="full" onclick="back()">Назад</button>
 </div>
 
-<!-- CONTACTS -->
 <div id="contacts" style="display:none;">
   <h2>Контакты</h2>
 
@@ -131,7 +142,6 @@ select {
   <button class="full" onclick="back()">Назад</button>
 </div>
 
-<!-- FORM -->
 <div id="form" style="display:none;">
   <h2>Записаться</h2>
 
@@ -143,16 +153,12 @@ select {
     <option>Акро</option>
   </select>
 
-  <!-- НОВОЕ -->
   <select id="type">
     <option>Оффлайн</option>
     <option>Онлайн</option>
   </select>
 
-  <!-- ДАТА -->
   <input type="date" id="date">
-
-  <!-- ВРЕМЯ -->
   <input type="time" id="time">
 
   <input id="username" placeholder="Ваш Telegram (@username)">
