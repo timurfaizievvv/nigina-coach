@@ -21,14 +21,13 @@ body {
   margin: auto;
 }
 
-/* заголовок */
 h2 {
   text-align: center;
   margin-bottom: 20px;
   font-size: 18px;
 }
 
-/* КНОПКИ 1x1 */
+/* блоки */
 .block {
   width: 100%;
   height: 60px;
@@ -44,10 +43,9 @@ h2 {
 
 .block:active {
   background: #007b0e;
-  transform: scale(0.97);
 }
 
-/* иконки одинаковые */
+/* иконки */
 .icon {
   width: 18px;
   height: 18px;
@@ -56,7 +54,7 @@ h2 {
   fill: none;
 }
 
-/* текст под блоком */
+/* текст под */
 .sub {
   text-align: center;
   color: #888;
@@ -86,7 +84,7 @@ h2 {
   background-position: right 12px center;
 }
 
-/* дата/время */
+/* дата */
 .fake {
   display: flex;
   align-items: center;
@@ -99,10 +97,20 @@ h2 {
 }
 
 /* кнопки */
-.full {
+.btn {
   width: 100%;
   height: 50px;
+  border-radius: 12px;
+  background: #1f1f1f;
+  color: white;
+  border: none;
   margin-top: 10px;
+  font-size: 15px;
+}
+
+/* disabled */
+.btn.disabled {
+  opacity: 0.4;
 }
 
 .note {
@@ -121,47 +129,38 @@ h2 {
 <div id="menu">
   <h2>Меню</h2>
 
-  <div class="block" onclick="show('form')">
-    <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-    Записаться
-  </div>
+  <div class="block" onclick="show('form')">Записаться</div>
 
   <div class="block" onclick="show('faq')">
-    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="17" x2="12" y2="17"/><path d="M9 9a3 3 0 016 0c0 2-3 2-3 4"/></svg>
+    ?
     FAQ
   </div>
 
-  <div class="block" onclick="openChat()">
-    <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16v12H5l-1 1z"/></svg>
-    Консультация
-  </div>
+  <div class="block" onclick="openChat()">Консультация</div>
 
   <div class="sub">Если Вы не нашли ответ в разделе FAQ, напишите мне</div>
 
-  <!-- отступ -->
   <div style="height:20px;"></div>
 
-  <div class="block" onclick="openInstagram()">
-    <svg class="icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="4"/></svg>
-    Instagram
-  </div>
-
+  <div class="block" onclick="openInstagram()">Instagram</div>
 </div>
 
 <!-- FORM -->
 <div id="form" style="display:none;">
   <h2>Записаться</h2>
 
-  <input class="input" id="name" placeholder="Имя">
-  <input class="input" id="contact" placeholder="Telegram или номер">
+  <input class="input" id="name" placeholder="Имя" oninput="checkForm()">
+  <input class="input" id="contact" placeholder="Telegram или номер" oninput="checkForm()">
 
-  <select class="input select" id="training">
+  <select class="input select" id="training" onchange="checkForm()">
+    <option value="">Выберите тренировку</option>
     <option>Пилатес</option>
     <option>Стретчинг</option>
     <option>Акро</option>
   </select>
 
-  <select class="input select" id="type">
+  <select class="input select" id="type" onchange="checkForm()">
+    <option value="">Тип</option>
     <option>Онлайн</option>
     <option>Оффлайн</option>
   </select>
@@ -177,8 +176,8 @@ h2 {
   <input type="date" id="date" class="hidden">
   <input type="time" id="time" class="hidden">
 
-  <button class="full" onclick="sendData()">Отправить</button>
-  <button class="full" onclick="back()">Назад</button>
+  <button id="submitBtn" class="btn disabled" onclick="sendData()">Отправить</button>
+  <button class="btn" onclick="back()">Назад</button>
 
   <div class="note">После отправления заявки с Вами свяжутся!</div>
 </div>
@@ -187,82 +186,76 @@ h2 {
 <div id="faq" style="display:none;">
   <h2>FAQ</h2>
   <div class="note">Скоро будет информация</div>
-  <button class="full" onclick="back()">Назад</button>
+  <button class="btn" onclick="back()">Назад</button>
 </div>
 
 </div>
 
 <script>
-const tg = window.Telegram.WebApp;
-tg.expand();
-
 function show(id){
-  document.getElementById("menu").style.display="none";
+  menu.style.display="none";
   document.getElementById(id).style.display="block";
 }
 
 function back(){
-  document.getElementById("menu").style.display="block";
-  document.getElementById("form").style.display="none";
-  document.getElementById("faq").style.display="none";
+  menu.style.display="block";
+  form.style.display="none";
+  faq.style.display="none";
 }
 
 function openChat(){ window.open("https://t.me/niginacoach"); }
 function openInstagram(){ window.open("https://www.instagram.com/nigina.coach"); }
 
-/* фикc клика */
-function openDate(){
-  const el=document.getElementById("date");
-  el.focus();
-  el.click();
+function openDate(){ date.click(); }
+function openTime(){ time.click(); }
+
+date.onchange = () => {
+  if(date.value){
+    const d=new Date(date.value);
+    dateText.innerText = d.toLocaleDateString("ru-RU",{day:"numeric",month:"long"});
+    checkForm();
+  }
+};
+
+time.onchange = () => {
+  if(time.value){
+    timeText.innerText = time.value;
+    checkForm();
+  }
+};
+
+/* проверка */
+function checkForm(){
+  const valid =
+    name.value &&
+    contact.value &&
+    training.value &&
+    type.value &&
+    date.value &&
+    time.value;
+
+  if(valid){
+    submitBtn.classList.remove("disabled");
+  } else {
+    submitBtn.classList.add("disabled");
+  }
 }
 
-function openTime(){
-  const el=document.getElementById("time");
-  el.focus();
-  el.click();
-}
-
-/* отображение */
-document.getElementById("date").addEventListener("change",function(){
-  if(this.value){
-    const d=new Date(this.value);
-    const months=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
-    document.getElementById("dateText").innerText=`${d.getDate()} ${months[d.getMonth()]}`;
-  }
-});
-
-document.getElementById("time").addEventListener("change",function(){
-  if(this.value){
-    document.getElementById("timeText").innerText=this.value;
-  }
-});
-
+/* отправка */
 function sendData(){
-  const name=nameEl.value;
-  const contact=contactEl.value;
-  const training=trainingEl.value;
-  const type=typeEl.value;
-  const date=dateEl.value;
-  const time=timeEl.value;
+  if(submitBtn.classList.contains("disabled")) return;
 
-  const text=`Новая заявка:
-Имя: ${name}
-Контакт: ${contact}
-Тренировка: ${training}
-Тип: ${type}
-Дата: ${date}
-Время: ${time}`;
+  const text =
+`Новая заявка:
+Имя: ${name.value}
+Контакт: ${contact.value}
+Тренировка: ${training.value}
+Тип: ${type.value}
+Дата: ${date.value}
+Время: ${time.value}`;
 
   window.open(`https://t.me/timurfaizievvv?text=${encodeURIComponent(text)}`);
 }
-
-const nameEl=document.getElementById("name");
-const contactEl=document.getElementById("contact");
-const trainingEl=document.getElementById("training");
-const typeEl=document.getElementById("type");
-const dateEl=document.getElementById("date");
-const timeEl=document.getElementById("time");
 </script>
 
 </body>
