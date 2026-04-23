@@ -56,6 +56,17 @@ input, select {
   outline: none;
 }
 
+.faq-question {
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.faq-answer {
+  font-size: 13px;
+  color: #8e8e93;
+  margin-bottom: 12px;
+}
+
 /* селекты стрелка */
 .select-wrap {
   position: relative;
@@ -206,18 +217,98 @@ button {
 <div id="faq" class="screen">
   <div class="title">FAQ</div>
 
-  <div class="menu-btn">Общие вопросы</div>
-  <div class="menu-btn">Здоровье и противопоказания</div>
-  <div class="menu-btn">Беременность и после родов</div>
-  <div class="menu-btn">Травмы и восстановления</div>
-  <div class="menu-btn">Формат занятий</div>
-  <div class="menu-btn">Результаты</div>
-  <div class="menu-btn">Безопасность</div>
-  <div class="menu-btn">Доп. вопросы</div>
+  <div class="menu-btn" onclick="openScreen('faq1')">Общие вопросы</div>
+  <div class="menu-btn" onclick="openScreen('faq2')">Здоровье и противопоказания</div>
+  <div class="menu-btn" onclick="openScreen('faq3')">Беременность и после родов</div>
+  <div class="menu-btn" onclick="openScreen('faq4')">Травмы и восстановления</div>
+  <div class="menu-btn" onclick="openScreen('faq5')">Формат занятий</div>
+  <div class="menu-btn" onclick="openScreen('faq6')">Результаты</div>
+  <div class="menu-btn" onclick="openScreen('faq7')">Безопасность</div>
+  <div class="menu-btn" onclick="openScreen('faq8')">Доп. вопросы</div>
 
   <button class="secondary" onclick="openScreen('home')" style="margin-top:20px;">Назад</button>
 </div>
 
+<!-- FAQ 1 -->
+<div id="faq1" class="screen">
+  <div class="title">Общие вопросы</div>
+
+  <div class="faq-question">Вопрос</div>
+  <div class="faq-answer">Ответ</div>
+
+  <button class="secondary" onclick="openScreen('faq')">Назад</button>
+</div>
+
+<!-- FAQ 2 -->
+<div id="faq2" class="screen">
+  <div class="title">Здоровье и противопоказания</div>
+
+  <div class="faq-question">Вопрос</div>
+  <div class="faq-answer">Ответ</div>
+
+  <button class="secondary" onclick="openScreen('faq')">Назад</button>
+</div>
+
+<!-- FAQ 3 -->
+<div id="faq3" class="screen">
+  <div class="title">Беременность и после родов</div>
+
+  <div class="faq-question">Вопрос</div>
+  <div class="faq-answer">Ответ</div>
+
+  <button class="secondary" onclick="openScreen('faq')">Назад</button>
+</div>
+
+<!-- FAQ 4 -->
+<div id="faq4" class="screen">
+  <div class="title">Травмы и восстановления</div>
+
+  <div class="faq-question">Вопрос</div>
+  <div class="faq-answer">Ответ</div>
+
+  <button class="secondary" onclick="openScreen('faq')">Назад</button>
+</div>
+
+<!-- FAQ 5 -->
+<div id="faq5" class="screen">
+  <div class="title">Формат занятий</div>
+
+  <div class="faq-question">Вопрос</div>
+  <div class="faq-answer">Ответ</div>
+
+  <button class="secondary" onclick="openScreen('faq')">Назад</button>
+</div>
+
+<!-- FAQ 6 -->
+<div id="faq6" class="screen">
+  <div class="title">Результаты</div>
+
+  <div class="faq-question">Вопрос</div>
+  <div class="faq-answer">Ответ</div>
+
+  <button class="secondary" onclick="openScreen('faq')">Назад</button>
+</div>
+
+<!-- FAQ 7 -->
+<div id="faq7" class="screen">
+  <div class="title">Безопасность</div>
+
+  <div class="faq-question">Вопрос</div>
+  <div class="faq-answer">Ответ</div>
+
+  <button class="secondary" onclick="openScreen('faq')">Назад</button>
+</div>
+
+<!-- FAQ 8 -->
+<div id="faq8" class="screen">
+  <div class="title">Доп. вопросы</div>
+
+  <div class="faq-question">Вопрос</div>
+  <div class="faq-answer">Ответ</div>
+
+  <button class="secondary" onclick="openScreen('faq')">Назад</button>
+</div>
+  
 <script>
 const tg = window.Telegram.WebApp;
 tg.expand();
