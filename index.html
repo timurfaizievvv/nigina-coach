@@ -21,53 +21,54 @@ body {
   margin: auto;
 }
 
+/* заголовок */
 h2 {
   text-align: center;
   margin-bottom: 20px;
   font-size: 18px;
 }
 
-/* GRID */
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-/* КНОПКИ */
-button {
+/* КНОПКИ 1x1 */
+.block {
+  width: 100%;
   height: 60px;
   border-radius: 14px;
-  border: none;
   background: #1f1f1f;
-  color: white;
-  font-size: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 15px;
 }
 
-button:active {
+.block:active {
   background: #007b0e;
   transform: scale(0.97);
 }
 
-/* АНИМАЦИЯ INSTAGRAM */
-.instagram {
-  animation: pulse 2s infinite;
+/* иконки одинаковые */
+.icon {
+  width: 18px;
+  height: 18px;
+  stroke: #888;
+  stroke-width: 2;
+  fill: none;
 }
 
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(0,123,14,0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(0,123,14,0); }
-  100% { box-shadow: 0 0 0 0 rgba(0,123,14,0); }
+/* текст под блоком */
+.sub {
+  text-align: center;
+  color: #888;
+  font-size: 13px;
+  margin-top: -6px;
+  margin-bottom: 12px;
 }
 
-/* ПОЛЯ */
+/* поля */
 .input {
-  height: 50px;
   width: 100%;
+  height: 50px;
   padding: 0 12px;
   margin-bottom: 12px;
   border-radius: 12px;
@@ -77,22 +78,21 @@ button:active {
   font-size: 15px;
 }
 
-/* SELECT */
+/* select */
 .select {
   appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='10' viewBox='0 0 24 24' width='10'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg stroke='gray' fill='none' stroke-width='2' viewBox='0 0 24 24' width='12'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat: no-repeat;
   background-position: right 12px center;
 }
 
-/* FAKE */
+/* дата/время */
 .fake {
   display: flex;
   align-items: center;
   color: #aaa;
 }
 
-/* скрытые */
 .hidden {
   position: absolute;
   opacity: 0;
@@ -111,47 +111,44 @@ button:active {
   font-size: 13px;
   text-align: center;
 }
-
-/* SVG */
-.icon {
-  width: 18px;
-  height: 18px;
-  fill: #888;
-}
 </style>
 </head>
 
 <body>
 <div class="container">
 
+<!-- MENU -->
 <div id="menu">
   <h2>Меню</h2>
 
-  <div class="grid">
-
-    <button onclick="openChat()">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16v12H5.17L4 17.17V4z"/></svg>
-      Консультация
-    </button>
-
-    <button onclick="show('form')">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm10 8h8v-6h-8v6zm0-18v6h8V3h-8zM3 21h8v-6H3v6z"/></svg>
-      Записаться
-    </button>
-
-    <button class="instagram" onclick="openInstagram()">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M7 2C4 2 2 4 2 7v10c0 3 2 5 5 5h10c3 0 5-2 5-5V7c0-3-2-5-5-5H7zm5 4a6 6 0 110 12 6 6 0 010-12zm0 2a4 4 0 100 8 4 4 0 000-8zm5.5-.75a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5z"/></svg>
-      Следите за мной
-    </button>
-
-    <button onclick="show('faq')">
-      <svg class="icon" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92A1.49 1.49 0 0013.5 14h-2v-.5c0-.83.34-1.58.88-2.12l1.24-1.26A2 2 0 0012 6a2 2 0 00-2 2H8a4 4 0 118 0c0 .88-.36 1.68-.93 2.25z"/></svg>
-      FAQ
-    </button>
-
+  <div class="block" onclick="show('form')">
+    <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Записаться
   </div>
+
+  <div class="block" onclick="show('faq')">
+    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="17" x2="12" y2="17"/><path d="M9 9a3 3 0 016 0c0 2-3 2-3 4"/></svg>
+    FAQ
+  </div>
+
+  <div class="block" onclick="openChat()">
+    <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16v12H5l-1 1z"/></svg>
+    Консультация
+  </div>
+
+  <div class="sub">Если Вы не нашли ответ в разделе FAQ, напишите мне</div>
+
+  <!-- отступ -->
+  <div style="height:20px;"></div>
+
+  <div class="block" onclick="openInstagram()">
+    <svg class="icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="4"/></svg>
+    Instagram
+  </div>
+
 </div>
 
+<!-- FORM -->
 <div id="form" style="display:none;">
   <h2>Записаться</h2>
 
@@ -186,6 +183,7 @@ button:active {
   <div class="note">После отправления заявки с Вами свяжутся!</div>
 </div>
 
+<!-- FAQ -->
 <div id="faq" style="display:none;">
   <h2>FAQ</h2>
   <div class="note">Скоро будет информация</div>
@@ -212,17 +210,25 @@ function back(){
 function openChat(){ window.open("https://t.me/niginacoach"); }
 function openInstagram(){ window.open("https://www.instagram.com/nigina.coach"); }
 
-function openDate(){ document.getElementById("date").click(); }
-function openTime(){ document.getElementById("time").click(); }
+/* фикc клика */
+function openDate(){
+  const el=document.getElementById("date");
+  el.focus();
+  el.click();
+}
 
-/* формат даты */
-const months=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+function openTime(){
+  const el=document.getElementById("time");
+  el.focus();
+  el.click();
+}
 
+/* отображение */
 document.getElementById("date").addEventListener("change",function(){
   if(this.value){
     const d=new Date(this.value);
-    const text=`${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
-    document.getElementById("dateText").innerText=text;
+    const months=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+    document.getElementById("dateText").innerText=`${d.getDate()} ${months[d.getMonth()]}`;
   }
 });
 
