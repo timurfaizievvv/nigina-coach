@@ -6,8 +6,6 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-
-/* 🔥 ГЛОБАЛЬНЫЙ ФИКС */
 * {
   box-sizing: border-box;
 }
@@ -30,14 +28,12 @@ h2 {
   margin-bottom: 20px;
 }
 
-/* GRID */
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-/* BUTTON */
 button {
   padding: 20px;
   border: none;
@@ -53,7 +49,6 @@ button:active {
   transform: scale(0.97);
 }
 
-/* INPUT + SELECT FIX */
 input, select {
   width: 100%;
   padding: 14px;
@@ -68,7 +63,6 @@ input, select {
   -webkit-appearance: none;
 }
 
-/* красивый select (стрелка) */
 select {
   background-image: linear-gradient(45deg, transparent 50%, white 50%),
                     linear-gradient(135deg, white 50%, transparent 50%);
@@ -78,18 +72,15 @@ select {
   background-repeat: no-repeat;
 }
 
-/* FULL WIDTH BUTTON */
 .full {
   width: 100%;
   margin-top: 10px;
 }
 
-/* CARD */
 .card {
   margin-bottom: 12px;
 }
 
-/* 📱 МОБИЛЬНАЯ АДАПТАЦИЯ */
 @media (max-width: 480px) {
   .container {
     padding: 15px;
@@ -101,10 +92,9 @@ select {
   }
 
   input, select {
-    font-size: 16px; /* убирает zoom на iOS */
+    font-size: 16px;
   }
 }
-
 </style>
 </head>
 
@@ -126,9 +116,7 @@ select {
 <!-- SCHEDULE -->
 <div id="schedule" style="display:none;">
   <h2>Расписание</h2>
-
   <div class="card">Здесь будет календарь</div>
-
   <button class="full" onclick="back()">Назад</button>
 </div>
 
@@ -136,17 +124,9 @@ select {
 <div id="contacts" style="display:none;">
   <h2>Контакты</h2>
 
-  <button class="full" onclick="openLink('https://www.instagram.com/nigina.coach')">
-    Instagram
-  </button>
-
-  <button class="full" onclick="openLink('https://t.me/niginacoach')">
-    Telegram
-  </button>
-
-  <button class="full" onclick="openLink('mailto:niginacoach@gmail.com')">
-    Gmail
-  </button>
+  <button class="full" onclick="openLink('https://www.instagram.com/nigina.coach')">Instagram</button>
+  <button class="full" onclick="openLink('https://t.me/niginacoach')">Telegram</button>
+  <button class="full" onclick="openLink('mailto:niginacoach@gmail.com')">Gmail</button>
 
   <button class="full" onclick="back()">Назад</button>
 </div>
@@ -162,6 +142,18 @@ select {
     <option>Стретчинг</option>
     <option>Акро</option>
   </select>
+
+  <!-- НОВОЕ -->
+  <select id="type">
+    <option>Оффлайн</option>
+    <option>Онлайн</option>
+  </select>
+
+  <!-- ДАТА -->
+  <input type="date" id="date">
+
+  <!-- ВРЕМЯ -->
+  <input type="time" id="time">
 
   <input id="username" placeholder="Ваш Telegram (@username)">
 
@@ -198,9 +190,19 @@ function openLink(url) {
 function sendData() {
   const name = document.getElementById("name").value;
   const training = document.getElementById("training").value;
+  const type = document.getElementById("type").value;
+  const date = document.getElementById("date").value;
+  const time = document.getElementById("time").value;
   const username = document.getElementById("username").value;
 
-  const text = `Новая заявка:\nИмя: ${name}\nТренировка: ${training}\nTelegram: ${username}`;
+  const text =
+`Новая заявка:
+Имя: ${name}
+Тренировка: ${training}
+Тип: ${type}
+Дата: ${date}
+Время: ${time}
+Telegram: ${username}`;
 
   const url = `https://t.me/timurfaizievvv?text=${encodeURIComponent(text)}`;
 
