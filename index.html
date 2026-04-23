@@ -259,26 +259,61 @@ time.addEventListener("change", () => {
 });
 
 /* ВАЛИДАЦИЯ */
+const nameInput = document.getElementById("name");
+const contactInput = document.getElementById("contact");
+const trainingInput = document.getElementById("training");
+const formatInput = document.getElementById("format");
+const dateInput = document.getElementById("date");
+const timeInput = document.getElementById("time");
+const submitBtn = document.getElementById("submitBtn");
+
+/* ВЕШАЕМ СОБЫТИЯ НА ВСЕ ПОЛЯ */
+[nameInput, contactInput].forEach(el => {
+  el.addEventListener("input", validate);
+});
+
+[trainingInput, formatInput].forEach(el => {
+  el.addEventListener("change", validate);
+});
+
+dateInput.addEventListener("change", validate);
+timeInput.addEventListener("change", validate);
+
+/* ВАЛИДАЦИЯ */
 function validate() {
   const filled =
-    name.value &&
-    contact.value &&
-    training.value &&
-    format.value &&
-    date.value &&
-    time.value;
-
-  const btn = document.getElementById("submitBtn");
+    nameInput.value.trim() !== "" &&
+    contactInput.value.trim() !== "" &&
+    trainingInput.value !== "" &&
+    formatInput.value !== "" &&
+    dateInput.value !== "" &&
+    timeInput.value !== "";
 
   if (filled) {
-    btn.classList.remove("disabled");
-    btn.classList.add("primary");
-    btn.innerText = "Отправить";
+    submitBtn.classList.remove("disabled");
+    submitBtn.classList.add("primary");
+    submitBtn.innerText = "Отправить";
   } else {
-    btn.classList.remove("primary");
-    btn.classList.add("disabled");
-    btn.innerText = "Заполните форму";
+    submitBtn.classList.remove("primary");
+    submitBtn.classList.add("disabled");
+    submitBtn.innerText = "Заполните форму";
   }
+}
+
+/* ОТПРАВКА */
+function sendForm() {
+  if (submitBtn.classList.contains("disabled")) return;
+
+  const data = {
+    name: nameInput.value,
+    contact: contactInput.value,
+    training: trainingInput.value,
+    format: formatInput.value,
+    date: document.getElementById("dateText").innerText,
+    time: document.getElementById("timeText").innerText
+  };
+
+  tg.sendData(JSON.stringify(data));
 }
 
 /* ОТПРАВКА */
