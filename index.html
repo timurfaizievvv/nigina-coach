@@ -29,7 +29,6 @@ body {
   padding: 20px;
 }
 
-/* СКРИНЫ */
 .screen { display: none; }
 .active { display: block; }
 
@@ -40,7 +39,6 @@ body {
   font-weight: 600;
 }
 
-/* БЛОКИ */
 .block {
   background: var(--card);
   padding: 14px;
@@ -58,11 +56,10 @@ input, select {
   outline: none;
 }
 
-/* ТРЕУГОЛЬНИК */
+/* стрелка */
 .select-wrap {
   position: relative;
 }
-
 .select-wrap::after {
   content: "▾";
   position: absolute;
@@ -70,10 +67,9 @@ input, select {
   top: 50%;
   transform: translateY(-50%);
   color: #8e8e93;
-  pointer-events: none;
 }
 
-/* КНОПКИ */
+/* кнопки */
 button {
   width: 100%;
   padding: 14px;
@@ -116,11 +112,9 @@ button {
 
 .spacer { height: 20px; }
 
-/* ОТОБРАЖЕНИЕ ДАТЫ/ВРЕМЕНИ */
 .value {
   font-size: 14px;
   color: #8e8e93;
-  margin-top: 5px;
 }
 </style>
 </head>
@@ -172,14 +166,16 @@ button {
     </select>
   </div>
 
-  <div class="block">
-    <input type="date" id="date">
-    <div id="dateText" class="value"></div>
+  <!-- ДАТА -->
+  <div class="block" onclick="openDatePicker()">
+    <input type="date" id="date" style="opacity:0; position:absolute;">
+    <div id="dateText" class="value">Выберите дату</div>
   </div>
 
-  <div class="block">
-    <input type="time" id="time">
-    <div id="timeText" class="value"></div>
+  <!-- ВРЕМЯ -->
+  <div class="block" onclick="openTimePicker()">
+    <input type="time" id="time" style="opacity:0; position:absolute;">
+    <div id="timeText" class="value">Выберите время</div>
   </div>
 
   <div class="spacer"></div>
@@ -222,6 +218,19 @@ function openInstagram() {
   window.open("https://www.instagram.com/nigina.coach", "_blank");
 }
 
+/* ФИКС iOS */
+function openDatePicker() {
+  const input = document.getElementById("date");
+  if (input.showPicker) input.showPicker();
+  else input.focus();
+}
+
+function openTimePicker() {
+  const input = document.getElementById("time");
+  if (input.showPicker) input.showPicker();
+  else input.focus();
+}
+
 /* ДАТА */
 const dateInput = document.getElementById("date");
 dateInput.addEventListener("change", () => {
@@ -234,7 +243,9 @@ dateInput.addEventListener("change", () => {
     year: "numeric"
   });
 
-  document.getElementById("dateText").innerText = text;
+  dateText.innerText = text;
+  dateText.style.color = "white";
+
   validate();
 });
 
@@ -243,18 +254,13 @@ const timeInput = document.getElementById("time");
 timeInput.addEventListener("change", () => {
   if (!timeInput.value) return;
 
-  document.getElementById("timeText").innerText = timeInput.value;
+  timeText.innerText = timeInput.value;
+  timeText.style.color = "white";
+
   validate();
 });
 
 /* ВАЛИДАЦИЯ */
-const fields = ["name", "contact", "training", "format"];
-
-fields.forEach(id => {
-  document.getElementById(id).addEventListener("input", validate);
-  document.getElementById(id).addEventListener("change", validate);
-});
-
 function validate() {
   const filled =
     name.value &&
@@ -279,7 +285,7 @@ function validate() {
 
 /* ОТПРАВКА */
 function sendForm() {
-  if (document.getElementById("submitBtn").classList.contains("disabled")) return;
+  if (submitBtn.classList.contains("disabled")) return;
 
   const data = {
     name: name.value,
