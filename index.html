@@ -1,81 +1,167 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f0f0f;
+      color: white;
+    }
+
+    .container {
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 12px;
+      border: none;
+      border-radius: 14px;
+      background: #1f1f1f;
+      color: white;
+      font-size: 16px;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      border: none;
+      background: #1a1a1a;
+      color: white;
+    }
+
+    .card {
+      background: #1a1a1a;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+
+    a {
+      color: #4da6ff;
+      text-decoration: none;
+    }
+  </style>
 </head>
 
-<body style="font-family:sans-serif; text-align:center; padding:20px;">
+<body>
+<div class="container">
 
-  <h2>Меню</h2>
-
+  <!-- MENU -->
   <div id="menu">
-    <button onclick="show('schedule')">📅 Расписание</button><br><br>
-    <button onclick="openChat()">💬 Консультация</button><br><br>
-    <button onclick="show('contacts')">📲 Контакты</button><br><br>
+    <h2>Меню</h2>
+
+    <button onclick="show('schedule')">📅 Расписание</button>
+    <button onclick="openChat()">💬 Консультация</button>
+    <button onclick="show('contacts')">📲 Контакты</button>
     <button onclick="show('form')">📝 Записаться</button>
   </div>
 
-  <!-- Расписание -->
+  <!-- SCHEDULE -->
   <div id="schedule" style="display:none;">
-    <h3>Расписание</h3>
-    <p>Здесь будет календарь (пока заглушка)</p>
-    <button onclick="back()">Назад</button>
+    <h2>Расписание</h2>
+
+    <div class="card">Тут будет календарь и тренировки</div>
+
+    <button onclick="back()">⬅ Назад</button>
   </div>
 
-  <!-- Контакты -->
+  <!-- CONTACTS -->
   <div id="contacts" style="display:none;">
-    <h3>Контакты</h3>
-    <p>
-      📩 Email: niginacoach@gmail.com<br>
-      📸 Instagram: <a href="https://instagram.com/nigina.coach">Открыть</a><br>
-      💬 Telegram: <a href="https://t.me/niginacoach">Написать</a>
-    </p>
-    <button onclick="back()">Назад</button>
+    <h2>Контакты</h2>
+
+    <div class="card">
+      📸 Instagram<br>
+      <a href="https://www.instagram.com/nigina.coach" target="_blank">
+        instagram.com/nigina.coach
+      </a>
+    </div>
+
+    <div class="card">
+      💬 Telegram<br>
+      <a href="https://t.me/niginacoach" target="_blank">
+        t.me/niginacoach
+      </a>
+    </div>
+
+    <div class="card">
+      📩 Gmail<br>
+      niginacoach@gmail.com
+    </div>
+
+    <button onclick="back()">⬅ Назад</button>
   </div>
 
-  <!-- Форма -->
+  <!-- FORM -->
   <div id="form" style="display:none;">
-    <h3>Запись</h3>
+    <h2>Записаться</h2>
 
-    <input id="name" placeholder="Имя"><br><br>
-    <input id="phone" placeholder="Телефон"><br><br>
+    <input id="name" placeholder="Имя">
 
-    <button onclick="sendData()">Отправить</button><br><br>
-    <button onclick="back()">Назад</button>
+    <select id="training">
+      <option>Пилатес</option>
+      <option>Стретчинг</option>
+      <option>Акро</option>
+    </select>
+
+    <input id="username" placeholder="Ваш Telegram (@username)">
+
+    <button onclick="sendData()">Отправить</button>
+    <button onclick="back()">⬅ Назад</button>
   </div>
 
-  <script>
-    const tg = window.Telegram.WebApp;
+</div>
 
-    function show(id) {
-      document.getElementById("menu").style.display = "none";
-      document.getElementById(id).style.display = "block";
-    }
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.expand();
 
-    function back() {
-      document.getElementById("menu").style.display = "block";
-      document.getElementById("schedule").style.display = "none";
-      document.getElementById("contacts").style.display = "none";
-      document.getElementById("form").style.display = "none";
-    }
+  function show(id) {
+    document.getElementById("menu").style.display = "none";
+    document.getElementById(id).style.display = "block";
+  }
 
-    function openChat() {
-      window.open("https://t.me/niginacoach", "_blank");
-    }
+  function back() {
+    document.getElementById("menu").style.display = "block";
+    document.getElementById("schedule").style.display = "none";
+    document.getElementById("contacts").style.display = "none";
+    document.getElementById("form").style.display = "none";
+  }
 
-    function sendData() {
-      const name = document.getElementById("name").value;
-      const phone = document.getElementById("phone").value;
+  function openChat() {
+    window.open("https://t.me/niginacoach", "_blank");
+  }
 
-      tg.sendData(JSON.stringify({
-        name: name,
-        phone: phone
-      }));
+  function sendData() {
+    const name = document.getElementById("name").value;
+    const training = document.getElementById("training").value;
+    const username = document.getElementById("username").value;
 
-      alert("Заявка отправлена!");
-    }
-  </script>
+    const text = `Новая заявка:\nИмя: ${name}\nТренировка: ${training}\nTelegram: ${username}`;
+
+    const url = `https://t.me/timurfaizievvv?text=${encodeURIComponent(text)}`;
+
+    window.open(url, "_blank");
+  }
+</script>
 
 </body>
 </html>
