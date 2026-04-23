@@ -56,16 +56,24 @@ input, select {
   outline: none;
 }
 
+.faq-item {
+  background: #1c1c1e;
+  border: 1px solid #2c2c2e;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
 .faq-question {
   font-size: 15px;
-  font-weight: 600; /* или 700 если хочешь жирнее */
-  margin-bottom: 4px;
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
 .faq-answer {
   font-size: 13px;
   color: #8e8e93;
-  margin-bottom: 12px;
+  line-height: 1.4;
 }
 
 /* селекты стрелка */
@@ -394,12 +402,13 @@ button {
 <!-- FAQ 6 -->
 <div id="faq6" class="screen">
   <div class="title">Результаты</div>
-
+  
+  <div class="faq-item">
   <div class="faq-question">❓ Когда будут результаты и что изменится?<br></div>
   <div class="faq-answer">При регулярных тренировках уже через 2–3 недели появятся первые ощущения,
     а через 1–2 месяца — заметные изменения: улучшится осанка, гибкость, укрепятся мышцы (особенно кор, спина и ягодицы),
     и при соблюдении питания возможно снижение веса.</div>
-
+  </div>
   <button class="secondary" onclick="openScreen('faq')">Назад</button>
 </div>
 
