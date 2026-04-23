@@ -10,7 +10,7 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: -apple-system, sans-serif;
   background: #0f0f0f;
   color: white;
 }
@@ -21,11 +21,10 @@ body {
   margin: auto;
 }
 
-@media (max-width: 600px) {
-  .container { padding: 16px 14px; }
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
 }
-
-h2 { text-align: center; margin-bottom: 20px; }
 
 .grid {
   display: grid;
@@ -35,17 +34,15 @@ h2 { text-align: center; margin-bottom: 20px; }
 
 button {
   padding: 18px;
-  border: none;
   border-radius: 16px;
+  border: none;
   background: #1f1f1f;
   color: white;
   font-size: 16px;
-  transition: 0.2s;
 }
 
 button:active {
   background: #007b0e;
-  transform: scale(0.97);
 }
 
 input, select {
@@ -56,37 +53,17 @@ input, select {
   border: none;
   background: #1a1a1a;
   color: white;
-  font-size: 16px;
-  appearance: none;
 }
 
-.fake-input {
-  width: 100%;
-  padding: 14px;
+/* 🔥 3 в ряд */
+.row3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
   margin-bottom: 12px;
-  border-radius: 12px;
-  background: #1a1a1a;
-  color: #aaa;
 }
 
-.hidden-input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* ПК */
-@media (min-width: 768px) {
-  .fake-input { display: none; }
-  .hidden-input {
-    position: static;
-    opacity: 1;
-    pointer-events: auto;
-    margin-bottom: 12px;
-  }
-}
-
-/* СЛОТЫ */
+/* слоты */
 .slots {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -100,18 +77,20 @@ input, select {
   background: #1f1f1f;
 }
 
-.slot.active { background: #007b0e; }
-.slot.disabled { background: #333; opacity: 0.4; }
+.slot.disabled {
+  opacity: 0.4;
+}
 
-.full { width: 100%; margin-top: 10px; }
-.card { margin-bottom: 12px; }
+.full {
+  width: 100%;
+  margin-top: 10px;
+}
 </style>
 </head>
 
 <body>
 <div class="container">
 
-<!-- MENU -->
 <div id="menu">
   <h2>Меню</h2>
   <div class="grid">
@@ -122,7 +101,6 @@ input, select {
   </div>
 </div>
 
-<!-- SCHEDULE -->
 <div id="schedule" style="display:none;">
   <h2>Расписание</h2>
 
@@ -133,7 +111,6 @@ input, select {
   <button class="full" onclick="back()">Назад</button>
 </div>
 
-<!-- CONTACTS -->
 <div id="contacts" style="display:none;">
   <h2>Контакты</h2>
   <button class="full" onclick="openLink('https://www.instagram.com/nigina.coach')">Instagram</button>
@@ -142,7 +119,6 @@ input, select {
   <button class="full" onclick="back()">Назад</button>
 </div>
 
-<!-- FORM -->
 <div id="form" style="display:none;">
   <h2>Записаться</h2>
 
@@ -160,16 +136,12 @@ input, select {
     <option>Онлайн</option>
   </select>
 
-  <div class="fake-input" onclick="openDate()">
-    <span id="dateText">Выберите день</span>
+  <!-- 🔥 НОВЫЙ ВЫБОР -->
+  <div class="row3">
+    <select id="month"></select>
+    <select id="day"></select>
+    <select id="time"></select>
   </div>
-
-  <div class="fake-input" onclick="openTime()">
-    <span id="timeText">Выберите время</span>
-  </div>
-
-  <input type="date" id="date" class="hidden-input">
-  <input type="time" id="time" class="hidden-input">
 
   <button class="full" onclick="sendData()">Отправить</button>
   <button class="full" onclick="back()">Назад</button>
@@ -182,9 +154,8 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 
 const TIMES = ["12:00","13:00","14:00","15:00","16:00","17:00","18:00"];
-let selectedDate = null;
+const MONTHS = ["01","02","03","04","05","06","07","08","09","10","11","12"];
 
-/* навигация */
 function show(id) {
   document.getElementById("menu").style.display = "none";
   document.getElementById(id).style.display = "block";
@@ -200,79 +171,89 @@ function back() {
 function openChat() { window.open("https://t.me/niginacoach"); }
 function openLink(url) { window.open(url); }
 
-/* хранение */
-function getBusy() {
-  return JSON.parse(localStorage.getItem("busy") || "{}");
+/* заполнение селектов */
+const monthEl = document.getElementById("month");
+const dayEl = document.getElementById("day");
+const timeEl = document.getElementById("time");
+
+MONTHS.forEach(m => {
+  const opt = document.createElement("option");
+  opt.value = m;
+  opt.text = m;
+  monthEl.appendChild(opt);
+});
+
+for(let i=1;i<=31;i++){
+  const d = i.toString().padStart(2,"0");
+  const opt = document.createElement("option");
+  opt.value = d;
+  opt.text = d;
+  dayEl.appendChild(opt);
 }
 
-function saveBusy(data) {
-  localStorage.setItem("busy", JSON.stringify(data));
+TIMES.forEach(t=>{
+  const opt = document.createElement("option");
+  opt.value = t;
+  opt.text = t;
+  timeEl.appendChild(opt);
+});
+
+/* storage */
+function getBusy(){
+  return JSON.parse(localStorage.getItem("busy")||"{}");
+}
+function saveBusy(d){
+  localStorage.setItem("busy",JSON.stringify(d));
 }
 
-/* рендер слотов */
-function renderSlots(date) {
-  const container = document.getElementById("slots");
-  container.innerHTML = "";
+/* расписание */
+document.getElementById("scheduleDate").addEventListener("change",function(){
+  const date=this.value;
+  const busy=getBusy();
+  const container=document.getElementById("slots");
+  container.innerHTML="";
 
-  const busy = getBusy();
-  const dayBusy = busy[date] || [];
+  TIMES.forEach(time=>{
+    const div=document.createElement("div");
+    div.className="slot";
+    div.innerText=time;
 
-  TIMES.forEach(time => {
-    const div = document.createElement("div");
-    div.className = "slot";
-    div.innerText = time;
-
-    if (dayBusy.includes(time)) {
+    if(busy[date]?.includes(time)){
       div.classList.add("disabled");
     } else {
-      div.onclick = () => {
-        document.getElementById("date").value = date;
-        document.getElementById("time").value = time;
-        document.getElementById("dateText").innerText = date;
-        document.getElementById("timeText").innerText = time;
+      div.onclick=()=>{
+        const [y,m,d]=date.split("-");
+        monthEl.value=m;
+        dayEl.value=d;
+        timeEl.value=time;
         show("form");
-      };
+      }
     }
 
     container.appendChild(div);
   });
-}
-
-/* выбор даты в расписании */
-document.getElementById("scheduleDate").addEventListener("change", function() {
-  selectedDate = this.value;
-  renderSlots(selectedDate);
-});
-
-/* мобилка */
-function openDate() { document.getElementById("date").click(); }
-function openTime() { document.getElementById("time").click(); }
-
-/* обновление текста */
-document.getElementById("date").addEventListener("change", function() {
-  document.getElementById("dateText").innerText = this.value;
-});
-
-document.getElementById("time").addEventListener("change", function() {
-  document.getElementById("timeText").innerText = this.value;
 });
 
 /* отправка */
-function sendData() {
-  const name = document.getElementById("name").value;
-  const training = document.getElementById("training").value;
-  const type = document.getElementById("type").value;
-  const date = document.getElementById("date").value;
-  const time = document.getElementById("time").value;
-  const username = document.getElementById("username").value;
+function sendData(){
+  const name=document.getElementById("name").value;
+  const username=document.getElementById("username").value;
+  const training=document.getElementById("training").value;
+  const type=document.getElementById("type").value;
 
-  const busy = getBusy();
-  if (!busy[date]) busy[date] = [];
+  const month=monthEl.value;
+  const day=dayEl.value;
+  const time=timeEl.value;
+
+  const year=new Date().getFullYear();
+  const date=`${year}-${month}-${day}`;
+
+  const busy=getBusy();
+  if(!busy[date]) busy[date]=[];
   busy[date].push(time);
   saveBusy(busy);
 
-  const text =
-`Новая заявка:
+  const text=`Новая заявка:
 Имя: ${name}
 Тренировка: ${training}
 Тип: ${type}
