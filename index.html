@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mini App</title>
+<title>Nigina Coach</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
@@ -11,129 +11,136 @@
 body {
   margin: 0;
   font-family: -apple-system, sans-serif;
-  background: #0f0f0f;
   color: white;
+  background: radial-gradient(circle at top right, #5c7fa3, #0e1a2b 60%);
 }
 
+/* контейнер */
 .container {
   padding: 16px;
   max-width: 500px;
   margin: auto;
 }
 
-h2 {
-  text-align: center;
+/* заголовок */
+.header {
   margin-bottom: 20px;
-  font-size: 18px;
 }
 
-.block {
-  width: 100%;
-  height: 60px;
-  border-radius: 14px;
-  background: #1f1f1f;
+.title {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.subtitle {
+  color: #aaa;
+  font-size: 13px;
+}
+
+/* карточки */
+.card {
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 12px;
-  font-size: 15px;
+  justify-content: space-between;
+  backdrop-filter: blur(20px);
+  background: linear-gradient(135deg, rgba(105,103,251,0.4), rgba(14,26,47,0.4));
+  border: 1px solid rgba(255,255,255,0.08);
   cursor: pointer;
   transition: 0.2s;
 }
 
-.block:active {
-  background: #007b0e;
+.card:active {
+  transform: scale(0.98);
 }
 
-.sub {
-  text-align: center;
-  color: #888;
+.card.green {
+  background: linear-gradient(135deg, rgba(200,249,4,0.4), rgba(14,26,47,0.4));
+}
+
+.card.blue {
+  background: linear-gradient(135deg, rgba(105,103,251,0.4), rgba(14,26,47,0.4));
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.card-sub {
   font-size: 13px;
-  margin-top: -6px;
-  margin-bottom: 12px;
+  color: #ccc;
+  margin-top: 4px;
 }
 
+/* форма */
 .input {
   width: 100%;
   height: 50px;
-  padding: 0 12px;
-  border-radius: 12px;
+  border-radius: 14px;
   border: none;
-  background: #1a1a1a;
+  padding: 0 12px;
+  margin-bottom: 12px;
+  background: rgba(255,255,255,0.05);
   color: white;
-  font-size: 15px;
-  margin-bottom: 12px;
 }
 
-.select-wrap {
-  position: relative;
-  margin-bottom: 12px;
-}
-
+/* select */
 .select {
-  appearance: none;
-  -webkit-appearance: none;
-  color: #888;
-}
-
-.select-wrap::after {
-  content: "";
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  width: 6px;
-  height: 6px;
-  border-right: 2px solid #888;
-  border-bottom: 2px solid #888;
-  transform: translateY(-50%) rotate(45deg);
-  pointer-events: none;
+  color: #aaa;
 }
 
 .select.filled {
   color: white;
 }
 
-.hidden {
-  position: absolute;
-  opacity: 0;
-  width: 100%;
-  height: 50px;
-  left: 0;
-}
-
+/* дата/время */
 .fake {
+  height: 50px;
   display: flex;
   align-items: center;
-  color: #aaa;
+  padding: 0 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.05);
   margin-bottom: 12px;
+  position: relative;
 }
 
-.full {
+.hidden {
+  position: absolute;
+  inset: 0;
+  opacity: 0.01;
+}
+
+/* кнопка */
+.button {
   width: 100%;
   height: 50px;
-  margin-top: 10px;
-  border-radius: 12px;
-  background: #1f1f1f;
-  color: white;
+  border-radius: 14px;
   border: none;
+  margin-top: 10px;
   font-size: 15px;
-  transition: 0.2s;
+  color: white;
+  background: linear-gradient(90deg, #6967FB, #C8F904);
 }
 
-.full:active {
-  background: #007b0e;
-}
-
-.full.disabled {
+.button.disabled {
   opacity: 0.4;
   pointer-events: none;
 }
 
 .note {
-  margin-top: 10px;
-  color: #888;
-  font-size: 13px;
   text-align: center;
+  font-size: 13px;
+  color: #aaa;
+  margin-top: 10px;
 }
 </style>
 </head>
@@ -142,63 +149,78 @@ h2 {
 <div class="container">
 
 <div id="menu">
-  <h2>Меню</h2>
+  <div class="header">
+    <div class="title">Nigina Coach</div>
+    <div class="subtitle">мини-приложение</div>
+  </div>
 
-  <div class="block" onclick="show('form')">Записаться</div>
-  <div class="block" onclick="show('faq')">FAQ</div>
-  <div class="block" onclick="openChat()">Консультация</div>
+  <div class="card blue" onclick="show('form')">
+    <div class="card-content">
+      <div class="card-title">Записаться</div>
+      <div class="card-sub">Запись на тренировку</div>
+    </div>
+  </div>
 
-  <div class="sub">Если Вы не нашли ответ в разделе FAQ, напишите мне</div>
+  <div class="card blue" onclick="show('faq')">
+    <div class="card-content">
+      <div class="card-title">FAQ</div>
+      <div class="card-sub">Ответы на вопросы</div>
+    </div>
+  </div>
 
-  <div style="height:20px;"></div>
+  <div class="card" onclick="openChat()">
+    <div class="card-content">
+      <div class="card-title">Консультация</div>
+      <div class="card-sub">Написать в Telegram</div>
+    </div>
+  </div>
 
-  <div class="block" onclick="openInstagram()">Instagram</div>
+  <div class="card green" onclick="openInstagram()">
+    <div class="card-content">
+      <div class="card-title">Instagram</div>
+      <div class="card-sub">Следите за мной</div>
+    </div>
+  </div>
 </div>
 
+<!-- форма -->
 <div id="form" style="display:none;">
-  <h2>Записаться</h2>
 
   <input class="input" id="name" placeholder="Имя">
   <input class="input" id="contact" placeholder="Telegram или номер">
 
-  <div class="select-wrap">
-    <select class="input select" id="training">
-      <option value="" disabled selected>Тренировка</option>
-      <option>Пилатес</option>
-      <option>Стретчинг</option>
-      <option>Акро</option>
-    </select>
-  </div>
+  <select class="input select" id="training">
+    <option value="" disabled selected>Тренировка</option>
+    <option>Пилатес</option>
+    <option>Стретчинг</option>
+    <option>Акро</option>
+  </select>
 
-  <div class="select-wrap">
-    <select class="input select" id="type">
-      <option value="" disabled selected>Тип</option>
-      <option>Онлайн</option>
-      <option>Оффлайн</option>
-    </select>
-  </div>
+  <select class="input select" id="type">
+    <option value="" disabled selected>Тип</option>
+    <option>Онлайн</option>
+    <option>Оффлайн</option>
+  </select>
 
-  <div class="input fake" onclick="openDate()">
+  <div class="fake">
     <span id="dateText">Выберите день</span>
+    <input type="date" id="date" class="hidden">
   </div>
 
-  <div class="input fake" onclick="openTime()">
+  <div class="fake">
     <span id="timeText">Выберите время</span>
+    <input type="time" id="time" class="hidden">
   </div>
 
-  <input type="date" id="date" class="hidden">
-  <input type="time" id="time" class="hidden">
+  <button id="submitBtn" class="button disabled">Отправить</button>
+  <button class="button" onclick="back()">Назад</button>
 
-  <button id="submitBtn" class="full disabled">Отправить</button>
-  <button class="full" onclick="back()">Назад</button>
-
-  <div class="note">После отправления заявки с Вами свяжутся!</div>
+  <div class="note">После отправления заявки с Вами свяжутся</div>
 </div>
 
 <div id="faq" style="display:none;">
-  <h2>FAQ</h2>
   <div class="note">Скоро будет информация</div>
-  <button class="full" onclick="back()">Назад</button>
+  <button class="button" onclick="back()">Назад</button>
 </div>
 
 </div>
@@ -208,138 +230,68 @@ const tg = window.Telegram.WebApp;
 tg.ready();
 tg.expand();
 
-// элементы
 const nameInput = document.getElementById("name");
 const contactInput = document.getElementById("contact");
-const trainingSelect = document.getElementById("training");
-const typeSelect = document.getElementById("type");
-const dateInput = document.getElementById("date");
-const timeInput = document.getElementById("time");
+const training = document.getElementById("training");
+const type = document.getElementById("type");
+const date = document.getElementById("date");
+const time = document.getElementById("time");
 const submitBtn = document.getElementById("submitBtn");
 const dateText = document.getElementById("dateText");
 const timeText = document.getElementById("timeText");
 
-// навигация
 function show(id){
-  tg.HapticFeedback.impactOccurred("light");
   document.getElementById("menu").style.display="none";
   document.getElementById(id).style.display="block";
 }
 
 function back(){
-  tg.HapticFeedback.impactOccurred("light");
   document.getElementById("menu").style.display="block";
   document.getElementById("form").style.display="none";
   document.getElementById("faq").style.display="none";
 }
 
-// ссылки
 function openChat(){ tg.openTelegramLink("https://t.me/niginacoach"); }
-function openInstagram(){ window.open("https://www.instagram.com/nigina.coach"); }
+function openInstagram(){ window.open("https://instagram.com"); }
 
-// дата/время
-function openDate(){ dateInput.click(); }
-function openTime(){ timeInput.click(); }
+training.onchange = type.onchange = checkForm;
+nameInput.oninput = contactInput.oninput = checkForm;
 
-trainingSelect.addEventListener("change", handleSelect);
-typeSelect.addEventListener("change", handleSelect);
-
-function handleSelect(e){
-  const el = e.target;
-  if(el.value){
-    el.classList.add("filled");
-  } else {
-    el.classList.remove("filled");
-  }
+date.onchange = () => {
+  const d = new Date(date.value);
+  dateText.innerText = d.getDate() + " число";
   checkForm();
-}
+};
 
-dateInput.addEventListener("change", function(){
-  if(this.value){
-    const d=new Date(this.value);
-    const months=["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
-    dateText.innerText=`${d.getDate()} ${months[d.getMonth()]}`;
-    checkForm();
-  }
-});
+time.onchange = () => {
+  timeText.innerText = time.value;
+  checkForm();
+};
 
-timeInput.addEventListener("change", function(){
-  if(this.value){
-    timeText.innerText=this.value;
-    checkForm();
-  }
-});
-
-// валидация
 function checkForm(){
-  const contactValid = contactInput.value.length >= 5;
-
   const valid =
     nameInput.value &&
-    contactValid &&
-    trainingSelect.value &&
-    typeSelect.value &&
-    dateInput.value &&
-    timeInput.value;
+    contactInput.value.length >= 5 &&
+    training.value &&
+    type.value &&
+    date.value &&
+    time.value;
 
   submitBtn.classList.toggle("disabled", !valid);
 }
 
-// события input
-[nameInput, contactInput].forEach(el=>{
-  el.addEventListener("input", checkForm);
-});
-
-// отправка
-submitBtn.addEventListener("click", sendData);
-
-function sendData(){
-  if(submitBtn.classList.contains("disabled")) return;
-
+submitBtn.onclick = () => {
   const data = {
     name: nameInput.value,
     contact: contactInput.value,
-    training: trainingSelect.value,
-    type: typeSelect.value,
+    training: training.value,
+    type: type.value,
     date: dateText.innerText,
     time: timeText.innerText
   };
 
-  try {
-    tg.sendData(JSON.stringify(data));
-  } catch(e){
-    const text =
-`Новая заявка:
-Имя: ${data.name}
-Контакт: ${data.contact}
-Тренировка: ${data.training}
-Тип: ${data.type}
-Дата: ${data.date}
-Время: ${data.time}`;
-
-    tg.openTelegramLink(`https://t.me/timurfaizievvv?text=${encodeURIComponent(text)}`);
-  }
-
-  resetForm();
-}
-
-// reset
-function resetForm(){
-  nameInput.value = "";
-  contactInput.value = "";
-  trainingSelect.value = "";
-  typeSelect.value = "";
-  dateInput.value = "";
-  timeInput.value = "";
-
-  trainingSelect.classList.remove("filled");
-  typeSelect.classList.remove("filled");
-
-  dateText.innerText = "Выберите день";
-  timeText.innerText = "Выберите время";
-
-  submitBtn.classList.add("disabled");
-}
+  tg.sendData(JSON.stringify(data));
+};
 </script>
 
 </body>
