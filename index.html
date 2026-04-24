@@ -237,6 +237,10 @@ body {
   border-color: #444;
 }
 
+.studio-card button {
+  margin-top: 10px;
+}
+
 
 /* ===== СТУДИИ ===== */
 
@@ -286,7 +290,7 @@ body {
   <div class="menu-btn" onclick="openScreen('faq')">FAQ</div>
 
   <div class="menu-btn" onclick="openConsult()">Консультация</div>
-  <div class="note">Если Вы не нашли ответ на вопрос в разделе FAQ, напишите мне</div>
+  <div class="note">Если Вы не нашли ответ на вопрос в разделе FAQ,<br>напишите мне</div>
 
   <div class="spacer"></div>
 
@@ -301,7 +305,7 @@ body {
 
   <div class="title">Занятия в студии</div>
 
-  <!-- ===== СТУДИЯ 1 ===== -->
+  <!-- ===== FORMA ===== -->
   <div class="studio-card">
     <div class="studio-title">Forma</div>
 
@@ -315,9 +319,11 @@ body {
       <div class="studio-time">Вт 14:00 • Чт 10:00</div>
     </div>
 
+    <!-- КНОПКА ДЛЯ FORMA -->
+    <button class="secondary" onclick="openForma()">Записаться в Forma</button>
   </div>
 
-  <!-- ===== СТУДИЯ 2 ===== -->
+  <!-- ===== TS FITNESS ===== -->
   <div class="studio-card">
     <div class="studio-title">TS Fitness</div>
 
@@ -331,6 +337,8 @@ body {
       <div class="studio-time">Вт 19:00 • Чт 19:00</div>
     </div>
 
+    <!-- КНОПКА ДЛЯ TS -->
+    <button class="secondary" onclick="openTS()">Записаться в TS Fitness</button>
   </div>
 
   <button class="secondary" onclick="openScreen('home')">Назад</button>
@@ -948,6 +956,14 @@ function openCategory(name) {
   document.body.appendChild(screen);
 
   openScreen(id);
+}
+
+function openForma() {
+  window.open("https://t.me/your-forma-link", "_blank");
+}
+
+function openTS() {
+  window.open("https://t.me/your-ts-link", "_blank");
 }
   
 </script>
