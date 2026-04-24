@@ -920,6 +920,13 @@ function openScreen(id) {
   });
 
   const next = document.getElementById(id);
+
+  // сброс анимации
+  next.classList.remove('fade-in');
+
+  // триггер перерисовки (важно!)
+  void next.offsetWidth;
+
   next.classList.add('active', 'fade-in');
 }
 
