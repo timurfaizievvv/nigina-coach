@@ -40,10 +40,14 @@ body {
 
 .block {
   background: var(--card);
-  padding: 14px;
+  padding: 16px;
   border-radius: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   position: relative;
+
+  min-height: 52px;
+  display: flex;
+  align-items: center;
 }
 
 input, select {
@@ -82,7 +86,7 @@ input, select {
 .select-wrap::after {
   content: "⌄";
   position: absolute;
-  right: 10px;
+  right: 16px;
   top: 50%;
   transform: translateY(-50%);
   color: #8e8e93;
