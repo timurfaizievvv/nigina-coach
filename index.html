@@ -129,7 +129,7 @@ button {
 }
 
 .note {
-  font-size: 10px;
+  font-size: 13px;
   color: var(--sub);
   text-align: center;
   margin-top: 8px;
@@ -174,7 +174,7 @@ button {
 }
 
 .lesson-desc {
-  font-size: 10px;
+  font-size: 13px;
   color: #8e8e93;
   padding: 0 12px 12px 12px;
   margin: 0;
@@ -210,7 +210,7 @@ button {
 
 /* маленький текст внутри */
 .category .sub {
-  font-size: 11px;
+  font-size: 13px;
   color: #8e8e93;
   margin-top: 4px;
 }
@@ -719,6 +719,7 @@ const trainings = [
 /* ===== ДАННЫЕ УРОКОВ ===== */
 /* тут ты будешь управлять всем контентом */
 const lessonsData = {
+
   "Пилатес": [
     {
       title: "Урок 1",
@@ -744,7 +745,46 @@ const lessonsData = {
       url: "https://youtube.com/your-link-3",
       img: "https://via.placeholder.com/400x200"
     }
+  ],
+
+  /* ДОБАВЬ ВОТ ЭТО */
+
+  "Осанка": [
+    {
+      title: "Урок 1",
+      desc: "Работа с осанкой",
+      url: "https://youtube.com/your-link-4",
+      img: "https://via.placeholder.com/400x200"
+    }
+  ],
+
+  "Силовая тренировка": [
+    {
+      title: "Урок 1",
+      desc: "Силовая база",
+      url: "https://youtube.com/your-link-5",
+      img: "https://via.placeholder.com/400x200"
+    }
+  ],
+
+  "Барре": [
+    {
+      title: "Урок 1",
+      desc: "Барре тренировка",
+      url: "https://youtube.com/your-link-6",
+      img: "https://via.placeholder.com/400x200"
+    }
+  ],
+
+  "Мобильность ТБС": [
+    {
+      title: "Урок 1",
+      desc: "Мобильность таза",
+      url: "https://youtube.com/your-link-7",
+      img: "https://via.placeholder.com/400x200"
+    }
   ]
+
 };
 
 /* ===== ГЕНЕРАЦИЯ КАТЕГОРИЙ ===== */
@@ -761,7 +801,7 @@ trainings.forEach(name => {
   div.innerHTML = `
     <div>
       <div>${name}</div>
-      <div class="sub">${count} уроков</div>
+      <div class="sub">${count} урок(ов)</div>
     </div>
   `;
 
