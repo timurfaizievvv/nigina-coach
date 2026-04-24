@@ -214,7 +214,25 @@ button {
   color: #8e8e93;
   margin-top: 4px;
 }
+  
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 
+.screen {
+  flex: 1;
+}
+
+.footer {
+  text-align: center;
+  font-size: 13px;
+  color: #6b6b6b;
+  margin-top: auto;
+  padding-top: 20px;
+}
+  
 </style>
 </head>
 
@@ -234,6 +252,9 @@ button {
   <div class="spacer"></div>
 
   <div class="menu-btn" onclick="openInstagram()">Instagram</div>
+  
+    <!-- ВОТ ЭТО ДОБАВЬ -->
+  <div class="footer">© Все права защищены 2026</div>
 </div>
 
 <!-- ФОРМА -->
