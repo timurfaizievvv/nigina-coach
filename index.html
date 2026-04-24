@@ -304,10 +304,6 @@ body {
 
 <body>
 
-<div id="backBtn" class="back-btn" onclick="goBack()" style="display:none;">
-  <span>←</span>
-</div>
-  
 <!-- ГЛАВНАЯ -->
 <div id="home" class="screen active">
   <div class="title">Главная страница</div>
@@ -774,43 +770,10 @@ body {
 const tg = window.Telegram.WebApp;
 tg.expand();
 
-
-
 /* НАВИГАЦИЯ */
-let historyStack = [];
-
 function openScreen(id) {
-  const current = document.querySelector('.screen.active');
-
-  if (current && current.id !== id) {
-    historyStack.push(current.id);
-  }
-
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-
-  updateBackButton(id);
-}
-
-function goBack() {
-  if (historyStack.length === 0) return;
-
-  const prev = historyStack.pop();
-
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(prev).classList.add('active');
-
-  updateBackButton(prev);
-}
-
-function updateBackButton(currentId) {
-  const btn = document.getElementById("backBtn");
-
-  if (currentId === "home") {
-    btn.style.display = "none";
-  } else {
-    btn.style.display = "flex";
-  }
 }
 
 function openConsult() {
@@ -1086,29 +1049,8 @@ function openTS() {
 function openTSMap() {
   window.open("https://2gis.ru/tashkent/geo/70000001109944299", "_blank");
 }
-
-/* Стрелка */
-.back-btn {
-  position: fixed;
-  top: 20px;
-  left: 16px;
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: #1c1c1e;
-  border: 1px solid #2c2c2e;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-  cursor: pointer;
-}
-
-.back-btn span {
-  font-size: 18px;
-  transform: translateX(-1px);
-}
-
+  
 </script>
+
 </body>
 </html>
