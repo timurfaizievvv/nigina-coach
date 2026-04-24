@@ -333,23 +333,23 @@ body {
 
   <!-- РАСПИСАНИЕ БОКСАМИ -->
   <div class="studio-item">
-    <div class="studio-name">Группа</div>
-    <div class="studio-time">Вт, Чт — 9:00 • 10:00 • 14:00 | Пилатес на реформере</div>
+    <div class="studio-name">Пилатес на реформере</div>
+    <div class="studio-time">Вт, Чт — 9:00 • 10:00 • 14:00 | Группу</div>
   </div>
 
   <div class="studio-item">
     <div class="studio-name">Персонально / Сплит</div>
-    <div class="studio-time">Вт, Чт — 15:00 • 16:00 | Пилатес на реформере</div>
+    <div class="studio-time">Вт, Чт — 15:00 • 16:00 | Персонально / Сплит</div>
   </div>
 
   <div class="studio-item">
-    <div class="studio-name">Группа</div>
-    <div class="studio-time">Сб — 14:00 | Пилатес на реформере</div>
+    <div class="studio-name">Пилатес на реформере</div>
+    <div class="studio-time">Сб — 14:00 | Группа</div>
   </div>
 
   <div class="studio-item">
-    <div class="studio-name">Персонально / Сплит</div>
-    <div class="studio-time">Сб — 15:00 • 16:00 | Пилатес на реформере</div>
+    <div class="studio-name">Пилатес на реформере</div>
+    <div class="studio-time">Сб — 15:00 • 16:00 | Персонально / Сплит</div>
   </div>
 
   <!-- АДРЕС -->
@@ -377,6 +377,7 @@ body {
 
   <!-- КНОПКА В САМОМ КОНЦЕ -->
   <button class="secondary" onclick="openForma()">Записаться</button>
+  <button class="secondary" onclick="openFormaMap()">Открыть адрес</button>
 </div>
 
   <!-- ===== TS FITNESS ===== -->
@@ -395,6 +396,7 @@ body {
 
     <!-- КНОПКА ДЛЯ TS -->
     <button class="secondary" onclick="openTS()">Записаться</button>
+    <button class="secondary" onclick="openTSMap()">Открыть адрес</button>
   </div>
 
   <button class="secondary" onclick="openScreen('home')">Назад</button>
@@ -1017,9 +1019,17 @@ function openCategory(name) {
 function openForma() {
   window.open("https://t.me/formastd", "_blank");
 }
+  
+function openFormaMap() {
+  window.open("https://maps.google.com", "_blank");
+}
 
 function openTS() {
   window.open("https://t.me/your-ts-link", "_blank");
+}
+
+function openTSMap() {
+  window.open("https://maps.google.com/your-ts-link", "_blank");
 }
   
 </script>
