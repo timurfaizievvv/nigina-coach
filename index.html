@@ -1024,22 +1024,6 @@ function validate() {
 }
 
 /* ОТПРАВКА */
-
-  if (submitBtn.classList.contains("disabled")) return;
-
-  const data = {
-    name: nameInput.value,
-    contact: contactInput.value,
-    training: trainingInput.value,
-    format: formatInput.value,
-    date: document.getElementById("dateText").innerText,
-    time: document.getElementById("timeText").innerText
-  };
-
-  tg.sendData(JSON.stringify(data));
-}
-
-/* ОТПРАВКА */
 function sendForm() {
   if (submitBtn.classList.contains("disabled")) return;
 
