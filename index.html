@@ -236,6 +236,41 @@ body {
 .secondary.instagram {
   border-color: #444;
 }
+
+
+/* ===== СТУДИИ ===== */
+
+.studio-card {
+  background: #1c1c1e;
+  border: 1px solid #2c2c2e;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.studio-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.studio-item {
+  background: #2c2c2e;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 8px;
+}
+
+.studio-name {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.studio-time {
+  font-size: 13px;
+  color: #8e8e93;
+  margin-top: 4px;
+}
   
 </style>
 </head>
@@ -245,7 +280,7 @@ body {
 <!-- ГЛАВНАЯ -->
 <div id="home" class="screen active">
   <div class="title">Главная страница</div>
-
+  <div class="menu-btn" onclick="openScreen('studio')">Занятия в студии</div>
   <div class="menu-btn" onclick="openScreen('form')">Записаться</div>
   <div class="menu-btn" onclick="openScreen('lessons')">Уроки</div>
   <div class="menu-btn" onclick="openScreen('faq')">FAQ</div>
@@ -261,6 +296,47 @@ body {
   <div class="footer">© Все права защищены 2026</div>
 </div>
 
+<!-- ===== СТУДИИ ===== -->
+<div id="studio" class="screen">
+
+  <div class="title">Занятия в студии</div>
+
+  <!-- ===== СТУДИЯ 1 ===== -->
+  <div class="studio-card">
+    <div class="studio-title">Forma</div>
+
+    <div class="studio-item">
+      <div class="studio-name">Пилатес</div>
+      <div class="studio-time">Пн 16:00 • Ср 12:00 • Пт 18:00</div>
+    </div>
+
+    <div class="studio-item">
+      <div class="studio-name">Стретчинг</div>
+      <div class="studio-time">Вт 14:00 • Чт 10:00</div>
+    </div>
+
+  </div>
+
+  <!-- ===== СТУДИЯ 2 ===== -->
+  <div class="studio-card">
+    <div class="studio-title">TS Fitness</div>
+
+    <div class="studio-item">
+      <div class="studio-name">Пилатес</div>
+      <div class="studio-time">Пн 18:00 • Ср 16:00 • Пт 12:00</div>
+    </div>
+
+    <div class="studio-item">
+      <div class="studio-name">Силовая</div>
+      <div class="studio-time">Вт 19:00 • Чт 19:00</div>
+    </div>
+
+  </div>
+
+  <button class="secondary" onclick="openScreen('home')">Назад</button>
+
+</div>
+  
 <!-- ФОРМА -->
 <div id="form" class="screen">
   <div class="title">Форма заполнения </div>
