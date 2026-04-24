@@ -594,27 +594,14 @@ function openInstagram() {
 
 /* ===== ОТКРЫТИЕ УРОКА (НОВОЕ) ===== */
 function openLesson(url) {
-  Telegram.WebApp.openLink(url);
+  window.open(url, "_blank");
 }
 
-/* ВАЛИДАЦИЯ */
-const nameInput = document.getElementById("name");
-const contactInput = document.getElementById("contact");
-const trainingInput = document.getElementById("training");
-const formatInput = document.getElementById("format");
-const dateInput = document.getElementById("date");
-const timeInput = document.getElementById("time");
-const submitBtn = document.getElementById("submitBtn");
-
-const dateText = document.getElementById("dateText");
-const timeText = document.getElementById("timeText");
-
-  
 /* ДАТА */
-dateInput.addEventListener("change", () => {
-  if (!dateInput.value) return;
+date.addEventListener("change", () => {
+  if (!date.value) return;
 
-  const d = new Date(dateInput.value);
+  const d = new Date(date.value);
   const text = d.toLocaleDateString("ru-RU", {
     day: "numeric",
     month: "long",
@@ -628,14 +615,23 @@ dateInput.addEventListener("change", () => {
 });
 
 /* ВРЕМЯ */
-timeInput.addEventListener("change", () => {
-  if (!timeInput.value) return;
+time.addEventListener("change", () => {
+  if (!time.value) return;
 
-  timeText.innerText = timeInput.value;
+  timeText.innerText = time.value;
   timeText.style.color = "white";
 
   validate();
 });
+
+/* ВАЛИДАЦИЯ */
+const nameInput = document.getElementById("name");
+const contactInput = document.getElementById("contact");
+const trainingInput = document.getElementById("training");
+const formatInput = document.getElementById("format");
+const dateInput = document.getElementById("date");
+const timeInput = document.getElementById("time");
+const submitBtn = document.getElementById("submitBtn");
 
 /* ВЕШАЕМ СОБЫТИЯ НА ВСЕ ПОЛЯ */
 [nameInput, contactInput].forEach(el => {
@@ -674,37 +670,20 @@ function validate() {
 function sendForm() {
   if (submitBtn.classList.contains("disabled")) return;
 
-  const text = `
-📥 Новая заявка
+  const data = {
+    name: nameInput.value,
+    contact: contactInput.value,
+    training: trainingInput.value,
+    format: formatInput.value,
+    date: document.getElementById("dateText").innerText,
+    time: document.getElementById("timeText").innerText
+  };
 
-👤 Имя: ${nameInput.value}
-📞 Контакт: ${contactInput.value}
-🏋️ Тренировка: ${trainingInput.value}
-📍 Формат: ${formatInput.value}
-📅 Дата: ${dateText.innerText}
-⏰ Время: ${timeText.innerText}
-  `;
-
-  fetch("https://api.telegram.org/bot8442724883:AAHIWj2bralEJXsfjdkRS3VFm-i6UiBtcV0/sendMessage", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      chat_id: -1003744751174,
-      text: text
-    })
-  })
-  .then(() => {
-    alert("Заявка отправлена");
-  })
-  .catch(() => {
-    alert("Ошибка отправки");
-  });
+  tg.sendData(JSON.stringify(data));
 }
 
 /* ОТПРАВКА */
-function sendForm() {
+/* function sendForm() {
   if (submitBtn.classList.contains("disabled")) return;
 
   const data = {
@@ -714,7 +693,7 @@ function sendForm() {
     format: format.value,
     date: dateText.innerText,
     time: timeText.innerText
-  }
+  };
 
   tg.sendData(JSON.stringify(data));
 }
