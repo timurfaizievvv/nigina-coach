@@ -29,8 +29,20 @@ body {
   padding: 20px;
 }
 
-.screen { display: none; }
-.active { display: block; }
+.screen {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: translateX(20px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.screen.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
 
 .title {
   text-align: center;
@@ -48,6 +60,14 @@ body {
   min-height: 52px;
   display: flex;
   align-items: center;
+}
+
+.block {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.block:focus-within {
+  transform: translateY(-2px);
 }
 
 input, select {
@@ -148,6 +168,15 @@ button {
   margin-top: 10px;
 }
 
+button {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+button:active {
+  transform: scale(0.97);
+  opacity: 0.7;
+}
+
 .primary {
   background: white;
   color: black;
@@ -179,6 +208,15 @@ button {
   margin-bottom: 12px;
 }
 
+.menu-btn {
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.menu-btn:active {
+  transform: scale(0.97);
+  opacity: 0.7;
+}
+
 .spacer { height: 20px; }
 
 .value {
@@ -193,6 +231,11 @@ button {
   overflow: hidden;
   margin-bottom: 14px;
   cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.lesson-card:active {
+  transform: scale(0.98);
 }
 
 .lesson-image {
@@ -338,7 +381,22 @@ body {
 .studio-card button {
   margin-top: 12px;
 }
-  
+
+.fade-in {
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 </style>
 </head>
 
@@ -857,8 +915,12 @@ function openScreen(id) {
     historyStack.push(current.id);
   }
 
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+  });
+
+  const next = document.getElementById(id);
+  next.classList.add('active', 'fade-in');
 }
 
 function openConsult() {
