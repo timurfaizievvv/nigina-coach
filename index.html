@@ -1024,7 +1024,7 @@ function validate() {
 }
 
 /* ОТПРАВКА */
-function sendForm() {
+
   if (submitBtn.classList.contains("disabled")) return;
 
   const data = {
@@ -1040,19 +1040,23 @@ function sendForm() {
 }
 
 /* ОТПРАВКА */
-/* function sendForm() {
+function sendForm() {
   if (submitBtn.classList.contains("disabled")) return;
 
   const data = {
-    name: name.value,
-    contact: contact.value,
-    training: training.value,
-    format: format.value,
-    date: dateText.innerText,
-    time: timeText.innerText
+    name: nameInput.value,
+    contact: contactInput.value,
+    training: trainingInput.value,
+    format: formatInput.value,
+    date: document.getElementById("dateText").innerText,
+    time: document.getElementById("timeText").innerText
   };
 
+  console.log("ОТПРАВКА:", data);
+
   tg.sendData(JSON.stringify(data));
+
+  alert("Форма отправлена"); // 👈 ДОБАВИЛ
 }
 
 /* ===== СПИСОК ТРЕНИРОВОК (как в select) ===== */
