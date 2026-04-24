@@ -615,7 +615,7 @@ date.addEventListener("change", () => {
 });
 
 /* ВРЕМЯ */
-time.addEventListener("change", () => {
+timeInput.addEventListener("change", () => {
   if (!time.value) return;
 
   timeText.innerText = time.value;
@@ -685,7 +685,7 @@ function sendForm() {
 ⏰ Время: ${timeText.innerText}
   `;
 
-  fetch("https://api.telegram.org/bot/sendMessage", {
+  fetch("https://api.telegram.org/bot8442724883:AAHIWj2bralEJXsfjdkRS3VFm-i6UiBtcV0/sendMessage", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
