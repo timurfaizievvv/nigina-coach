@@ -598,10 +598,10 @@ function openLesson(url) {
 }
 
 /* ДАТА */
-date.addEventListener("change", () => {
-  if (!date.value) return;
+dateInput.addEventListener("change", () => {
+  if (!dateInput.value) return;
 
-  const d = new Date(date.value);
+  const d = new Date(dateInput.value);
   const text = d.toLocaleDateString("ru-RU", {
     day: "numeric",
     month: "long",
@@ -616,9 +616,9 @@ date.addEventListener("change", () => {
 
 /* ВРЕМЯ */
 timeInput.addEventListener("change", () => {
-  if (!time.value) return;
+  if (!timeInput.value) return;
 
-  timeText.innerText = time.value;
+  timeText.innerText = timeInput.value;
   timeText.style.color = "white";
 
   validate();
