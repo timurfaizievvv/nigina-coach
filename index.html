@@ -180,6 +180,41 @@ button {
   margin: 0;
   line-height: 1.4;
 }
+
+/* ===== СЕТКА КАТЕГОРИЙ ===== */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 колонки */
+  gap: 12px;
+}
+
+.category {
+  background: #1c1c1e;
+  border: 1px solid #2c2c2e;
+  border-radius: 12px;
+  height: 120px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+}
+
+.category:active {
+  opacity: 0.7;
+}
+
+/* маленький текст внутри */
+.category .sub {
+  font-size: 11px;
+  color: #8e8e93;
+  margin-top: 4px;
+}
+
 </style>
 </head>
 
@@ -535,40 +570,17 @@ button {
   <button class="secondary" onclick="openScreen('faq')">Назад</button>
 </div>
 
-<!-- ===== ЭКРАН "УРОКИ" ===== -->
+<!-- ===== ЭКРАН КАТЕГОРИЙ ===== -->
 <div id="lessons" class="screen">
 
-  <div class="title">Уроки</div>
+  <div class="title">Выберите тренировку</div>
 
-  <!-- УРОК 1 -->
-  <div class="lesson-card" onclick="openLesson('https://youtube.com/your-link-1')">
-    <img src="https://via.placeholder.com/400x200" class="lesson-image">
-    <div class="lesson-title">Пилатес</div>
-    <!-- ОПИСАНИЕ -->
-    <div class="lesson-desc">
-    Укрепление кора, осанки и контроля тела
-    </div>
-  </div>
+  <!-- сюда JS добавит блоки -->
+  <div class="grid" id="categoriesGrid"></div>
 
-  <!-- УРОК 2 -->
-  <div class="lesson-card" onclick="openLesson('https://youtube.com/your-link-2')">
-    <img src="https://via.placeholder.com/400x200" class="lesson-image">
-    <div class="lesson-title">Стретчинг</div>
-    <!-- ОПИСАНИЕ -->
-    <div class="lesson-desc">
-    Укрепление кора, осанки и контроля тела
-    </div>
-  </div>
+  <button class="secondary" onclick="openScreen('home')">Назад</button>
 
-  <!-- УРОК 3 -->
-  <div class="lesson-card" onclick="openLesson('https://youtube.com/your-link-3')">
-    <img src="https://via.placeholder.com/400x200" class="lesson-image">
-    <div class="lesson-title">Акро</div>
-    <!-- ОПИСАНИЕ -->
-    <div class="lesson-desc">
-    Укрепление кора, осанки и контроля тела
-    </div>
-  </div>
+</div>
 
   <button class="secondary" onclick="openScreen('home')">Назад</button>
 
@@ -683,7 +695,7 @@ function sendForm() {
 }
 
 /* ОТПРАВКА */
-function sendForm() {
+/* function sendForm() {
   if (submitBtn.classList.contains("disabled")) return;
 
   const data = {
@@ -697,6 +709,111 @@ function sendForm() {
 
   tg.sendData(JSON.stringify(data));
 }
+
+/* ===== СПИСОК ТРЕНИРОВОК (как в select) ===== */
+const trainings = [
+  "Пилатес",
+  "Акро",
+  "Стретчинг",
+  "Осанка",
+  "Силовая тренировка",
+  "Барре",
+  "Мобильность ТБС"
+];
+
+/* ===== ДАННЫЕ УРОКОВ ===== */
+/* тут ты будешь управлять всем контентом */
+const lessonsData = {
+  "Пилатес": [
+    {
+      title: "Урок 1",
+      desc: "База пилатеса",
+      url: "https://youtube.com/your-link-1",
+      img: "https://via.placeholder.com/400x200"
+    }
+  ],
+
+  "Акро": [
+    {
+      title: "Урок 1",
+      desc: "Баланс и координация",
+      url: "https://youtube.com/your-link-2",
+      img: "https://via.placeholder.com/400x200"
+    }
+  ],
+
+  "Стретчинг": [
+    {
+      title: "Урок 1",
+      desc: "Растяжка тела",
+      url: "https://youtube.com/your-link-3",
+      img: "https://via.placeholder.com/400x200"
+    }
+  ]
+};
+
+/* ===== ГЕНЕРАЦИЯ КАТЕГОРИЙ ===== */
+const grid = document.getElementById("categoriesGrid");
+
+trainings.forEach(name => {
+
+  const div = document.createElement("div");
+  div.className = "category";
+
+  /* количество уроков */
+  const count = lessonsData[name]?.length || 0;
+
+  div.innerHTML = `
+    <div>
+      <div>${name}</div>
+      <div class="sub">${count} уроков</div>
+    </div>
+  `;
+
+  /* при клике открываем экран */
+  div.onclick = () => openCategory(name);
+
+  grid.appendChild(div);
+});
+
+
+/* ===== ОТКРЫТИЕ КАТЕГОРИИ ===== */
+function openCategory(name) {
+
+  const id = "cat_" + name;
+
+  /* если экран уже создан — просто открываем */
+  if (document.getElementById(id)) {
+    openScreen(id);
+    return;
+  }
+
+  /* создаём экран */
+  const screen = document.createElement("div");
+  screen.id = id;
+  screen.className = "screen";
+
+  const lessons = lessonsData[name] || [];
+
+  screen.innerHTML = `
+    <div class="title">${name}</div>
+
+    ${lessons.map(l => `
+      <div class="lesson-card" onclick="openLesson('${l.url}')">
+        <img src="${l.img}" class="lesson-image">
+        <div class="lesson-title">${l.title}</div>
+        <div class="lesson-desc">${l.desc}</div>
+      </div>
+    `).join("")}
+
+    <button class="secondary" onclick="openScreen('lessons')">Назад</button>
+  `;
+
+  document.body.appendChild(screen);
+
+  openScreen(id);
+}
+  
 </script>
 
 </body>
