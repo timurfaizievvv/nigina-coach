@@ -1037,7 +1037,22 @@ function sendForm() {
   };
 
   tg.sendData(JSON.stringify(data));
-  tg.close(); // 👈 ВОТ ЭТО КЛЮЧ
+}
+
+/* ОТПРАВКА */
+/* function sendForm() {
+  if (submitBtn.classList.contains("disabled")) return;
+
+  const data = {
+    name: name.value,
+    contact: contact.value,
+    training: training.value,
+    format: format.value,
+    date: dateText.innerText,
+    time: timeText.innerText
+  };
+
+  tg.sendData(JSON.stringify(data));
 }
 
 /* ===== СПИСОК ТРЕНИРОВОК (как в select) ===== */
