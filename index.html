@@ -30,18 +30,20 @@ body {
 }
 
 .screen {
-  position: absolute;
-  inset: 0;
   opacity: 0;
   transform: translateX(20px);
   transition: all 0.3s ease;
+
   pointer-events: none;
+  position: absolute;
+  width: 100%;
 }
 
 .screen.active {
   opacity: 1;
   transform: translateX(0);
   pointer-events: auto;
+  position: relative;
 }
 
 .title {
