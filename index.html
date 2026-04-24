@@ -1230,12 +1230,12 @@ function goBack() {
   const next = document.getElementById(prev);
 
   // сброс анимации
-  next.classList.remove('fade-back');
+  next.classList.remove('fade-in');
 
   // триггер перерисовки
   void next.offsetWidth;
 
-  next.classList.add('active', 'fade-back');
+  next.classList.add('active', 'fade-in');
 }
 
 </script>
