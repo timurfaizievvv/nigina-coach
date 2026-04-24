@@ -393,6 +393,21 @@ body {
   }
 }
 
+.fade-back {
+  animation: fadeBack 0.4s ease;
+}
+
+@keyframes fadeBack {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 </style>
 </head>
 
@@ -1208,8 +1223,19 @@ function goBack() {
 
   const prev = historyStack.pop();
 
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(prev).classList.add('active');
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+  });
+
+  const next = document.getElementById(prev);
+
+  // сброс анимации
+  next.classList.remove('fade-back');
+
+  // триггер перерисовки
+  void next.offsetWidth;
+
+  next.classList.add('active', 'fade-back');
 }
 
 </script>
