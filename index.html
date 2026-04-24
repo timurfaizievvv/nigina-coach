@@ -27,23 +27,21 @@ body {
   background: var(--bg);
   color: var(--text);
   padding: 20px;
+  overflow-x: hidden;
 }
 
 .screen {
+  display: none;
+  will-change: transform, opacity;
   opacity: 0;
   transform: translateX(20px);
   transition: all 0.3s ease;
-
-  pointer-events: none;
-  position: absolute;
-  width: 100%;
 }
 
 .screen.active {
+  display: block;
   opacity: 1;
   transform: translateX(0);
-  pointer-events: auto;
-  position: relative;
 }
 
 .title {
@@ -304,10 +302,6 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-}
-
-.screen {
-  flex: 1;
 }
 
 .footer {
