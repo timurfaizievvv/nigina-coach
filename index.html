@@ -167,9 +167,16 @@ button {
 }
 
 .lesson-title {
-  padding: 12px;
+  padding: 12px 12px 4px 12px; /* меньше снизу */
   font-size: 16px;
   font-weight: 600;
+}
+
+.lesson-desc {
+  font-size: 10px;
+  color: #8e8e93;
+  padding: 0 12px 12px 12px;
+  line-height: 1.4;
 }
 </style>
 </head>
@@ -535,18 +542,27 @@ button {
   <div class="lesson-card" onclick="openLesson('https://youtube.com/your-link-1')">
     <img src="https://via.placeholder.com/400x200" class="lesson-image">
     <div class="lesson-title">Пилатес</div>
+    <!-- ОПИСАНИЕ -->
+    <div class="lesson-desc">
+    Укрепление кора, осанки и контроля тела
   </div>
 
   <!-- УРОК 2 -->
   <div class="lesson-card" onclick="openLesson('https://youtube.com/your-link-2')">
     <img src="https://via.placeholder.com/400x200" class="lesson-image">
     <div class="lesson-title">Стретчинг</div>
+    <!-- ОПИСАНИЕ -->
+    <div class="lesson-desc">
+    Укрепление кора, осанки и контроля тела
   </div>
 
   <!-- УРОК 3 -->
   <div class="lesson-card" onclick="openLesson('https://youtube.com/your-link-3')">
     <img src="https://via.placeholder.com/400x200" class="lesson-image">
     <div class="lesson-title">Акро</div>
+    <!-- ОПИСАНИЕ -->
+    <div class="lesson-desc">
+    Укрепление кора, осанки и контроля тела
   </div>
 
   <button class="secondary" onclick="openScreen('home')">Назад</button>
