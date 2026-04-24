@@ -275,6 +275,36 @@ body {
   color: #8e8e93;
   margin-top: 4px;
 }
+
+.studio-info {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #2c2c2e;
+}
+
+.studio-address {
+  font-size: 13px;
+  color: #8e8e93;
+  margin-bottom: 6px;
+}
+
+.studio-desc {
+  font-size: 13px;
+  color: #8e8e93;
+  margin-bottom: 10px;
+}
+
+.studio-schedule {
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.studio-text {
+  font-size: 13px;
+  color: #8e8e93;
+  line-height: 1.5;
+}
   
 </style>
 </head>
@@ -322,6 +352,36 @@ body {
     <!-- КНОПКА ДЛЯ FORMA -->
     <button class="secondary" onclick="openForma()">Записаться в Forma</button>
   </div>
+
+ <!-- ДОП. ИНФА -->
+ <div class="studio-info">
+
+  <div class="studio-address">
+    Улица Олтинепа 253
+  </div>
+
+  <div class="studio-desc">
+    Направление: пилатес на реформере, групповые, персональные / сплит (2 человека)
+  </div>
+
+  <div class="studio-schedule">
+    <div><b>Вт, Чт</b> — групповые: 9:00 • 10:00 • 14:00</div>
+    <div>персональный / сплит: 15:00 • 16:00</div>
+
+    <div style="margin-top:6px;"><b>Сб</b> — групповые: 14:00</div>
+    <div>персональный / сплит: 15:00 • 16:00</div>
+  </div>
+
+  <div class="studio-text">
+    Пилатес на реформере — это тренировка на специальном оборудовании с пружинами, 
+    которое создаёт сопротивление и помогает глубоко проработать всё тело.
+    <br><br>
+    Она сочетает силу и контроль: укрепляет мышцы, формирует рельеф и улучшает осанку без ударной нагрузки.
+    <br><br>
+    Подходит для любого уровня — с акцентом на индивидуальные цели и ощущение «собранного», подтянутого тела.
+  </div>
+
+</div>
 
   <!-- ===== TS FITNESS ===== -->
   <div class="studio-card">
@@ -959,7 +1019,7 @@ function openCategory(name) {
 }
 
 function openForma() {
-  window.open("https://t.me/your-forma-link", "_blank");
+  window.open("https://t.me/formastd", "_blank");
 }
 
 function openTS() {
