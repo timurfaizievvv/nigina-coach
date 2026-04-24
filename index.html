@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head> 
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
@@ -594,7 +594,7 @@ function openInstagram() {
 
 /* ===== ОТКРЫТИЕ УРОКА (НОВОЕ) ===== */
 function openLesson(url) {
-  Telegram.WebApp.openLink(url);
+  window.open(url, "_blank");
 }
 
 /* ДАТА */
@@ -683,7 +683,7 @@ function sendForm() {
 }
 
 /* ОТПРАВКА */
-/* function sendForm() {
+function sendForm() {
   if (submitBtn.classList.contains("disabled")) return;
 
   const data = {
