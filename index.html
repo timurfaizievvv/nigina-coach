@@ -266,7 +266,7 @@ body {
 }
 
 .studio-name {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
 }
 
@@ -276,34 +276,27 @@ body {
   margin-top: 4px;
 }
 
-.studio-info {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid #2c2c2e;
-}
-
 .studio-address {
   font-size: 13px;
   color: #8e8e93;
-  margin-bottom: 6px;
+  margin-top: 10px;
 }
 
 .studio-desc {
   font-size: 13px;
   color: #8e8e93;
-  margin-bottom: 10px;
-}
-
-.studio-schedule {
-  font-size: 13px;
-  line-height: 1.5;
-  margin-bottom: 12px;
+  margin-top: 6px;
 }
 
 .studio-text {
   font-size: 13px;
   color: #8e8e93;
-  line-height: 1.5;
+  line-height: 1.6;
+  margin-top: 10px;
+}
+
+.studio-card button {
+  margin-top: 12px;
 }
   
 </style>
@@ -335,43 +328,41 @@ body {
 
   <div class="title">Занятия в студии</div>
 
-  <!-- ===== FORMA ===== -->
-  <div class="studio-card">
-    <div class="studio-title">Forma</div>
+<div class="studio-card">
+  <div class="studio-title">Forma</div>
 
-    <div class="studio-item">
-      <div class="studio-name">Пилатес</div>
-      <div class="studio-time">Пн 16:00 • Ср 12:00 • Пт 18:00</div>
-    </div>
-
-    <div class="studio-item">
-      <div class="studio-name">Стретчинг</div>
-      <div class="studio-time">Вт 14:00 • Чт 10:00</div>
-    </div>
-
-    <!-- КНОПКА ДЛЯ FORMA -->
-    <button class="secondary" onclick="openForma()">Записаться в Forma</button>
+  <!-- РАСПИСАНИЕ БОКСАМИ -->
+  <div class="studio-item">
+    <div class="studio-name">Вт, Чт — Групповые</div>
+    <div class="studio-time">9:00 • 10:00 • 14:00</div>
   </div>
 
- <!-- ДОП. ИНФА -->
- <div class="studio-info">
+  <div class="studio-item">
+    <div class="studio-name">Вт, Чт — Персональный / сплит</div>
+    <div class="studio-time">15:00 • 16:00</div>
+  </div>
 
+  <div class="studio-item">
+    <div class="studio-name">Сб — Групповые</div>
+    <div class="studio-time">14:00</div>
+  </div>
+
+  <div class="studio-item">
+    <div class="studio-name">Сб — Персональный / сплит</div>
+    <div class="studio-time">15:00 • 16:00</div>
+  </div>
+
+  <!-- АДРЕС -->
   <div class="studio-address">
     Улица Олтинепа 253
   </div>
 
+  <!-- ОПИСАНИЕ НАПРАВЛЕНИЯ -->
   <div class="studio-desc">
     Направление: пилатес на реформере, групповые, персональные / сплит (2 человека)
   </div>
 
-  <div class="studio-schedule">
-    <div><b>Вт, Чт</b> — групповые: 9:00 • 10:00 • 14:00</div>
-    <div>персональный / сплит: 15:00 • 16:00</div>
-
-    <div style="margin-top:6px;"><b>Сб</b> — групповые: 14:00</div>
-    <div>персональный / сплит: 15:00 • 16:00</div>
-  </div>
-
+  <!-- ТЕКСТ -->
   <div class="studio-text">
     Пилатес на реформере — это тренировка на специальном оборудовании с пружинами, 
     которое создаёт сопротивление и помогает глубоко проработать всё тело.
@@ -381,6 +372,8 @@ body {
     Подходит для любого уровня — с акцентом на индивидуальные цели и ощущение «собранного», подтянутого тела.
   </div>
 
+  <!-- КНОПКА В САМОМ КОНЦЕ -->
+  <button class="secondary" onclick="openForma()">Записаться в Forma</button>
 </div>
 
   <!-- ===== TS FITNESS ===== -->
