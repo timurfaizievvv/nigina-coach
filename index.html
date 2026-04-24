@@ -670,16 +670,33 @@ function validate() {
 function sendForm() {
   if (submitBtn.classList.contains("disabled")) return;
 
-  const data = {
-    name: nameInput.value,
-    contact: contactInput.value,
-    training: trainingInput.value,
-    format: formatInput.value,
-    date: document.getElementById("dateText").innerText,
-    time: document.getElementById("timeText").innerText
-  };
+  const text = `
+📥 Новая заявка
 
-  tg.sendData(JSON.stringify(data));
+👤 Имя: ${nameInput.value}
+📞 Контакт: ${contactInput.value}
+🏋️ Тренировка: ${trainingInput.value}
+📍 Формат: ${formatInput.value}
+📅 Дата: ${dateText.innerText}
+⏰ Время: ${timeText.innerText}
+  `;
+
+  fetch("https://api.telegram.org/bot8442724883:AAHIWj2bralEJXsfjdkRS3VFm-i6UiBtcV0/sendMessage", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      chat_id: -1003744751174,
+      text: text
+    })
+  })
+  .then(() => {
+    alert("Заявка отправлена");
+  })
+  .catch(() => {
+    alert("Ошибка отправки");
+  });
 }
 
 /* ОТПРАВКА */
