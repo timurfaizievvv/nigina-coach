@@ -594,7 +594,7 @@ function openInstagram() {
 
 /* ===== ОТКРЫТИЕ УРОКА (НОВОЕ) ===== */
 function openLesson(url) {
-  window.open(url, "_blank");
+  Telegram.WebApp.openLink(url);
 }
 
 /* ДАТА */
@@ -683,7 +683,7 @@ function sendForm() {
 }
 
 /* ОТПРАВКА */
-function sendForm() {
+/* function sendForm() {
   if (submitBtn.classList.contains("disabled")) return;
 
   const data = {
