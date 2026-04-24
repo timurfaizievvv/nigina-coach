@@ -298,12 +298,37 @@ body {
 .studio-card button {
   margin-top: 12px;
 }
+
+.back-btn {
+  position: fixed;
+  top: 20px;
+  left: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #1c1c1e;
+  border: 1px solid #2c2c2e;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  cursor: pointer;
+}
+
+.back-btn span {
+  font-size: 18px;
+  transform: translateX(-1px);
+}
   
 </style>
 </head>
 
 <body>
 
+<div id="backBtn" class="back-btn" onclick="goBack()">
+  <span>←</span>
+</div>
+  
 <!-- ГЛАВНАЯ -->
 <div id="home" class="screen active">
   <div class="title">Главная страница</div>
@@ -771,9 +796,43 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 
 /* НАВИГАЦИЯ */
+const tg = window.Telegram.WebApp;
+tg.expand();
+
+let historyStack = [];
+
 function openScreen(id) {
+  const current = document.querySelector('.screen.active');
+
+  if (current && current.id !== id) {
+    historyStack.push(current.id);
+  }
+
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+
+  updateBackButton(id);
+}
+
+function goBack() {
+  if (historyStack.length === 0) return;
+
+  const prev = historyStack.pop();
+
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(prev).classList.add('active');
+
+  updateBackButton(prev);
+}
+
+function updateBackButton(currentId) {
+  const btn = document.getElementById("backBtn");
+
+  if (currentId === "home") {
+    btn.style.display = "none";
+  } else {
+    btn.style.display = "flex";
+  }
 }
 
 function openConsult() {
@@ -1049,6 +1108,8 @@ function openTS() {
 function openTSMap() {
   window.open("https://2gis.ru/tashkent/geo/70000001109944299", "_blank");
 }
+
+updateBackButton("home");
   
 </script>
 
