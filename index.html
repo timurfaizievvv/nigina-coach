@@ -631,8 +631,6 @@ html, body {
   <button class="secondary" onclick="openTSMap()">Открыть адрес</button>
   </div>
 
-  <button class="secondary" onclick="openScreen('home')">Назад</button>
-
 </div>
   
 <!-- ФОРМА -->
@@ -757,7 +755,6 @@ html, body {
 — 3–5 — быстрый прогресс</div>
   </div>
     
-  <button class="secondary" onclick="openScreen('faq')">Назад</button>
 </div>
 
 <!-- FAQ 2 -->
@@ -806,7 +803,6 @@ html, body {
 — Избегать длительных статических поз<br>
 — Не перегружать ноги</div>
   </div>
-  <button class="secondary" onclick="openScreen('faq')">Назад</button>
 </div>
 
 <!-- FAQ 3 -->
@@ -856,7 +852,6 @@ html, body {
 — С корректными упражнениями<br>
 — Без классических скручиваний</div>
   </div>
-  <button class="secondary" onclick="openScreen('faq')">Назад</button>
 </div>
 
 <!-- FAQ 4 -->
@@ -894,7 +889,6 @@ html, body {
 — Постепенное увеличение</div>
   </div>
     
-  <button class="secondary" onclick="openScreen('faq')">Назад</button>
 </div>
 
 <!-- FAQ 5 -->
@@ -927,7 +921,6 @@ html, body {
   <div class="faq-question">Что делать, если что-то не получается?<br></div>
   <div class="faq-answer">Это нормально — прогресс приходит постепенно</div>
   </div>
-  <button class="secondary" onclick="openScreen('faq')">Назад</button>
 </div>
 
 <!-- FAQ 6 -->
@@ -943,7 +936,6 @@ html, body {
     а через 1–2 месяца — заметные изменения: улучшится осанка, гибкость, укрепятся мышцы (особенно кор, спина и ягодицы),
     и при соблюдении питания возможно снижение веса</div>
   </div> 
-  <button class="secondary" onclick="openScreen('faq')">Назад</button>
 </div>
 
 <!-- FAQ 7 -->
@@ -973,7 +965,6 @@ html, body {
 — Чередовать нагрузки<br>
 — Не перегружать тело</div>
   </div> 
-  <button class="secondary" onclick="openScreen('faq')">Назад</button>
 </div>
 
 <!-- FAQ 8 -->
@@ -997,7 +988,6 @@ html, body {
   <div class="faq-question">У меня лишний вес — можно заниматься?<br></div>
   <div class="faq-answer">Да, тренировки адаптируются</div>
   </div>
-  <button class="secondary" onclick="openScreen('faq')">Назад</button>
 </div>
 
 <!-- ===== ЭКРАН КАТЕГОРИЙ ===== -->
@@ -1009,9 +999,6 @@ html, body {
 </div>
 
   <div class="grid" id="categoriesGrid"></div>
-
-  <button class="secondary" onclick="openScreen('home')">Назад</button>
-
 </div>
 
   <div id="step1" class="screen">
@@ -1629,8 +1616,6 @@ screen.innerHTML = `
         <div class="lesson-desc">${l.desc}</div>
       </div>
     `).join("")}
-
-    <button class="secondary" onclick="openScreen('lessons')">Назад</button>
   `;
 
   document.body.appendChild(screen);
