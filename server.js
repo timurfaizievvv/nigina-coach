@@ -3,6 +3,7 @@ const express = require("express");
 const fetch = require("node-fetch");
 const cors = require("cors");
 
+const TOKEN = process.env.BOT_TOKEN;
 const app = express();
 
 app.use(cors());
@@ -39,16 +40,30 @@ async function sendTG(text) {
 
 // запись
 app.post("/book", async (req, res) => {
-  app.get("/slots-all", async (req, res) => {
-  const r = await fetch(
-    `${process.env.SUPABASE_URL}/rest/v1/records`,
-    {
+  const data = req.body;
+
+  bookings.push(data);
+
+  try {
+    await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+      method: "POST",
       headers: {
-        apikey: process.env.SUPABASE_KEY,
-        Authorization: `Bearer ${process.env.SUPABASE_KEY}`
-      }
-    }
-  );
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        chat_id: data.user_id,
+        text: `Вы успешно записались ✅
+
+Дата: ${data.date}
+Время: ${data.time}`
+      })
+    });
+  } catch (e) {
+    console.log("Ошибка отправки:", e);
+  }
+
+  res.send({ ok: true });
+});
 
   const data = await r.json();
   res.json(data);
