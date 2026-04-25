@@ -408,6 +408,47 @@ body {
   }
 }
 
+#calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.day {
+  padding: 12px;
+  text-align: center;
+  border-radius: 10px;
+  background: #2c2c2e;
+  cursor: pointer;
+}
+
+.day.disabled {
+  background: #1a1a1c;
+  color: #555;
+  cursor: default;
+}
+
+.day.active {
+  background: white;
+  color: black;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin: 4px auto 0;
+}
+
+.dot.green {
+  background: #4cd964;
+}
+
+.dot.red {
+  background: #ff3b30;
+}
+  
 </style>
 </head>
 
@@ -994,14 +1035,46 @@ body {
 
 </div>
 
-  <div id="step3" class="screen">
+<div id="step3" class="screen">
+
   <div class="header">
     <div class="back-btn" onclick="goBack()">←</div>
-    <div class="title">Формат</div>
+    <div class="title">Формат тренировки</div>
+  </div>
+
+  <div class="menu-btn" onclick="selectFormat('Онлайн')">
+    Онлайн
+  </div>
+
+  <div class="menu-btn" onclick="selectFormat('Оффлайн')">
+    Оффлайн
+  </div>
+
+  <div class="menu-btn" onclick="selectFormat('Выезд на дом')">
+    Выезд на дом
+  </div>
+
+</div>
+
+<div id="step4" class="screen">
+
+  <div class="header">
+    <div class="back-btn" onclick="goBack()">←</div>
+    <div class="title">Выберите дату</div>
+  </div>
+
+  <div id="calendar"></div>
+
+</div>
+
+  <div id="step5" class="screen">
+  <div class="header">
+    <div class="back-btn" onclick="goBack()">←</div>
+    <div class="title">Выбор времени</div>
   </div>
 
   <div class="block">
-    Следующий шаг (сделаем сейчас)
+    Сейчас сделаем слоты
   </div>
 </div>
   
@@ -1018,6 +1091,11 @@ const step1Btn = document.getElementById("step1Btn");
 
 let bookingData = {};
 
+const TIMES = [
+  "10:00","11:00","12:00","13:00",
+  "14:00","15:00","16:00","17:00"
+];
+  
 step1Btn.onclick = () => {
   if (step1Btn.classList.contains("disabled")) return;
 
@@ -1033,6 +1111,53 @@ function selectTraining(type) {
   openScreen("step3");
 }
 
+function selectFormat(type) {
+  bookingData.format = type;
+
+  openScreen("step4");
+}
+
+function generateCalendar() {
+  const container = document.getElementById("calendar");
+  container.innerHTML = "";
+
+  const today = new Date();
+
+  for (let i = 0; i < 14; i++) { // 2 недели вперёд
+    const date = new Date();
+    date.setDate(today.getDate() + i);
+
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+
+    const formatted = `${date.getFullYear()}-${month}-${day}`;
+
+    const div = document.createElement("div");
+    div.className = "day";
+    div.innerText = day;
+
+    // пример: воскресенье отключено
+    if (date.getDay() === 0) {
+      div.classList.add("disabled");
+    } else {
+      div.onclick = () => selectDate(formatted, div);
+    }
+
+    container.appendChild(div);
+  }
+}
+
+function selectDate(date, el) {
+  bookingData.date = date;
+
+  document.querySelectorAll(".day").forEach(d => d.classList.remove("active"));
+  el.classList.add("active");
+
+  openScreen("step5");
+}
+  
+generateCalendar();
+
 function checkStep1() {
   if (stepName.value.trim() && stepContact.value.trim()) {
     step1Btn.classList.remove("disabled");
@@ -1040,6 +1165,51 @@ function checkStep1() {
   } else {
     step1Btn.classList.add("disabled");
     step1Btn.classList.remove("primary");
+  }
+}
+
+async function getAllBookings() {
+  const res = await fetch("https://nigina-coach.onrender.com/slots-all");
+  return await res.json();
+}
+
+async function generateCalendar() {
+  const container = document.getElementById("calendar");
+  container.innerHTML = "";
+
+  const bookings = await getAllBookings();
+
+  const today = new Date();
+
+  for (let i = 0; i < 14; i++) {
+    const date = new Date();
+    date.setDate(today.getDate() + i);
+
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const formatted = `${date.getFullYear()}-${month}-${day}`;
+
+    const div = document.createElement("div");
+    div.className = "day";
+    div.innerHTML = `<div>${day}</div>`;
+
+    // записи на этот день
+    const dayBookings = bookings.filter(b => b.date === formatted);
+
+    const dot = document.createElement("div");
+    dot.classList.add("dot");
+
+    if (dayBookings.length >= TIMES.length) {
+      dot.classList.add("red");
+      div.classList.add("disabled");
+    } else {
+      dot.classList.add("green");
+      div.onclick = () => selectDate(formatted, div);
+    }
+
+    div.appendChild(dot);
+
+    container.appendChild(div);
   }
 }
   
@@ -1368,6 +1538,8 @@ function goBack() {
   next.classList.add('active', 'fade-in');
 }
 
+generateCalendar();
+  
 </script>
 
 </body>
