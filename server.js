@@ -39,8 +39,22 @@ async function sendTG(text) {
 
 // запись
 app.post("/book", async (req, res) => {
-  const data = req.body;
+  app.get("/slots-all", async (req, res) => {
+  const r = await fetch(
+    `${process.env.SUPABASE_URL}/rest/v1/records`,
+    {
+      headers: {
+        apikey: process.env.SUPABASE_KEY,
+        Authorization: `Bearer ${process.env.SUPABASE_KEY}`
+      }
+    }
+  );
 
+  const data = await r.json();
+  res.json(data);
+});
+  const data = req.body;
+  
   try {
     await save(data);
 
