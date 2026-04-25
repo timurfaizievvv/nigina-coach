@@ -59,8 +59,8 @@ app.post("/book", async (req, res) => {
       reply_markup: {
         inline_keyboard: [
           [
-            { text: "✅ Принять", callback_data: `approve|${telegram_id}|${date}|${time}` },
-            { text: "❌ Отклонить", callback_data: `reject|${telegram_id}|${date}|${time}` }
+            { text: "Принять", callback_data: `approve|${telegram_id}|${date}|${time}` },
+            { text: "Отклонить", callback_data: `reject|${telegram_id}|${date}|${time}` }
           ]
         ]
       }
@@ -133,7 +133,7 @@ if (data.message && pendingRejects[data.message.chat.id]) {
       });
     }
 
-    if (action === "reject") {
+if (action === "reject") {
   pendingRejects[message.chat.id] = {
     userId,
     date,
