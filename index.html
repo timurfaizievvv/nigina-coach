@@ -1669,6 +1669,7 @@ function goBack() {
 }
 
 document.getElementById("confirmBtn").onclick = async () => {
+
   await fetch("https://nigina-coach.onrender.com/book", {
     method: "POST",
     headers: {
@@ -1677,6 +1678,22 @@ document.getElementById("confirmBtn").onclick = async () => {
     body: JSON.stringify(bookingData)
   });
 
+  // 👉 добавляем запись в память (чтобы сразу занялся слот)
+  cachedBookings.push({
+    date: bookingData.date,
+    time: bookingData.time
+  });
+
+  // 👉 очищаем время
+  document.getElementById("slots").innerHTML = "";
+
+  // 👉 скрываем кнопку
+  document.getElementById("confirmBtn").style.display = "none";
+
+  // 👉 возвращаем в главное меню
+  openScreen("home");
+
+  // 👉 сообщение
   alert("Запись подтверждена");
 };
   
