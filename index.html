@@ -932,19 +932,82 @@ body {
 
 </div>
 
-  <div id="step2" class="screen">
+<div id="step2" class="screen">
+
   <div class="header">
     <div class="back-btn" onclick="goBack()">←</div>
-    <div class="title">Шаг 2</div>
+    <div class="title">Выберите тренировку</div>
+  </div>
+
+  <div class="grid">
+
+    <div class="category" onclick="selectTraining('Пилатес')">
+      <div>
+        <div>Пилатес</div>
+        <div class="sub">50 минут</div>
+      </div>
+    </div>
+
+    <div class="category" onclick="selectTraining('Акро')">
+      <div>
+        <div>Акро</div>
+        <div class="sub">50 минут</div>
+      </div>
+    </div>
+
+    <div class="category" onclick="selectTraining('Стретчинг')">
+      <div>
+        <div>Стретчинг</div>
+        <div class="sub">50 минут</div>
+      </div>
+    </div>
+
+    <div class="category" onclick="selectTraining('Осанка')">
+      <div>
+        <div>Осанка</div>
+        <div class="sub">50 минут</div>
+      </div>
+    </div>
+
+    <div class="category" onclick="selectTraining('Силовая тренировка')">
+      <div>
+        <div>Силовая</div>
+        <div class="sub">50 минут</div>
+      </div>
+    </div>
+
+    <div class="category" onclick="selectTraining('Барре')">
+      <div>
+        <div>Барре</div>
+        <div class="sub">50 минут</div>
+      </div>
+    </div>
+
+    <div class="category" onclick="selectTraining('Мобильность ТБС')">
+      <div>
+        <div>Мобильность ТБС</div>
+        <div class="sub">50 минут</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+  <div id="step3" class="screen">
+  <div class="header">
+    <div class="back-btn" onclick="goBack()">←</div>
+    <div class="title">Формат</div>
   </div>
 
   <div class="block">
-    Выбор тренировки (сделаем дальше)
+    Следующий шаг (сделаем сейчас)
   </div>
 </div>
   
 <script>
 
+  
 const stepName = document.getElementById("stepName");
 const stepContact = document.getElementById("stepContact");
 const step1Btn = document.getElementById("step1Btn");
@@ -963,6 +1026,12 @@ step1Btn.onclick = () => {
 
   openScreen("step2"); // следующий экран
 };
+
+function selectTraining(type) {
+  bookingData.training = type;
+
+  openScreen("step3");
+}
 
 function checkStep1() {
   if (stepName.value.trim() && stepContact.value.trim()) {
