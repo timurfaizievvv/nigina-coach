@@ -461,6 +461,31 @@ body {
 .green { background: #4cd964; }
 .red { background: #ff3b30; }
 
+#slots {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.slot {
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  background: #2c2c2e;
+}
+
+.slot.busy {
+  background: #3a1f1f;
+  color: #ff6b6b;
+  text-decoration: line-through;
+}
+
+.slot.active {
+  background: white;
+  color: black;
+}
+
 body {
   height: 100vh;
   overflow: hidden;
@@ -1107,12 +1132,6 @@ html, body {
 </div>
   
 <script>
-
-
-async function getAllBookings() {
-  const res = await fetch("https://nigina-coach.onrender.com/slots-all");
-  return await res.json();
-}
   
 const stepName = document.getElementById("stepName");
 const stepContact = document.getElementById("stepContact");
@@ -1157,13 +1176,6 @@ function changeMonth(dir) {
   renderCalendar();
 }
 
-let currentDate = new Date();
-
-function changeMonth(dir) {
-  currentDate.setMonth(currentDate.getMonth() + dir);
-  renderCalendar();
-}
-
 async function renderCalendar() {
   const grid = document.getElementById("calendarGrid");
   const label = document.getElementById("monthLabel");
@@ -1190,7 +1202,7 @@ async function renderCalendar() {
   }
 
   for (let d = 1; d <= daysInMonth; d++) {
-    const full = `${year}-${month+1}-${d}`;
+    const full = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 
     const div = document.createElement("div");
     div.className = "day";
@@ -1220,13 +1232,39 @@ async function renderCalendar() {
   }
 }
 
-function selectDate(date, el) {
+async function loadSlots(date) {
   bookingData.date = date;
 
-  document.querySelectorAll(".day").forEach(d => d.classList.remove("active"));
-  el.classList.add("active");
+  const res = await fetch("https://nigina-coach.onrender.com/slots-all");
+  const all = await res.json();
 
-  openScreen("step5");
+  const dayBookings = all.filter(b => b.date === date);
+
+  const container = document.getElementById("slots");
+  container.innerHTML = "";
+
+  TIMES.forEach(time => {
+    const busy = dayBookings.some(b => b.time === time);
+
+    const div = document.createElement("div");
+    div.className = "slot";
+    div.innerText = time;
+
+    if (busy) {
+      div.classList.add("busy");
+    } else {
+      div.onclick = () => selectTime(time, div);
+    }
+
+    container.appendChild(div);
+  });
+}
+
+function selectTime(time, el) {
+  bookingData.time = time;
+
+  document.querySelectorAll(".slot").forEach(s => s.classList.remove("active"));
+  el.classList.add("active");
 }
 
 function checkStep1() {
@@ -1243,32 +1281,10 @@ async function getAllBookings() {
   const res = await fetch("https://nigina-coach.onrender.com/slots-all");
   return await res.json();
 }
-
-function generateCalendar() {
-  const container = document.getElementById("calendar");
-
-  if (!container) {
-    console.log("❌ НЕ НАЙДЕН #calendar");
-    return;
-  }
-
-  container.innerHTML = "";
-
-  for (let i = 1; i <= 14; i++) {
-    const div = document.createElement("div");
-    div.className = "day";
-    div.innerText = i;
-
-    container.appendChild(div);
-  }
-
-  console.log("✅ КАЛЕНДАРЬ ОТРИСОВАЛСЯ");
-}
   
 const tg = window.Telegram.WebApp;
 
 tg.expand();
-tg.disableVerticalSwipes();
 
 tg.onEvent('viewportChanged', () => {
   document.body.style.height = tg.viewportHeight + 'px';
@@ -1300,9 +1316,9 @@ function openScreen(id) {
   next.classList.add('active', 'fade-in');
 
   // 🔥 ВОТ ЭТО МЫ ДОБАВИЛИ
-  if (id === "step4") {
-    generateCalendar();
-  }
+if (id === "step4") {
+  renderCalendar();
+}
 }
 
 function openConsult() {
