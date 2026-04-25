@@ -23,17 +23,17 @@ app.post("/book", async (req, res) => {
 
   try {
     // 🔥 ПРОВЕРКА: занят ли слот
-    const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?date=eq.${date}&time=eq.${time}&status=eq.confirmed`, {
-      headers: {
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`
-      }
-    });
+  const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?date=eq.${date}&time=eq.${time}&status=in.(pending,confirmed)`, {
+  headers: {
+    "apikey": SUPABASE_KEY,
+    "Authorization": `Bearer ${SUPABASE_KEY}`
+  }
+});
 
     const existing = await checkRes.json();
 
     if (existing.length > 0) {
-      return res.json({
+      return res.status(400).json({
         ok: false,
         message: "Это время уже занято"
       });
