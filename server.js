@@ -120,7 +120,7 @@ app.post(`/bot${TOKEN}`, async (req, res) => {
     const userId = pendingRejects[data.message.chat.id].userId;
     const info = pendingRejects[data.message.chat.id];
 
-    const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${info.date}&time=eq.${info.time}`, {
+    const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${info.date}&time=eq.${info.time}&order=created_at.desc&limit=1`, {
       headers: {
         "apikey": SUPABASE_KEY,
         "Authorization": `Bearer ${SUPABASE_KEY}`
@@ -128,19 +128,27 @@ app.post(`/bot${TOKEN}`, async (req, res) => {
     });
 
     const [booking] = await dbRes.json();
+    if (!booking) {
+      console.log("❌ BOOKING NOT FOUND");
+      return res.sendStatus(200);
+    }
 
 // 🔥 ВОТ ЭТО ДОБАВИЛ
-await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${booking.date}&time=eq.${booking.time}`, {
+const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?id=eq.${booking.id}`, {
   method: "PATCH",
   headers: {
     "Content-Type": "application/json",
     "apikey": SUPABASE_KEY,
-    "Authorization": `Bearer ${SUPABASE_KEY}`
+    "Authorization": `Bearer ${SUPABASE_KEY}`,
+    "Prefer": "return=representation"
   },
   body: JSON.stringify({
     status: "rejected"
   })
 });
+
+const patchData = await patchRes.json();
+console.log("PATCH REJECT:", patchData);
     
     // ❌ ОБНОВЛЯЕМ СООБЩЕНИЕ
     await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
@@ -195,7 +203,7 @@ await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.$
     const [action, userId, date, time] = cbData.split("|");
 
     // 📥 ПОЛУЧАЕМ ЗАЯВКУ
-    const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${date}&time=eq.${time}`, {
+    const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${date}&time=eq.${time}&order=created_at.desc&limit=1`, {
       headers: {
         "apikey": SUPABASE_KEY,
         "Authorization": `Bearer ${SUPABASE_KEY}`
@@ -208,35 +216,41 @@ await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.$
     const training = booking?.training || "";
     const format = booking?.format || "";
 
-    // ✅ ПРИНЯТЬ
-    if (action === "approve") {
+// ✅ ПРИНЯТЬ
+if (action === "approve") {
 
-      await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${date}&time=eq.${time}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": SUPABASE_KEY,
-          "Authorization": `Bearer ${SUPABASE_KEY}`
-        },
-        body: JSON.stringify({ status: "confirmed" })
-      });
+  const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?id=eq.${booking.id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": SUPABASE_KEY,
+      "Authorization": `Bearer ${SUPABASE_KEY}`,
+      "Prefer": "return=representation"
+    },
+    body: JSON.stringify({
+      status: "confirmed"
+    })
+  });
 
-      await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: userId,
-          text: `✅ Ваша заявка подтверждена\n📅 ${date} ⏰ ${time}`
-        })
-      });
+  const patchData = await patchRes.json();
+  console.log("PATCH APPROVE:", patchData);
 
-      await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: message.chat.id,
-          message_id: message.message_id,
-          text: `
+  await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: userId,
+      text: `✅ Ваша заявка подтверждена\n📅 ${date} ⏰ ${time}`
+    })
+  });
+
+  await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: message.chat.id,
+      message_id: message.message_id,
+      text: `
 📥 Заявка
 
 👤 ${name}
@@ -247,10 +261,10 @@ await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.$
 
 Статус: ✅ Подтверждено
 `,
-          reply_markup: { inline_keyboard: [] }
-        })
-      });
-    }
+      reply_markup: { inline_keyboard: [] }
+    })
+  });
+}
 
     // ❌ ОТКЛОНИТЬ
     if (action === "reject") {
