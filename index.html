@@ -492,8 +492,8 @@ body {
 }
 
 body {
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 html, body {
@@ -1180,9 +1180,6 @@ function selectFormat(type) {
 
 let currentDate = new Date();
 
-let cachedBookings = [];
-let isRendering = false;
-
 function changeMonth(dir) {
   currentDate.setMonth(currentDate.getMonth() + dir);
   renderCalendar();
@@ -1279,10 +1276,7 @@ async function renderCalendar() {
 async function loadSlots(date) {
   bookingData.date = date;
 
-  const res = await fetch("https://nigina-coach.onrender.com/slots-all");
-  const all = await res.json();
-
-  const dayBookings = all.filter(b => b.date === date);
+  const dayBookings = cachedBookings.filter(b => b.date === date);
 
   const container = document.getElementById("slots");
   container.innerHTML = "";
