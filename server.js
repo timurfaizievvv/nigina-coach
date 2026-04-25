@@ -95,7 +95,9 @@ app.post(`/bot${TOKEN}`, async (req, res) => {
 
   // 📩 ОБРАБОТКА ТЕКСТА
   if (data.message && pendingRejects[data.message.chat.id]) {
-const info = pendingRejects[data.message.chat.id];
+    const comment = data.message.text;
+    const userId = pendingRejects[data.message.chat.id].userId;
+    const info = pendingRejects[data.message.chat.id];
 
 await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
   method: "POST",
@@ -144,7 +146,7 @@ if (data.callback_query) {
   });
 
   const { data: cbData, message } = data.callback_query;
-  const [action, userId, date, time, training, format, name] = cbData.split("|");
+  const [action, userId, date, time] = cbData.split("|");
 
     // ✅ ПРИНЯТЬ
     if (action === "approve") {
@@ -170,10 +172,7 @@ if (data.callback_query) {
 ✅ Ваша заявка подтверждена
 
 📅 ${date}
-⏰ ${time}
-🏋️ ${training}
-📌 ${format}
-      `
+⏰ ${time}`
     })
   });
 
