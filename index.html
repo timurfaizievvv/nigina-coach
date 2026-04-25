@@ -435,11 +435,16 @@ body {
 }
 
 .day {
-  padding: 10px;
-  text-align: center;
-  border-radius: 10px;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 12px;
   background: #2c2c2e;
-  position: relative;
+
+  font-size: 14px;
 }
 
 .day.active {
@@ -492,8 +497,8 @@ body {
 }
 
 html, body {
-  overflow: hidden;
   height: 100%;
+  overflow-x: hidden;
 }
   
 </style>
@@ -1128,10 +1133,14 @@ html, body {
   </div>
 
   <div id="slots"></div>
+  <button id="confirmBtn" style="display:none;">Подтвердить запись</button>
 
 </div>
   
 <script>
+
+let cachedBookings = [];
+let isRendering = false;
   
 const stepName = document.getElementById("stepName");
 const stepContact = document.getElementById("stepContact");
@@ -1171,12 +1180,19 @@ function selectFormat(type) {
 
 let currentDate = new Date();
 
+let cachedBookings = [];
+let isRendering = false;
+
 function changeMonth(dir) {
   currentDate.setMonth(currentDate.getMonth() + dir);
   renderCalendar();
 }
 
 async function renderCalendar() {
+
+  if (isRendering) return;
+  isRendering = true;
+
   const grid = document.getElementById("calendarGrid");
   const label = document.getElementById("monthLabel");
 
@@ -1192,10 +1208,17 @@ async function renderCalendar() {
 
   const firstDay = new Date(year, month, 1);
   const start = (firstDay.getDay() + 6) % 7;
-
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  const bookings = await getAllBookings();
+  // 🔥 КЭШ (убирает лаг)
+  if (!cachedBookings.length) {
+    try {
+      const res = await fetch("https://nigina-coach.onrender.com/slots-all");
+      cachedBookings = await res.json();
+    } catch (e) {
+      console.log("Ошибка загрузки");
+    }
+  }
 
   for (let i = 0; i < start; i++) {
     grid.appendChild(document.createElement("div"));
@@ -1208,15 +1231,23 @@ async function renderCalendar() {
     div.className = "day";
     div.innerHTML = `<div>${d}</div>`;
 
-    const dayBookings = bookings.filter(b => b.date === full);
+    const dateObj = new Date(year, month, d);
+    const isSunday = dateObj.getDay() === 0;
+
+    const dayBookings = cachedBookings.filter(b => b.date === full);
 
     const dot = document.createElement("div");
     dot.classList.add("dot");
 
-    if (dayBookings.length >= TIMES.length) {
+    if (isSunday) {
       dot.classList.add("red");
       div.classList.add("disabled");
-    } else {
+    } 
+    else if (dayBookings.length >= TIMES.length) {
+      dot.classList.add("red");
+      div.classList.add("disabled");
+    } 
+    else {
       dot.classList.add("green");
 
       div.onclick = () => {
@@ -1230,6 +1261,8 @@ async function renderCalendar() {
     div.appendChild(dot);
     grid.appendChild(div);
   }
+
+  isRendering = false;
 }
 
 async function loadSlots(date) {
@@ -1265,6 +1298,9 @@ function selectTime(time, el) {
 
   document.querySelectorAll(".slot").forEach(s => s.classList.remove("active"));
   el.classList.add("active");
+
+  // 👇 ВОТ СЮДА
+  document.getElementById("confirmBtn").style.display = "block";
 }
 
 function checkStep1() {
@@ -1286,9 +1322,14 @@ const tg = window.Telegram.WebApp;
 
 tg.expand();
 
-tg.onEvent('viewportChanged', () => {
-  document.body.style.height = tg.viewportHeight + 'px';
-});
+function fixViewport() {
+  document.documentElement.style.height = tg.viewportHeight + "px";
+  document.body.style.height = tg.viewportHeight + "px";
+}
+
+fixViewport();
+
+tg.onEvent("viewportChanged", fixViewport);
 
 /* НАВИГАЦИЯ */
 let historyStack = [];
@@ -1617,6 +1658,18 @@ function goBack() {
 
   next.classList.add('active', 'fade-in');
 }
+
+document.getElementById("confirmBtn").onclick = async () => {
+  await fetch("https://nigina-coach.onrender.com/book", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(bookingData)
+  });
+
+  alert("Запись подтверждена");
+};
   
 </script>
 
