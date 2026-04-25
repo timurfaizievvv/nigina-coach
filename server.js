@@ -148,6 +148,11 @@ if (data.callback_query) {
   const { data: cbData, message } = data.callback_query;
   const [action, userId, date, time] = cbData.split("|");
 
+  // 👉 ДОБАВЬ ЭТО:
+  let training = "";
+  let format = "";
+  let name = "";
+
     // ✅ ПРИНЯТЬ
     if (action === "approve") {
 
@@ -201,14 +206,11 @@ if (data.callback_query) {
 
     // ❌ ОТКЛОНИТЬ
     if (action === "reject") {
-pendingRejects[message.chat.id] = {
-  userId,
-  date,
-  time,
-  training,
-  format,
-  name,
-  messageId: message.message_id
+    pendingRejects[message.chat.id] = {
+      userId,
+      date,
+      time,
+      messageId: message.message_id
 };
 
       await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
