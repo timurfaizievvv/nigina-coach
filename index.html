@@ -1209,9 +1209,6 @@ function changeMonth(dir) {
 
 async function renderCalendar() {
 
-  if (isRendering) return;
-  isRendering = true;
-
   const grid = document.getElementById("calendarGrid");
   const label = document.getElementById("monthLabel");
 
@@ -1229,95 +1226,34 @@ async function renderCalendar() {
   const start = (firstDay.getDay() + 6) % 7;
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  // 🔥 КЭШ (убирает лаг)
-  if (!cachedBookings.length) {
-    try {
-      const res = await fetch("https://nigina-coach.onrender.com/slots-all");
-      cachedBookings = await res.json();
-    } catch (e) {
-      console.log("Ошибка загрузки");
-    }
-  }
-
+  // 👉 ПУСТЫЕ ЯЧЕЙКИ
   for (let i = 0; i < start; i++) {
     grid.appendChild(document.createElement("div"));
   }
 
+  // 👉 СНАЧАЛА РИСУЕМ ВСЕ ДНИ (МГНОВЕННО)
   for (let d = 1; d <= daysInMonth; d++) {
+
     const full = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-
-    const today = new Date();
-    today.setHours(0,0,0,0);
-
-    const currentDay = new Date(year, month, d);
-    currentDay.setHours(0,0,0,0);
-
-    const isPast = currentDay < today;
 
     const div = document.createElement("div");
     div.className = "day";
     div.innerHTML = `<div>${d}</div>`;
 
-    const dateObj = new Date(year, month, d);
-    const isSunday = dateObj.getDay() === 0;
-
-    const dayBookings = cachedBookings.filter(b => b.date === full);
-
     const dot = document.createElement("div");
     dot.classList.add("dot");
 
-    if (isPast) {
-      div.classList.add("disabled");
-    }
-    else if (isSunday) {
-      dot.classList.add("red");
-      div.classList.add("disabled");
-    }
-    else if (dayBookings.length >= TIMES.length) {
-      dot.classList.add("red");
-      div.classList.add("disabled");
-    }
-    else {
-      dot.classList.add("green");
-
-      div.onclick = () => {
-        document.querySelectorAll(".day").forEach(el => el.classList.remove("active"));
-        div.classList.add("active");
-
-        loadSlots(full);
-      };
-    }
+    dot.classList.add("green"); // пока все зелёные
 
     div.appendChild(dot);
+
+    div.dataset.date = full;
+
     grid.appendChild(div);
   }
 
-  isRendering = false;
-}
-
-async function loadSlots(date) {
-  bookingData.date = date;
-
-  const dayBookings = cachedBookings.filter(b => b.date === date);
-
-  const container = document.getElementById("slots");
-  container.innerHTML = "";
-
-  TIMES.forEach(time => {
-    const busy = dayBookings.some(b => b.time === time);
-
-    const div = document.createElement("div");
-    div.className = "slot";
-    div.innerText = time;
-
-    if (busy) {
-      div.classList.add("busy");
-    } else {
-      div.onclick = () => selectTime(time, div);
-    }
-
-    container.appendChild(div);
-  });
+  // 👉 ТЕПЕРЬ ПОДГРУЖАЕМ ДАННЫЕ (НЕ БЛОКИРУЕМ UI)
+  updateCalendarDots();
 }
 
 function selectTime(time, el) {
@@ -1389,6 +1325,61 @@ if (id === "step4") {
     renderCalendar();
   }, 50);
 }
+
+async function updateCalendarDots() {
+
+  if (!cachedBookings.length) {
+    const res = await fetch("https://nigina-coach.onrender.com/slots-all");
+    cachedBookings = await res.json();
+  }
+
+  const days = document.querySelectorAll(".day");
+
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  days.forEach(div => {
+
+    const date = div.dataset.date;
+    if (!date) return;
+
+    const [y,m,d] = date.split("-");
+    const dateObj = new Date(y, m-1, d);
+
+    const isSunday = dateObj.getDay() === 0;
+
+    const dayBookings = cachedBookings.filter(b => b.date === date);
+
+    const dot = div.querySelector(".dot");
+
+    if (dateObj < today) {
+      div.classList.add("disabled");
+      dot.classList.remove("green");
+      return;
+    }
+
+    if (isSunday) {
+      dot.classList.add("red");
+      div.classList.add("disabled");
+      return;
+    }
+
+    if (dayBookings.length >= TIMES.length) {
+      dot.classList.add("red");
+      div.classList.add("disabled");
+      return;
+    }
+
+    // 👉 только теперь кликабельность
+    div.onclick = () => {
+      document.querySelectorAll(".day").forEach(el => el.classList.remove("active"));
+      div.classList.add("active");
+
+      loadSlots(date);
+    };
+  });
+}
+
 }
 
 function openConsult() {
