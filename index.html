@@ -408,46 +408,58 @@ body {
   }
 }
 
-#calendar {
+.calendar-box {
+  background: #1c1c1e;
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.week {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 8px;
-  margin-top: 10px;
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 6px;
+}
+
+#calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
 }
 
 .day {
-  padding: 12px;
+  padding: 10px;
   text-align: center;
   border-radius: 10px;
   background: #2c2c2e;
-  cursor: pointer;
-}
-
-.day.disabled {
-  background: #1a1a1c;
-  color: #555;
-  cursor: default;
+  position: relative;
 }
 
 .day.active {
-  background: white;
-  color: black;
+  background: #fff;
+  color: #000;
+}
+
+.day.disabled {
+  opacity: 0.3;
 }
 
 .dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   margin: 4px auto 0;
 }
 
-.dot.green {
-  background: #4cd964;
-}
-
-.dot.red {
-  background: #ff3b30;
-}
+.green { background: #4cd964; }
+.red { background: #ff3b30; }
 
 body {
   height: 100vh;
@@ -1070,22 +1082,28 @@ html, body {
 
   <div class="header">
     <div class="back-btn" onclick="goBack()">←</div>
-    <div class="title">Выберите дату</div>
+    <div class="title">Дата и время</div>
   </div>
 
-  <div id="calendar"></div>
+  <div class="calendar-box">
 
-</div>
+    <div class="calendar-header">
+      <div onclick="changeMonth(-1)">‹</div>
+      <div id="monthLabel"></div>
+      <div onclick="changeMonth(1)">›</div>
+    </div>
 
-  <div id="step5" class="screen">
-  <div class="header">
-    <div class="back-btn" onclick="goBack()">←</div>
-    <div class="title">Выбор времени</div>
+    <div class="week">
+      <div>Пн</div><div>Вт</div><div>Ср</div>
+      <div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+    </div>
+
+    <div id="calendarGrid"></div>
+
   </div>
 
-  <div class="block">
-    Сейчас сделаем слоты
-  </div>
+  <div id="slots"></div>
+
 </div>
   
 <script>
@@ -1132,36 +1150,53 @@ function selectFormat(type) {
   openScreen("step4");
 }
 
-async function generateCalendar() {
-  const container = document.getElementById("calendar");
+let currentDate = new Date();
 
-  if (!container) return;
+function changeMonth(dir) {
+  currentDate.setMonth(currentDate.getMonth() + dir);
+  renderCalendar();
+}
 
-  container.innerHTML = "";
+let currentDate = new Date();
 
-  let bookings = [];
+function changeMonth(dir) {
+  currentDate.setMonth(currentDate.getMonth() + dir);
+  renderCalendar();
+}
 
-  try {
-    bookings = await getAllBookings();
-  } catch (e) {
-    console.log("Ошибка загрузки записей");
+async function renderCalendar() {
+  const grid = document.getElementById("calendarGrid");
+  const label = document.getElementById("monthLabel");
+
+  grid.innerHTML = "";
+
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+
+  label.innerText = new Date(year, month).toLocaleString("ru", {
+    month: "long",
+    year: "numeric"
+  });
+
+  const firstDay = new Date(year, month, 1);
+  const start = (firstDay.getDay() + 6) % 7;
+
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  const bookings = await getAllBookings();
+
+  for (let i = 0; i < start; i++) {
+    grid.appendChild(document.createElement("div"));
   }
 
-  const today = new Date();
-
-  for (let i = 0; i < 14; i++) {
-    const date = new Date();
-    date.setDate(today.getDate() + i);
-
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const formatted = `${date.getFullYear()}-${month}-${day}`;
+  for (let d = 1; d <= daysInMonth; d++) {
+    const full = `${year}-${month+1}-${d}`;
 
     const div = document.createElement("div");
     div.className = "day";
-    div.innerHTML = `<div>${day}</div>`;
+    div.innerHTML = `<div>${d}</div>`;
 
-    const dayBookings = bookings.filter(b => b.date === formatted);
+    const dayBookings = bookings.filter(b => b.date === full);
 
     const dot = document.createElement("div");
     dot.classList.add("dot");
@@ -1171,11 +1206,17 @@ async function generateCalendar() {
       div.classList.add("disabled");
     } else {
       dot.classList.add("green");
-      div.onclick = () => selectDate(formatted, div);
+
+      div.onclick = () => {
+        document.querySelectorAll(".day").forEach(el => el.classList.remove("active"));
+        div.classList.add("active");
+
+        loadSlots(full);
+      };
     }
 
     div.appendChild(dot);
-    container.appendChild(div);
+    grid.appendChild(div);
   }
 }
 
