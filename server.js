@@ -129,6 +129,19 @@ app.post(`/bot${TOKEN}`, async (req, res) => {
 
     const [booking] = await dbRes.json();
 
+// 🔥 ВОТ ЭТО ДОБАВИЛ
+await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${booking.date}&time=eq.${booking.time}`, {
+  method: "PATCH",
+  headers: {
+    "Content-Type": "application/json",
+    "apikey": SUPABASE_KEY,
+    "Authorization": `Bearer ${SUPABASE_KEY}`
+  },
+  body: JSON.stringify({
+    status: "rejected"
+  })
+});
+    
     // ❌ ОБНОВЛЯЕМ СООБЩЕНИЕ
     await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
       method: "POST",
