@@ -418,6 +418,7 @@ body {
   <div class="title home-title">Главная страница</div>
   <div class="menu-btn" onclick="openScreen('studio')">Занятия в студии</div>
   <div class="menu-btn" onclick="openScreen('form')">Записаться</div>
+  <div class="menu-btn" onclick="openScreen('step1')">Индивидуальные занятия</div>
   <div class="menu-btn" onclick="openScreen('lessons')">Уроки</div>
   <div class="menu-btn" onclick="openScreen('faq')">FAQ</div>
 
@@ -911,8 +912,68 @@ body {
   <button class="secondary" onclick="openScreen('home')">Назад</button>
 
 </div>
+
+  <div id="step1" class="screen">
+
+  <div class="header">
+    <div class="back-btn" onclick="goBack()">←</div>
+    <div class="title">Ваши данные</div>
+  </div>
+
+  <div class="block">
+    <input id="stepName" placeholder="Введите имя">
+  </div>
+
+  <div class="block">
+    <input id="stepContact" placeholder="Введите @user или номер телефона">
+  </div>
+
+  <button id="step1Btn" class="disabled">Далее</button>
+
+</div>
+
+  <div id="step2" class="screen">
+  <div class="header">
+    <div class="back-btn" onclick="goBack()">←</div>
+    <div class="title">Шаг 2</div>
+  </div>
+
+  <div class="block">
+    Выбор тренировки (сделаем дальше)
+  </div>
+</div>
   
 <script>
+
+const stepName = document.getElementById("stepName");
+const stepContact = document.getElementById("stepContact");
+const step1Btn = document.getElementById("step1Btn");
+
+[stepName, stepContact].forEach(el => {
+  el.addEventListener("input", checkStep1);
+});
+
+let bookingData = {};
+
+step1Btn.onclick = () => {
+  if (step1Btn.classList.contains("disabled")) return;
+
+  bookingData.name = stepName.value;
+  bookingData.contact = stepContact.value;
+
+  openScreen("step2"); // следующий экран
+};
+
+function checkStep1() {
+  if (stepName.value.trim() && stepContact.value.trim()) {
+    step1Btn.classList.remove("disabled");
+    step1Btn.classList.add("primary");
+  } else {
+    step1Btn.classList.add("disabled");
+    step1Btn.classList.remove("primary");
+  }
+}
+  
 const tg = window.Telegram.WebApp;
 tg.expand();
 
