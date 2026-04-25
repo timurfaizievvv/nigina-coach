@@ -106,16 +106,14 @@ await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
     chat_id: data.message.chat.id,
     message_id: info.messageId,
     text: `
-📥 Заявка
+    📥 Заявка
 
-👤 ${info.name}
-📅 ${info.date}
-⏰ ${info.time}
-🏋️ ${info.training}
-📌 ${info.format}
+    👤 ${userId}
+    📅 ${info.date}
+    ⏰ ${info.time}
 
-Статус: ❌ Отклонено
-Причина: ${comment}
+    Статус: ❌ Отклонено
+    Причина: ${comment}
     `,
     reply_markup: { inline_keyboard: [] }
   })
