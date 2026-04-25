@@ -1678,22 +1678,22 @@ document.getElementById("confirmBtn").onclick = async () => {
     body: JSON.stringify(bookingData)
   });
 
-  // 👉 добавляем запись в память (чтобы сразу занялся слот)
   cachedBookings.push({
     date: bookingData.date,
     time: bookingData.time
   });
 
-  // 👉 очищаем время
+  // ✅ СБРОС
+  bookingData = {};
+  document.getElementById("stepName").value = "";
+  document.getElementById("stepContact").value = "";
+  step1Btn.classList.add("disabled");
+  step1Btn.classList.remove("primary");
   document.getElementById("slots").innerHTML = "";
-
-  // 👉 скрываем кнопку
   document.getElementById("confirmBtn").style.display = "none";
 
-  // 👉 возвращаем в главное меню
   openScreen("home");
 
-  // 👉 сообщение
   alert("Запись подтверждена");
 };
   
