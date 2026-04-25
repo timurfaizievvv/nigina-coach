@@ -167,19 +167,22 @@ app.post(`/bot${TOKEN}`, async (req, res) => {
 
     // ✅ ПРИНЯТЬ
     if (action === "approve") {
+    const oldText = message.text;
 
-      await fetch(`${SUPABASE_URL}/rest/v1/bookings?id=eq.${bookingId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: SUPABASE_KEY,
-          Authorization: `Bearer ${SUPABASE_KEY}`,
-          Prefer: "return=representation"
-        },
-        body: JSON.stringify({
-          status: "confirmed"
-        })
-      });
+await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    chat_id: message.chat.id,
+    message_id: message.message_id,
+    text: `
+${oldText}
+
+Статус: ✅ Подтверждено
+`,
+    reply_markup: { inline_keyboard: [] }
+  })
+});
 
       // клиенту
       await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
