@@ -108,13 +108,13 @@ await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
     text: `
     📥 Заявка
 
-    👤 ${userId}
-    📅 ${info.date}
-    ⏰ ${info.time}
+👤 ${userId}
+📅 ${info.date}
+⏰ ${info.time}
 
-    Статус: ❌ Отклонено
-    Причина: ${comment}
-    `,
+Статус: ❌ Отклонено
+Причина: ${comment}
+`,
     reply_markup: { inline_keyboard: [] }
   })
 });
