@@ -3,7 +3,6 @@ const express = require("express");
 const fetch = require("node-fetch");
 const cors = require("cors");
 
-const TOKEN = process.env.BOT_TOKEN;
 const app = express();
 
 app.use(cors());
@@ -43,24 +42,6 @@ app.post("/book", async (req, res) => {
   const data = req.body;
 
   bookings.push(data);
-
-  try {
-    await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        chat_id: data.user_id,
-        text: `Вы успешно записались ✅
-
-Дата: ${data.date}
-Время: ${data.time}`
-      })
-    });
-  } catch (e) {
-    console.log("Ошибка отправки:", e);
-  }
 
   res.send({ ok: true });
 });
