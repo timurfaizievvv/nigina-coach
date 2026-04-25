@@ -7,6 +7,7 @@ const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
+
 let pendingRejects = {};
 
 // Проверка сервера
@@ -19,7 +20,7 @@ app.post("/book", async (req, res) => {
   const { date, time, training, format, name, contact, telegram_id } = req.body;
 
   // 1. Сохраняем в базу
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/bookings`, {
+  await fetch(`${SUPABASE_URL}/rest/v1/bookings`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -38,7 +39,7 @@ app.post("/book", async (req, res) => {
     })
   });
 
-  // 2. Отправляем в Telegram группу
+  // 2. Сообщение в группу
   const text = `
 📥 Новая заявка
 
@@ -59,8 +60,8 @@ app.post("/book", async (req, res) => {
       reply_markup: {
         inline_keyboard: [
           [
-            { text: "Принять", callback_data: `approve|${telegram_id}|${date}|${time}` },
-            { text: "Отклонить", callback_data: `reject|${telegram_id}|${date}|${time}` }
+            { text: "✅ Принять", callback_data: `approve|${telegram_id}|${date}|${time}` },
+            { text: "❌ Отклонить", callback_data: `reject|${telegram_id}|${date}|${time}` }
           ]
         ]
       }
@@ -81,37 +82,56 @@ app.post("/book", async (req, res) => {
 });
 
 
-// 📌 WEBHOOK ОТ TELEGRAM
+// 📌 WEBHOOK TELEGRAM
 app.post(`/bot${TOKEN}`, async (req, res) => {
   const data = req.body;
-  
-  // 📩 ОБРАБОТКА ТЕКСТА (КОММЕНТАРИЙ)
-if (data.message && pendingRejects[data.message.chat.id]) {
-  const { userId, date, time } = pendingRejects[data.message.chat.id];
-  const comment = data.message.text;
 
-  await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${date}&time=eq.${time}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      "apikey": SUPABASE_KEY,
-      "Authorization": `Bearer ${SUPABASE_KEY}`
-    },
-    body: JSON.stringify({
-      status: "rejected",
-      admin_comment: comment
-    })
-  });
+  // 📩 ОБРАБОТКА КОММЕНТАРИЯ (ПОСЛЕ ОТКЛОНЕНИЯ)
+  if (data.message && pendingRejects[data.message.chat.id]) {
+    const { userId, date, time } = pendingRejects[data.message.chat.id];
+    const comment = data.message.text;
 
-  delete pendingRejects[data.message.chat.id];
-}
+    await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${date}&time=eq.${time}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`
+      },
+      body: JSON.stringify({
+        status: "rejected",
+        admin_comment: comment
+      })
+    });
 
+    await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: userId,
+        text: `❌ Заявка отклонена\n\nПричина: ${comment}`
+      })
+    });
+
+    delete pendingRejects[data.message.chat.id];
+  }
+
+  // 📌 ОБРАБОТКА КНОПОК
   if (data.callback_query) {
-    const { data: cbData, message } = data.callback_query;
+    const { data: cbData, message, id } = data.callback_query;
     const [action, userId, date, time] = cbData.split("|");
 
+    // убрать "часики" на кнопке
+    await fetch(`https://api.telegram.org/bot${TOKEN}/answerCallbackQuery`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        callback_query_id: id
+      })
+    });
+
+    // ✅ ПРИНЯТЬ
     if (action === "approve") {
-      // обновляем статус
       await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${date}&time=eq.${time}`, {
         method: "PATCH",
         headers: {
@@ -122,7 +142,6 @@ if (data.message && pendingRejects[data.message.chat.id]) {
         body: JSON.stringify({ status: "confirmed" })
       });
 
-      // пишем клиенту
       await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -133,22 +152,24 @@ if (data.message && pendingRejects[data.message.chat.id]) {
       });
     }
 
-if (action === "reject") {
-  pendingRejects[message.chat.id] = {
-    userId,
-    date,
-    time
-  };
+    // ❌ ОТКЛОНИТЬ
+    if (action === "reject") {
+      pendingRejects[message.chat.id] = {
+        userId,
+        date,
+        time
+      };
 
-  await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: message.chat.id,
-      text: "✏️ Напишите причину отказа:"
-    })
-  });
-}
+      await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: message.chat.id,
+          text: "✏️ Напишите причину отказа:"
+        })
+      });
+    }
+  }
 
   res.sendStatus(200);
 });
