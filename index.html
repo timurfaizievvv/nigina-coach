@@ -1155,8 +1155,6 @@ function selectDate(date, el) {
 
   openScreen("step5");
 }
-  
-generateCalendar();
 
 function checkStep1() {
   if (stepName.value.trim() && stepContact.value.trim()) {
@@ -1220,6 +1218,7 @@ tg.expand();
 let historyStack = [];
 
 function openScreen(id) {
+  
   const current = document.querySelector('.screen.active');
 
   if (current && current.id !== id) {
@@ -1239,6 +1238,11 @@ function openScreen(id) {
   void next.offsetWidth;
 
   next.classList.add('active', 'fade-in');
+
+  // 🔥 ВОТ ЭТО МЫ ДОБАВИЛИ
+  if (id === "step4") {
+    generateCalendar();
+  }
 }
 
 function openConsult() {
@@ -1537,8 +1541,6 @@ function goBack() {
 
   next.classList.add('active', 'fade-in');
 }
-
-generateCalendar();
   
 </script>
 
