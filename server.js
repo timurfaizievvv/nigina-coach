@@ -86,7 +86,7 @@ app.post("/book", async (req, res) => {
 app.post(`/bot${TOKEN}`, async (req, res) => {
   const data = req.body;
 
-  // 📩 ОБРАБОТКА КОММЕНТАРИЯ (ПОСЛЕ ОТКЛОНЕНИЯ)
+  // 📩 ОБРАБОТКА ТЕКСТА
   if (data.message && pendingRejects[data.message.chat.id]) {
     const { userId, date, time } = pendingRejects[data.message.chat.id];
     const comment = data.message.text;
@@ -116,85 +116,71 @@ app.post(`/bot${TOKEN}`, async (req, res) => {
     delete pendingRejects[data.message.chat.id];
   }
 
-  // 📌 ОБРАБОТКА КНОПОК
+  // 📌 КНОПКИ
   if (data.callback_query) {
-    const { data: cbData, message, id } = data.callback_query;
+    const { data: cbData, message } = data.callback_query;
     const [action, userId, date, time] = cbData.split("|");
 
-    // убрать "часики" на кнопке
-    await fetch(`https://api.telegram.org/bot${TOKEN}/answerCallbackQuery`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        callback_query_id: id
-      })
-    });
+    // ✅ ПРИНЯТЬ
+    if (action === "approve") {
+      await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${date}&time=eq.${time}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`
+        },
+        body: JSON.stringify({ status: "confirmed" })
+      });
 
-// ✅ ПРИНЯТЬ
-if (action === "approve") {
-  await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${date}&time=eq.${time}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      "apikey": SUPABASE_KEY,
-      "Authorization": `Bearer ${SUPABASE_KEY}`
-    },
-    body: JSON.stringify({ status: "confirmed" })
-  });
+      await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: userId,
+          text: `✅ Ваша заявка подтверждена\n📅 ${date} ⏰ ${time}`
+        })
+      });
 
-  // сообщение клиенту
-  await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: userId,
-      text: `✅ Ваша заявка подтверждена\n📅 ${date} ⏰ ${time}`
-    })
-  });
+      await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: message.chat.id,
+          message_id: message.message_id,
+          text: "✅ Заявка принята"
+        })
+      });
+    }
 
-  // 🔥 УБИРАЕМ КНОПКИ + МЕНЯЕМ ТЕКСТ (ОДНИМ ЗАПРОСОМ)
-  await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: message.chat.id,
-      message_id: message.message_id,
-      text: "✅ Заявка принята",
-      reply_markup: { inline_keyboard: [] }
-    })
-  });
-}
+    // ❌ ОТКЛОНИТЬ
+    if (action === "reject") {
+      pendingRejects[message.chat.id] = {
+        userId,
+        date,
+        time
+      };
 
-// ❌ ОТКЛОНИТЬ
-if (action === "reject") {
-  pendingRejects[message.chat.id] = {
-    userId,
-    date,
-    time
-  };
+      await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: message.chat.id,
+          message_id: message.message_id,
+          text: "❌ Введите причину отказа:"
+        })
+      });
 
-  // убираем кнопки + меняем текст
-  await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: message.chat.id,
-      message_id: message.message_id,
-      text: "❌ Введите причину отказа:",
-      reply_markup: { inline_keyboard: [] }
-    })
-  });
-
-  // просим комментарий
-  await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: message.chat.id,
-      text: "✏️ Напишите причину отказа:"
-    })
-  });
-}
+      await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: message.chat.id,
+          text: "✏️ Напишите причину отказа:"
+        })
+      });
+    }
+  }
 
   res.sendStatus(200);
 });
