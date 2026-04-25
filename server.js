@@ -1,4 +1,5 @@
 const express = require("express");
+const fetch = require("node-fetch");
 const app = express();
 
 app.use(express.json());
@@ -10,60 +11,56 @@ const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
 let pendingRejects = {};
 
-// Проверка сервера
+// ✅ ПРОВЕРКА СЕРВЕРА
+app.get("/", (req, res) => {
+  res.send("Server is working");
+});
+
+
+// 📌 СОЗДАНИЕ ЗАЯВКИ
 app.post("/book", async (req, res) => {
   const { date, time, training, format, name, contact, telegram_id } = req.body;
 
-  // 🔥 ПРОВЕРКА СЛОТА
-  const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?date=eq.${date}&time=eq.${time}&status=eq.confirmed`, {
-    headers: {
-      "apikey": SUPABASE_KEY,
-      "Authorization": `Bearer ${SUPABASE_KEY}`
-    }
-  });
-
-  const existing = await checkRes.json();
-
-  if (existing.length > 0) {
-    return res.json({
-      ok: false,
-      message: "Это время уже занято"
+  try {
+    // 🔥 ПРОВЕРКА: занят ли слот
+    const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?date=eq.${date}&time=eq.${time}&status=eq.confirmed`, {
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`
+      }
     });
-  }
 
-  // ✅ ТОЛЬКО ЕСЛИ СВОБОДНО — СОЗДАЕМ ЗАЯВКУ
-  const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings`, {
+    const existing = await checkRes.json();
 
-const existing = await checkRes.json();
+    if (existing.length > 0) {
+      return res.json({
+        ok: false,
+        message: "Это время уже занято"
+      });
+    }
 
-if (existing.length > 0) {
-  return res.json({
-    ok: false,
-    message: "Это время уже занято"
-  });
-}
-  // 1. Сохраняем в базу
-  await fetch(`${SUPABASE_URL}/rest/v1/bookings`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "apikey": SUPABASE_KEY,
-      "Authorization": `Bearer ${SUPABASE_KEY}`
-    },
-    body: JSON.stringify({
-      date,
-      time,
-      training,
-      format,
-      name,
-      contact,
-      telegram_id,
-      status: "pending"
-    })
-  });
+    // ✅ СОЗДАЕМ ЗАЯВКУ
+    await fetch(`${SUPABASE_URL}/rest/v1/bookings`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`
+      },
+      body: JSON.stringify({
+        date,
+        time,
+        training,
+        format,
+        name,
+        contact,
+        telegram_id,
+        status: "pending"
+      })
+    });
 
-  // 2. Сообщение в группу
-const text = `
+    // 📤 ОТПРАВКА В ГРУППУ
+    const text = `
 📥 Новая заявка
 
 👤 ${name}
@@ -76,39 +73,39 @@ const text = `
 Статус: ⏳ Ожидание
 `;
 
-console.log("📤 Отправка в группу...");
+    await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: CHAT_ID,
+        text,
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: "✅ Принять", callback_data: `approve|${telegram_id}|${date}|${time}` },
+              { text: "❌ Отклонить", callback_data: `reject|${telegram_id}|${date}|${time}` }
+            ]
+          ]
+        }
+      })
+    });
 
-const tgRes = await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    chat_id: CHAT_ID,
-    text,
-    reply_markup: {
-      inline_keyboard: [
-        [
-          { text: "✅ Принять", callback_data: `approve|${telegram_id}|${date}|${time}` },
-          { text: "❌ Отклонить", callback_data: `reject|${telegram_id}|${date}|${time}` }
-        ]
-      ]
-    }
-  })
-});
+    // 📩 ОТВЕТ КЛИЕНТУ
+    await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: telegram_id,
+        text: "✅ Вы записались. Ожидайте подтверждения"
+      })
+    });
 
-const tgData = await tgRes.json();
-console.log("📥 Ответ Telegram:", tgData);
+    res.json({ ok: true });
 
-  // 3. Ответ клиенту
-  await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: telegram_id,
-      text: "✅ Вы записались. Ожидайте подтверждения"
-    })
-  });
-
-  res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false });
+  }
 });
 
 
@@ -116,31 +113,31 @@ console.log("📥 Ответ Telegram:", tgData);
 app.post(`/bot${TOKEN}`, async (req, res) => {
   const data = req.body;
 
-  // 📩 ОБРАБОТКА ТЕКСТА
-if (data.message && pendingRejects[data.message.chat.id]) {
+  // 📩 ОБРАБОТКА КОММЕНТАРИЯ
+  if (data.message && pendingRejects[data.message.chat.id]) {
 
-  const comment = data.message.text;
-  const userId = pendingRejects[data.message.chat.id].userId;
-  const info = pendingRejects[data.message.chat.id];
+    const comment = data.message.text;
+    const userId = pendingRejects[data.message.chat.id].userId;
+    const info = pendingRejects[data.message.chat.id];
 
-  // 🔥 ВОТ СЮДА ВСТАВЛЯЕШЬ
-  const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${info.date}&time=eq.${info.time}`, {
-    headers: {
-      "apikey": SUPABASE_KEY,
-      "Authorization": `Bearer ${SUPABASE_KEY}`
-    }
-  });
+    const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${info.date}&time=eq.${info.time}`, {
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`
+      }
+    });
 
-  const [booking] = await dbRes.json();
+    const [booking] = await dbRes.json();
 
-await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    chat_id: data.message.chat.id,
-    message_id: info.messageId,
-    text: `
-    📥 Заявка
+    // ❌ ОБНОВЛЯЕМ СООБЩЕНИЕ
+    await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: data.message.chat.id,
+        message_id: info.messageId,
+        text: `
+📥 Заявка
 
 👤 ${booking.name}
 📅 ${booking.date}
@@ -151,10 +148,11 @@ await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
 Статус: ❌ Отклонено
 Причина: ${comment}
 `,
-    reply_markup: { inline_keyboard: [] }
-  })
-});
+        reply_markup: { inline_keyboard: [] }
+      })
+    });
 
+    // 📩 КЛИЕНТУ
     await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -168,21 +166,22 @@ await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
   }
 
   // 📌 КНОПКИ
-if (data.callback_query) {
-  const callbackId = data.callback_query.id;
+  if (data.callback_query) {
 
-  await fetch(`https://api.telegram.org/bot${TOKEN}/answerCallbackQuery`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      callback_query_id: callbackId
-    })
-  });
+    const callbackId = data.callback_query.id;
 
-  const { data: cbData, message } = data.callback_query;
-  const [action, userId, date, time] = cbData.split("|");
+    await fetch(`https://api.telegram.org/bot${TOKEN}/answerCallbackQuery`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        callback_query_id: callbackId
+      })
+    });
 
-    // ✅ ПРИНЯТЬ
+    const { data: cbData, message } = data.callback_query;
+    const [action, userId, date, time] = cbData.split("|");
+
+    // 📥 ПОЛУЧАЕМ ЗАЯВКУ
     const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${date}&time=eq.${time}`, {
       headers: {
         "apikey": SUPABASE_KEY,
@@ -195,41 +194,36 @@ if (data.callback_query) {
     const name = booking?.name || "";
     const training = booking?.training || "";
     const format = booking?.format || "";
+
+    // ✅ ПРИНЯТЬ
     if (action === "approve") {
 
-  // обновляем в базе
-  await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${date}&time=eq.${time}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      "apikey": SUPABASE_KEY,
-      "Authorization": `Bearer ${SUPABASE_KEY}`
-    },
-    body: JSON.stringify({ status: "confirmed" })
-  });
+      await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${date}&time=eq.${time}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`
+        },
+        body: JSON.stringify({ status: "confirmed" })
+      });
 
-  // сообщение клиенту
-  await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: userId,
-      text: `
-✅ Ваша заявка подтверждена
+      await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: userId,
+          text: `✅ Ваша заявка подтверждена\n📅 ${date} ⏰ ${time}`
+        })
+      });
 
-📅 ${date}
-⏰ ${time}`
-    })
-  });
-
-  // 🔥 ОБНОВЛЯЕМ СООБЩЕНИЕ В ГРУППЕ (НЕ ТЕРЯЕМ ДАННЫЕ)
-  await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: message.chat.id,
-      message_id: message.message_id,
-      text: `
+      await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: message.chat.id,
+          message_id: message.message_id,
+          text: `
 📥 Заявка
 
 👤 ${name}
@@ -239,20 +233,21 @@ if (data.callback_query) {
 📌 ${format}
 
 Статус: ✅ Подтверждено
-      `,
-      reply_markup: { inline_keyboard: [] }
-    })
-  });
-}
+`,
+          reply_markup: { inline_keyboard: [] }
+        })
+      });
+    }
 
     // ❌ ОТКЛОНИТЬ
     if (action === "reject") {
-    pendingRejects[message.chat.id] = {
-      userId,
-      date,
-      time,
-      messageId: message.message_id
-};
+
+      pendingRejects[message.chat.id] = {
+        userId,
+        date,
+        time,
+        messageId: message.message_id
+      };
 
       await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
         method: "POST",
