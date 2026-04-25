@@ -322,7 +322,16 @@ body {
 }
 
 .secondary.instagram {
-  border-color: #444;
+  background: transparent;
+  border: 1px solid #2c2c2e;
+  color: white;
+
+  padding: 12px;
+  height: 48px; /* фикс высоты */
+}
+
+button:disabled {
+  opacity: 0.5;
 }
 
 .studio-card button {
@@ -1133,7 +1142,7 @@ html, body {
   </div>
 
   <div id="slots"></div>
-  <button id="confirmBtn" class="primary" style="display:none;">
+  <button id="confirmBtn" class="secondary instagram" style="display:none;">
   Подтвердить запись
   </button>
 
