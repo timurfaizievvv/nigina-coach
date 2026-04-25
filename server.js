@@ -53,22 +53,27 @@ const text = `
 Статус: ⏳ Ожидание
 `;
 
-  await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      chat_id: CHAT_ID,
-      text,
-      reply_markup: {
-        inline_keyboard: [
-          [
-            { text: "✅ Принять", callback_data: `approve|${telegram_id}|${date}|${time}|${training}|${format}|${name}` },
-            { text: "❌ Отклонить", callback_data: `reject|${telegram_id}|${date}|${time}|${training}|${format}|${name}` }
-          ]
+console.log("📤 Отправка в группу...");
+
+const tgRes = await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    chat_id: CHAT_ID,
+    text,
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: "✅ Принять", callback_data: `approve|${telegram_id}|${date}|${time}|${training}|${format}|${name}` },
+          { text: "❌ Отклонить", callback_data: `reject|${telegram_id}|${date}|${time}|${training}|${format}|${name}` }
         ]
-      }
-    })
-  });
+      ]
+    }
+  })
+});
+
+const tgData = await tgRes.json();
+console.log("📥 Ответ Telegram:", tgData);
 
   // 3. Ответ клиенту
   await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
