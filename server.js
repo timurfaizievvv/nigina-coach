@@ -64,8 +64,8 @@ const tgRes = await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
     reply_markup: {
       inline_keyboard: [
         [
-          { text: "✅ Принять", callback_data: `approve|${telegram_id}|${date}|${time}|${training}|${format}|${name}` },
-          { text: "❌ Отклонить", callback_data: `reject|${telegram_id}|${date}|${time}|${training}|${format}|${name}` }
+          { text: "✅ Принять", callback_data: `approve|${telegram_id}|${date}|${time}` },
+          { text: "❌ Отклонить", callback_data: `reject|${telegram_id}|${date}|${time}` }
         ]
       ]
     }
@@ -134,7 +134,7 @@ await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
   // 📌 КНОПКИ
   if (data.callback_query) {
     const { data: cbData, message } = data.callback_query;
-    const [action, userId, date, time, training, format, name] = cbData.split("|");
+    const [action, userId, date, time] = cbData.split("|");
 
     // ✅ ПРИНЯТЬ
     if (action === "approve") {
