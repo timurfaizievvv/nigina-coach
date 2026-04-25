@@ -11,14 +11,37 @@ const SUPABASE_KEY = process.env.SUPABASE_KEY;
 let pendingRejects = {};
 
 // Проверка сервера
-app.get("/", (req, res) => {
-  res.send("Server is working");
-});
-
-// 📌 СОЗДАНИЕ ЗАЯВКИ
 app.post("/book", async (req, res) => {
   const { date, time, training, format, name, contact, telegram_id } = req.body;
 
+  // 🔥 ПРОВЕРКА СЛОТА
+  const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?date=eq.${date}&time=eq.${time}&status=eq.confirmed`, {
+    headers: {
+      "apikey": SUPABASE_KEY,
+      "Authorization": `Bearer ${SUPABASE_KEY}`
+    }
+  });
+
+  const existing = await checkRes.json();
+
+  if (existing.length > 0) {
+    return res.json({
+      ok: false,
+      message: "Это время уже занято"
+    });
+  }
+
+  // ✅ ТОЛЬКО ЕСЛИ СВОБОДНО — СОЗДАЕМ ЗАЯВКУ
+  const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings`, {
+
+const existing = await checkRes.json();
+
+if (existing.length > 0) {
+  return res.json({
+    ok: false,
+    message: "Это время уже занято"
+  });
+}
   // 1. Сохраняем в базу
   await fetch(`${SUPABASE_URL}/rest/v1/bookings`, {
     method: "POST",
