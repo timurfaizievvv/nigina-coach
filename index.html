@@ -1695,6 +1695,17 @@ function goBack() {
 
 document.getElementById("confirmBtn").onclick = async () => {
 
+  // 👉 ВОТ СЮДА ВСТАВЛЯЕШЬ
+  bookingData.user_id = tg.initDataUnsafe.user.id;
+
+  await fetch("https://nigina-coach.onrender.com/book", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(bookingData)
+  });
+
   await fetch("https://nigina-coach.onrender.com/book", {
     method: "POST",
     headers: {
