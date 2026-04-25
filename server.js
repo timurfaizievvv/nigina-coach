@@ -132,9 +132,19 @@ await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
   }
 
   // 📌 КНОПКИ
-  if (data.callback_query) {
-    const { data: cbData, message } = data.callback_query;
-    const [action, userId, date, time] = cbData.split("|");
+if (data.callback_query) {
+  const callbackId = data.callback_query.id;
+
+  await fetch(`https://api.telegram.org/bot${TOKEN}/answerCallbackQuery`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      callback_query_id: callbackId
+    })
+  });
+
+  const { data: cbData, message } = data.callback_query;
+  const [action, userId, date, time, training, format, name] = cbData.split("|");
 
     // ✅ ПРИНЯТЬ
     if (action === "approve") {
