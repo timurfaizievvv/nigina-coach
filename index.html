@@ -430,6 +430,7 @@ button:disabled {
   background: #1c1c1e;
   border-radius: 16px;
   padding: 12px;
+  margin-bottom: 20px;
 }
 
 .calendar-header {
@@ -490,10 +491,19 @@ button:disabled {
 .red { background: #ff3b30; }
 
 #slots {
-  margin-top: 20px;
+  margin: 20px 0;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
+}
+
+.calendar-box,
+#slots {
+  margin-bottom: 20px;
+}
+
+#confirmBtn {
+  margin-top: 0;
 }
 
 .slot {
