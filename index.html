@@ -448,6 +448,16 @@ body {
 .dot.red {
   background: #ff3b30;
 }
+
+body {
+  height: 100vh;
+  overflow: hidden;
+}
+
+html, body {
+  overflow: hidden;
+  height: 100%;
+}
   
 </style>
 </head>
@@ -1215,7 +1225,13 @@ function generateCalendar() {
 }
   
 const tg = window.Telegram.WebApp;
+
 tg.expand();
+tg.disableVerticalSwipes();
+
+tg.onEvent('viewportChanged', () => {
+  document.body.style.height = tg.viewportHeight + 'px';
+});
 
 /* НАВИГАЦИЯ */
 let historyStack = [];
