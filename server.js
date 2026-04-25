@@ -41,16 +41,6 @@ async function sendTG(text) {
 app.post("/book", async (req, res) => {
   const data = req.body;
 
-  bookings.push(data);
-
-  res.send({ ok: true });
-});
-
-  const data = await r.json();
-  res.json(data);
-});
-  const data = req.body;
-  
   try {
     await save(data);
 
@@ -64,7 +54,9 @@ ${data.date} ${data.time}
     `);
 
     res.json({ ok: true });
+
   } catch (e) {
+    console.log(e);
     res.status(500).json({ error: "занято" });
   }
 });
