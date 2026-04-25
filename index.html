@@ -1655,9 +1655,26 @@ function goBack() {
   next.classList.add('active', 'fade-in');
 }
 
+// 🚀 ПРЕДЗАГРУЗКА КАЛЕНДАРЯ
+(async () => {
+  try {
+    const res = await fetch("https://nigina-coach.onrender.com/slots-all");
+    cachedBookings = await res.json();
+  } catch (e) {
+    console.log("Ошибка предзагрузки");
+  }
+})();
+  
 document.getElementById("confirmBtn").onclick = async () => {
+const btn = document.getElementById("confirmBtn");
+btn.innerText = "Отправка...";
+btn.disabled = true;
 
-  await fetch("https://nigina-coach.onrender.com/book", {
+  alert("Запись подтверждена");
+  
+  fetch("https://nigina-coach.onrender.com/book", {
+    btn.innerText = "Подтвердить запись";
+    btn.disabled = false;
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -1680,8 +1697,6 @@ document.getElementById("confirmBtn").onclick = async () => {
   document.getElementById("confirmBtn").style.display = "none";
 
   openScreen("home");
-
-  alert("Запись подтверждена");
 };
   
 </script>
