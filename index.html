@@ -1667,37 +1667,43 @@ function goBack() {
   
 console.log("ОТПРАВКА", bookingData);
 document.getElementById("confirmBtn").onclick = async () => {
-const btn = document.getElementById("confirmBtn");
-btn.innerText = "Отправка...";
-btn.disabled = true;
 
-  alert("Запись подтверждена");
-  
- await fetch("https://nigina-coach.onrender.com/book", {
-    btn.innerText = "Подтвердить запись";
-    btn.disabled = false;
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(bookingData)
-  });
+  const btn = document.getElementById("confirmBtn");
+  btn.innerText = "Отправка...";
+  btn.disabled = true;
 
-  cachedBookings.push({
-    date: bookingData.date,
-    time: bookingData.time
-  });
+  try {
+    await fetch("https://nigina-coach.onrender.com/book", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(bookingData)
+    });
 
-  // ✅ СБРОС
-  bookingData = {};
-  document.getElementById("stepName").value = "";
-  document.getElementById("stepContact").value = "";
-  step1Btn.classList.add("disabled");
-  step1Btn.classList.remove("primary");
-  document.getElementById("slots").innerHTML = "";
-  document.getElementById("confirmBtn").style.display = "none";
+    alert("Запись подтверждена");
 
-  openScreen("home");
+    cachedBookings.push({
+      date: bookingData.date,
+      time: bookingData.time
+    });
+
+    // очистка
+    bookingData = {};
+    document.getElementById("stepName").value = "";
+    document.getElementById("stepContact").value = "";
+    document.getElementById("slots").innerHTML = "";
+    document.getElementById("confirmBtn").style.display = "none";
+
+    openScreen("home");
+
+  } catch (e) {
+    console.log("Ошибка", e);
+    alert("Ошибка записи");
+  }
+
+  btn.innerText = "Подтвердить запись";
+  btn.disabled = false;
 };
   
 </script>
