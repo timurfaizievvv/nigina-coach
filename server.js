@@ -40,24 +40,27 @@ app.post("/book", async (req, res) => {
     }
 
     // ✅ СОЗДАЕМ ЗАЯВКУ
-    await fetch(`${SUPABASE_URL}/rest/v1/bookings`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`
-      },
-      body: JSON.stringify({
-        date,
-        time,
-        training,
-        format,
-        name,
-        contact,
-        telegram_id,
-        status: "pending"
-      })
-    });
+const createRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "apikey": SUPABASE_KEY,
+    "Authorization": `Bearer ${SUPABASE_KEY}`,
+    "Prefer": "return=representation"
+  },
+  body: JSON.stringify({
+    date,
+    time,
+    training,
+    format,
+    name,
+    contact,
+    telegram_id,
+    status: "pending"
+  })
+});
+
+const [newBooking] = await createRes.json();
 
     // 📤 ОТПРАВКА В ГРУППУ
     const text = `
@@ -82,8 +85,8 @@ app.post("/book", async (req, res) => {
         reply_markup: {
           inline_keyboard: [
             [
-              { text: "✅ Принять", callback_data: `approve|${telegram_id}|${date}|${time}` },
-              { text: "❌ Отклонить", callback_data: `reject|${telegram_id}|${date}|${time}` }
+              { text: "✅ Принять", callback_data: `approve|${booking.id}` },
+              { text: "❌ Отклонить", callback_data: `reject|${booking.id}` }
             ]
           ]
         }
@@ -114,24 +117,19 @@ app.post(`/bot${TOKEN}`, async (req, res) => {
   const data = req.body;
 
   // 📩 ОБРАБОТКА КОММЕНТАРИЯ
-  if (data.message && pendingRejects[data.message.chat.id]) {
+const bookingId = pendingRejects[data.message.chat.id].bookingId;
 
-    const comment = data.message.text;
-    const userId = pendingRejects[data.message.chat.id].userId;
-    const info = pendingRejects[data.message.chat.id];
-
-    const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${info.date}&time=eq.${info.time}&order=created_at.desc&limit=1`, {
-      headers: {
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`
-      }
-    });
-
-    const [booking] = await dbRes.json();
-    if (!booking) {
-      console.log("❌ BOOKING NOT FOUND");
-      return res.sendStatus(200);
-    }
+await fetch(`${SUPABASE_URL}/rest/v1/bookings?id=eq.${bookingId}`, {
+  method: "PATCH",
+  headers: {
+    "Content-Type": "application/json",
+    "apikey": SUPABASE_KEY,
+    "Authorization": `Bearer ${SUPABASE_KEY}`
+  },
+  body: JSON.stringify({
+    status: "rejected"
+  })
+});
 
 // 🔥 ВОТ ЭТО ДОБАВИЛ
 const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?id=eq.${booking.id}`, {
@@ -202,35 +200,20 @@ console.log("PATCH REJECT:", patchData);
     const { data: cbData, message } = data.callback_query;
     const [action, userId, date, time] = cbData.split("|");
 
-    // 📥 ПОЛУЧАЕМ ЗАЯВКУ
-    const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${date}&time=eq.${time}&order=created_at.desc&limit=1`, {
-      headers: {
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`
-      }
-    });
-
-    const [booking] = await dbRes.json();
-
-    const name = booking?.name || "";
-    const training = booking?.training || "";
-    const format = booking?.format || "";
-
 // ✅ ПРИНЯТЬ
 if (action === "approve") {
 
-  const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?id=eq.${booking.id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      "apikey": SUPABASE_KEY,
-      "Authorization": `Bearer ${SUPABASE_KEY}`,
-      "Prefer": "return=representation"
-    },
-    body: JSON.stringify({
-      status: "confirmed"
-    })
-  });
+await fetch(`${SUPABASE_URL}/rest/v1/bookings?id=eq.${bookingId}`, {
+  method: "PATCH",
+  headers: {
+    "Content-Type": "application/json",
+    "apikey": SUPABASE_KEY,
+    "Authorization": `Bearer ${SUPABASE_KEY}`
+  },
+  body: JSON.stringify({
+    status: "confirmed"
+  })
+});
 
   const patchData = await patchRes.json();
   console.log("PATCH APPROVE:", patchData);
