@@ -1672,7 +1672,7 @@ btn.disabled = true;
 
   alert("Запись подтверждена");
   
-  fetch("https://nigina-coach.onrender.com/book", {
+ await fetch("https://nigina-coach.onrender.com/book", {
     btn.innerText = "Подтвердить запись";
     btn.disabled = false;
     method: "POST",
