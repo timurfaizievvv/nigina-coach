@@ -73,6 +73,21 @@ ${data.date} ${data.time}
   }
 });
 
+app.get("/slots-all", async (req, res) => {
+  const r = await fetch(
+    `${process.env.SUPABASE_URL}/rest/v1/records`,
+    {
+      headers: {
+        apikey: process.env.SUPABASE_KEY,
+        Authorization: `Bearer ${process.env.SUPABASE_KEY}`
+      }
+    }
+  );
+
+  const data = await r.json();
+  res.json(data);
+});
+
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
