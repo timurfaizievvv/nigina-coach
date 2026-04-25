@@ -1080,6 +1080,11 @@ body {
   
 <script>
 
+
+async function getAllBookings() {
+  const res = await fetch("https://nigina-coach.onrender.com/slots-all");
+  return await res.json();
+}
   
 const stepName = document.getElementById("stepName");
 const stepContact = document.getElementById("stepContact");
@@ -1117,32 +1122,49 @@ function selectFormat(type) {
   openScreen("step4");
 }
 
-function generateCalendar() {
+async function generateCalendar() {
   const container = document.getElementById("calendar");
+
+  if (!container) return;
+
   container.innerHTML = "";
+
+  let bookings = [];
+
+  try {
+    bookings = await getAllBookings();
+  } catch (e) {
+    console.log("Ошибка загрузки записей");
+  }
 
   const today = new Date();
 
-  for (let i = 0; i < 14; i++) { // 2 недели вперёд
+  for (let i = 0; i < 14; i++) {
     const date = new Date();
     date.setDate(today.getDate() + i);
 
     const day = date.getDate();
     const month = date.getMonth() + 1;
-
     const formatted = `${date.getFullYear()}-${month}-${day}`;
 
     const div = document.createElement("div");
     div.className = "day";
-    div.innerText = day;
+    div.innerHTML = `<div>${day}</div>`;
 
-    // пример: воскресенье отключено
-    if (date.getDay() === 0) {
+    const dayBookings = bookings.filter(b => b.date === formatted);
+
+    const dot = document.createElement("div");
+    dot.classList.add("dot");
+
+    if (dayBookings.length >= TIMES.length) {
+      dot.classList.add("red");
       div.classList.add("disabled");
     } else {
+      dot.classList.add("green");
       div.onclick = () => selectDate(formatted, div);
     }
 
+    div.appendChild(dot);
     container.appendChild(div);
   }
 }
