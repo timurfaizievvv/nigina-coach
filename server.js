@@ -1,5 +1,4 @@
 const express = require("express");
-const fetch = require("node-fetch");
 const app = express();
 
 app.use(express.json());
@@ -8,6 +7,7 @@ const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
+let pendingRejects = {};
 
 // Проверка сервера
 app.get("/", (req, res) => {
@@ -84,6 +84,27 @@ app.post("/book", async (req, res) => {
 // 📌 WEBHOOK ОТ TELEGRAM
 app.post(`/bot${TOKEN}`, async (req, res) => {
   const data = req.body;
+  
+  // 📩 ОБРАБОТКА ТЕКСТА (КОММЕНТАРИЙ)
+if (data.message && pendingRejects[data.message.chat.id]) {
+  const { userId, date, time } = pendingRejects[data.message.chat.id];
+  const comment = data.message.text;
+
+  await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${date}&time=eq.${time}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": SUPABASE_KEY,
+      "Authorization": `Bearer ${SUPABASE_KEY}`
+    },
+    body: JSON.stringify({
+      status: "rejected",
+      admin_comment: comment
+    })
+  });
+
+  delete pendingRejects[data.message.chat.id];
+}
 
   if (data.callback_query) {
     const { data: cbData, message } = data.callback_query;
@@ -113,16 +134,21 @@ app.post(`/bot${TOKEN}`, async (req, res) => {
     }
 
     if (action === "reject") {
-      // пока без комментария
-      await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${date}&time=eq.${time}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "apikey": SUPABASE_KEY,
-          "Authorization": `Bearer ${SUPABASE_KEY}`
-        },
-        body: JSON.stringify({ status: "rejected" })
-      });
+  pendingRejects[message.chat.id] = {
+    userId,
+    date,
+    time
+  };
+
+  await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: message.chat.id,
+      text: "✏️ Напишите причину отказа:"
+    })
+  });
+}
 
       await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
         method: "POST",
