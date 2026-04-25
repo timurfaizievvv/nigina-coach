@@ -1171,44 +1171,25 @@ async function getAllBookings() {
   return await res.json();
 }
 
-async function generateCalendar() {
+function generateCalendar() {
   const container = document.getElementById("calendar");
+
+  if (!container) {
+    console.log("❌ НЕ НАЙДЕН #calendar");
+    return;
+  }
+
   container.innerHTML = "";
 
-  const bookings = await getAllBookings();
-
-  const today = new Date();
-
-  for (let i = 0; i < 14; i++) {
-    const date = new Date();
-    date.setDate(today.getDate() + i);
-
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const formatted = `${date.getFullYear()}-${month}-${day}`;
-
+  for (let i = 1; i <= 14; i++) {
     const div = document.createElement("div");
     div.className = "day";
-    div.innerHTML = `<div>${day}</div>`;
-
-    // записи на этот день
-    const dayBookings = bookings.filter(b => b.date === formatted);
-
-    const dot = document.createElement("div");
-    dot.classList.add("dot");
-
-    if (dayBookings.length >= TIMES.length) {
-      dot.classList.add("red");
-      div.classList.add("disabled");
-    } else {
-      dot.classList.add("green");
-      div.onclick = () => selectDate(formatted, div);
-    }
-
-    div.appendChild(dot);
+    div.innerText = i;
 
     container.appendChild(div);
   }
+
+  console.log("✅ КАЛЕНДАРЬ ОТРИСОВАЛСЯ");
 }
   
 const tg = window.Telegram.WebApp;
