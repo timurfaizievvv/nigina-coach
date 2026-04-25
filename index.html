@@ -508,21 +508,21 @@ html, body {
   
 .bottom-btn {
   position: fixed;
-  bottom: 20px;
-
   left: 20px;
   right: 20px;
+  bottom: 20px;
 
-  padding: 14px;
-  border-radius: 12px;
+  padding: 16px;
+  border-radius: 14px;
 
   background: white;
   color: black;
   font-size: 16px;
+  font-weight: 600;
+
+  text-align: center;
 
   z-index: 1000;
-
-  width: auto; /* 👈 ключевая строка */
 }
 
 #step4 {
@@ -1694,17 +1694,6 @@ function goBack() {
 }
 
 document.getElementById("confirmBtn").onclick = async () => {
-
-  // 👉 ВОТ СЮДА ВСТАВЛЯЕШЬ
-  bookingData.user_id = tg.initDataUnsafe.user.id;
-
-  await fetch("https://nigina-coach.onrender.com/book", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(bookingData)
-  });
 
   await fetch("https://nigina-coach.onrender.com/book", {
     method: "POST",
