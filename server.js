@@ -1,21 +1,24 @@
-import express from "express";
-import fetch from "node-fetch";
-
+const express = require("express");
+const fetch = require("node-fetch");
 const app = express();
+
 app.use(express.json());
 
+const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
-// тест
+// Проверка сервера
 app.get("/", (req, res) => {
   res.send("Server is working");
 });
 
-// запись
+// 📌 СОЗДАНИЕ ЗАЯВКИ
 app.post("/book", async (req, res) => {
-  const data = req.body;
+  const { date, time, training, format, name, contact, telegram_id } = req.body;
 
+  // 1. Сохраняем в базу
   const response = await fetch(`${SUPABASE_URL}/rest/v1/bookings`, {
     method: "POST",
     headers: {
@@ -23,33 +26,118 @@ app.post("/book", async (req, res) => {
       "apikey": SUPABASE_KEY,
       "Authorization": `Bearer ${SUPABASE_KEY}`
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify({
+      date,
+      time,
+      training,
+      format,
+      name,
+      contact,
+      telegram_id,
+      status: "pending"
+    })
   });
 
-  const result = await response.json();
-  res.json(result);
-});
+  // 2. Отправляем в Telegram группу
+  const text = `
+📥 Новая заявка
 
-// получение слотов
-app.get("/slots", async (req, res) => {
-  const date = req.query.date;
+👤 ${name}
+📅 ${date}
+⏰ ${time}
+🏋️ ${training}
+📌 ${format}
+📞 ${contact}
+`;
 
-  const response = await fetch(
-    `${SUPABASE_URL}/rest/v1/bookings?date=eq.${date}`,
-    {
-      headers: {
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`
+  await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: CHAT_ID,
+      text,
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: "✅ Принять", callback_data: `approve|${telegram_id}|${date}|${time}` },
+            { text: "❌ Отклонить", callback_data: `reject|${telegram_id}|${date}|${time}` }
+          ]
+        ]
       }
-    }
-  );
+    })
+  });
 
-  const result = await response.json();
-  res.json(result);
+  // 3. Ответ клиенту
+  await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: telegram_id,
+      text: "✅ Вы записались. Ожидайте подтверждения"
+    })
+  });
+
+  res.json({ ok: true });
 });
 
-const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log("Server started on port " + PORT);
+// 📌 WEBHOOK ОТ TELEGRAM
+app.post(`/bot${TOKEN}`, async (req, res) => {
+  const data = req.body;
+
+  if (data.callback_query) {
+    const { data: cbData, message } = data.callback_query;
+    const [action, userId, date, time] = cbData.split("|");
+
+    if (action === "approve") {
+      // обновляем статус
+      await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${date}&time=eq.${time}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`
+        },
+        body: JSON.stringify({ status: "confirmed" })
+      });
+
+      // пишем клиенту
+      await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: userId,
+          text: `✅ Ваша заявка подтверждена\n📅 ${date} ⏰ ${time}`
+        })
+      });
+    }
+
+    if (action === "reject") {
+      // пока без комментария
+      await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${date}&time=eq.${time}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`
+        },
+        body: JSON.stringify({ status: "rejected" })
+      });
+
+      await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: userId,
+          text: "❌ Ваша заявка отклонена"
+        })
+      });
+    }
+  }
+
+  res.sendStatus(200);
+});
+
+app.listen(process.env.PORT || 3000, () => {
+  console.log("Server started");
 });
