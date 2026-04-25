@@ -94,10 +94,21 @@ app.post(`/bot${TOKEN}`, async (req, res) => {
   const data = req.body;
 
   // 📩 ОБРАБОТКА ТЕКСТА
-  if (data.message && pendingRejects[data.message.chat.id]) {
-    const comment = data.message.text;
-    const userId = pendingRejects[data.message.chat.id].userId;
-    const info = pendingRejects[data.message.chat.id];
+if (data.message && pendingRejects[data.message.chat.id]) {
+
+  const comment = data.message.text;
+  const userId = pendingRejects[data.message.chat.id].userId;
+  const info = pendingRejects[data.message.chat.id];
+
+  // 🔥 ВОТ СЮДА ВСТАВЛЯЕШЬ
+  const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${info.date}&time=eq.${info.time}`, {
+    headers: {
+      "apikey": SUPABASE_KEY,
+      "Authorization": `Bearer ${SUPABASE_KEY}`
+    }
+  });
+
+  const [booking] = await dbRes.json();
 
 await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
   method: "POST",
@@ -108,9 +119,11 @@ await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
     text: `
     📥 Заявка
 
-👤 ${userId}
-📅 ${info.date}
-⏰ ${info.time}
+👤 ${booking.name}
+📅 ${booking.date}
+⏰ ${booking.time}
+🏋️ ${booking.training}
+📌 ${booking.format}
 
 Статус: ❌ Отклонено
 Причина: ${comment}
@@ -146,12 +159,19 @@ if (data.callback_query) {
   const { data: cbData, message } = data.callback_query;
   const [action, userId, date, time] = cbData.split("|");
 
-  // 👉 ДОБАВЬ ЭТО:
-  let training = "";
-  let format = "";
-  let name = "";
-
     // ✅ ПРИНЯТЬ
+    const dbRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?telegram_id=eq.${userId}&date=eq.${date}&time=eq.${time}`, {
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`
+      }
+    });
+
+    const [booking] = await dbRes.json();
+
+    const name = booking?.name || "";
+    const training = booking?.training || "";
+    const format = booking?.format || "";
     if (action === "approve") {
 
   // обновляем в базе
