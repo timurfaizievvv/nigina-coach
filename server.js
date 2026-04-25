@@ -8,6 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static("./"));
+app.use(express.static(__dirname));
 
 const PORT = process.env.PORT || 3000;
 
@@ -56,6 +57,10 @@ ${data.date} ${data.time}
   } catch (e) {
     res.status(500).json({ error: "занято" });
   }
+});
+
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
 });
 
 app.listen(PORT, () => console.log("Server started"));
