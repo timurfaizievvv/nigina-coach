@@ -116,38 +116,58 @@ app.post(`/bot${TOKEN}`, async (req, res) => {
   const data = req.body;
 
   // ❌ КОММЕНТАРИЙ ОТКЛОНЕНИЯ
-  if (data.message && pendingRejects[data.message.chat.id]) {
+if (data.message && pendingRejects[data.message.chat.id]) {
 
-    const comment = data.message.text;
-    const info = pendingRejects[data.message.chat.id];
-    const bookingId = info.bookingId;
-    const userId = info.userId;
+  const info = pendingRejects[data.message.chat.id];
+  const comment = data.message.text;
+  const bookingId = info.bookingId;
+  const userId = info.userId;
 
-    // 🔥 ОБНОВЛЯЕМ СТАТУС
-    await fetch(`${SUPABASE_URL}/rest/v1/bookings?id=eq.${bookingId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": SUPABASE_KEY,
-        "Authorization": `Bearer ${SUPABASE_KEY}`
-      },
-      body: JSON.stringify({
-        status: "rejected"
-      })
-    });
+  // 🔥 ВОТ СЮДА ВСТАВИЛИ PATCH
+  const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/bookings?id=eq.${bookingId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": SUPABASE_KEY,
+      "Authorization": `Bearer ${SUPABASE_KEY}`
+    },
+    body: JSON.stringify({
+      status: "rejected"
+    })
+  });
 
-    // 📩 КЛИЕНТУ
-    await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: userId,
-        text: `❌ Заявка отклонена\n\nПричина: ${comment}`
-      })
-    });
+  const patchData = await patchRes.json();
+  console.log("PATCH REJECT:", patchData);
 
-    delete pendingRejects[data.message.chat.id];
-  }
+  // ✏️ обновляем сообщение
+  await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: data.message.chat.id,
+      message_id: info.messageId,
+      text: `
+${info.text}
+
+Статус: ❌ Отклонено
+Причина: ${comment}
+`,
+      reply_markup: { inline_keyboard: [] }
+    })
+  });
+
+  // 📩 клиенту
+  await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: userId,
+      text: `❌ Заявка отклонена\n\nПричина: ${comment}`
+    })
+  });
+
+  delete pendingRejects[data.message.chat.id];
+}
 
   // 📌 КНОПКИ
   if (data.callback_query) {
@@ -195,10 +215,12 @@ app.post(`/bot${TOKEN}`, async (req, res) => {
     // ❌ ОТКЛОНИТЬ
     if (action === "reject") {
 
-      pendingRejects[message.chat.id] = {
-        bookingId,
-        userId: data.callback_query.from.id
-      };
+    pendingRejects[message.chat.id] = {
+      bookingId,
+      userId: data.callback_query.from.id,
+      text: message.text, // 🔥 сохраняем текст заявки
+      messageId: message.message_id
+    };
 
       await fetch(`https://api.telegram.org/bot${TOKEN}/editMessageText`, {
         method: "POST",
