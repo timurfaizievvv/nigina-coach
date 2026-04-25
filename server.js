@@ -60,8 +60,8 @@ app.post("/book", async (req, res) => {
       reply_markup: {
         inline_keyboard: [
           [
-            { text: "✅ Принять", callback_data: `approve|${telegram_id}|${date}|${time}` },
-            { text: "❌ Отклонить", callback_data: `reject|${telegram_id}|${date}|${time}` }
+            { text: "✅ Принять", callback_data: `approve|${telegram_id}|${date}|${time}|${training}|${format}` },
+            { text: "❌ Отклонить", callback_data: `reject|${telegram_id}|${date}|${time}|${training}|${format}` }
           ]
         ]
       }
@@ -119,7 +119,7 @@ app.post(`/bot${TOKEN}`, async (req, res) => {
   // 📌 КНОПКИ
   if (data.callback_query) {
     const { data: cbData, message } = data.callback_query;
-    const [action, userId, date, time] = cbData.split("|");
+    const [action, userId, date, time, training, format] = cbData.split("|");
 
     // ✅ ПРИНЯТЬ
     if (action === "approve") {
@@ -138,7 +138,11 @@ app.post(`/bot${TOKEN}`, async (req, res) => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: userId,
-          text: `✅ Ваша заявка подтверждена\n📅 ${date} ⏰ ${time}`
+          text: `✅ Ваша заявка подтверждена!
+                 📅 Дата: ${date}
+                 ⏰ Время: ${time}
+                 🏋️ Тренировка: ${training}
+                 📌 Формат: ${format}`
         })
       });
 
