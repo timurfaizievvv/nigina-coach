@@ -421,16 +421,12 @@ body {
 }
 
 .week {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
   font-size: 12px;
   color: #aaa;
   margin-bottom: 6px;
 }
 
 #calendarGrid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
   gap: 6px;
 }
 
@@ -1136,6 +1132,13 @@ html, body {
   <button id="confirmBtn" style="display:none;">Подтвердить запись</button>
 
 </div>
+
+<div class="week calendar-grid">
+  <div>Пн</div><div>Вт</div><div>Ср</div>
+  <div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+</div>
+
+<div id="calendarGrid" class="calendar-grid"></div>
   
 <script>
 
