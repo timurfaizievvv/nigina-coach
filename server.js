@@ -150,17 +150,6 @@ if (action === "reject") {
   });
 }
 
-      await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: userId,
-          text: "❌ Ваша заявка отклонена"
-        })
-      });
-    }
-  }
-
   res.sendStatus(200);
 });
 
