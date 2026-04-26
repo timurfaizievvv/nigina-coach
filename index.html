@@ -1148,6 +1148,19 @@ html, body {
 <script>
 
 let cachedBookings = [];
+let bookingsLoaded = false;
+
+const loadBookings = async () => {
+  if (bookingsLoaded) return;
+
+  try {
+    const res = await fetch("https://nigina-coach.onrender.com/slots-all");
+    cachedBookings = await res.json();
+    bookingsLoaded = true;
+  } catch (e) {
+    console.log("Ошибка загрузки");
+  }
+};
 let isRendering = false;
   
 const stepName = document.getElementById("stepName");
@@ -1206,6 +1219,8 @@ function changeMonth(dir) {
 
 async function renderCalendar() {
 
+  await loadBookings(); // 👈 ВАЖНО
+  
   if (isRendering) return;
   isRendering = true;
 
@@ -1689,14 +1704,7 @@ function goBack() {
 }
 
 // 🚀 ПРЕДЗАГРУЗКА КАЛЕНДАРЯ
-(async () => {
-  try {
-    const res = await fetch("https://nigina-coach.onrender.com/slots-all");
-    cachedBookings = await res.json();
-  } catch (e) {
-    console.log("Ошибка предзагрузки");
-  }
-})();
+loadBookings();
   
 console.log("ОТПРАВКА", bookingData);
 document.getElementById("confirmBtn").onclick = async () => {
