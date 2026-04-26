@@ -12,15 +12,14 @@ app.use(express.static(__dirname));
 
 const PORT = process.env.PORT || 3000;
 
+// ================= НАПОМИНАНИЯ =================
 function scheduleReminder(date, time, chat_id) {
   const trainingDate = new Date(`${date} ${time}`);
-
   const now = new Date();
 
   const ms24h = trainingDate - now - (24 * 60 * 60 * 1000);
   const ms2h = trainingDate - now - (2 * 60 * 60 * 1000);
 
-  // за 24 часа
   if (ms24h > 0) {
     setTimeout(() => {
       fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
@@ -34,7 +33,6 @@ function scheduleReminder(date, time, chat_id) {
     }, ms24h);
   }
 
-  // за 2 часа
   if (ms2h > 0) {
     setTimeout(() => {
       fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
@@ -49,20 +47,30 @@ function scheduleReminder(date, time, chat_id) {
   }
 }
 
-// запись в базу
+// ================= СОХРАНЕНИЕ В SUPABASE =================
 async function save(data) {
-  return await fetch(`${process.env.SUPABASE_URL}/rest/v1/records`, {
+  const response = await fetch(`${process.env.SUPABASE_URL}/rest/v1/records`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       apikey: process.env.SUPABASE_KEY,
       Authorization: `Bearer ${process.env.SUPABASE_KEY}`,
+      Prefer: "return=representation" // 🔥 важно
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify([data]) // 🔥 важно (массив)
   });
+
+  const text = await response.text();
+  console.log("SUPABASE RESPONSE:", text);
+
+  if (!response.ok) {
+    throw new Error("Ошибка записи в Supabase");
+  }
+
+  return text;
 }
 
-// отправка в телеграм
+// ================= TELEGRAM =================
 async function sendTG(text) {
   await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
     method: "POST",
@@ -74,56 +82,60 @@ async function sendTG(text) {
   });
 }
 
-// запись
+// ================= BOOK =================
 app.post("/book", async (req, res) => {
   const data = req.body;
+
+  console.log("NEW BOOKING:", data); // 🔥 лог входящих данных
 
   try {
     await save(data);
 
+    // в группу
     await sendTG(`
-🗓️ У тебя новая запись
+🗓️ Новая запись
 👤 ${data.name}
 ☎️ ${data.contact}
 ✨ ${data.training}
 📍 ${data.format}
 📆 ${data.date} ${data.time}
     `);
+
+    // напоминания
     scheduleReminder(data.date, data.time, data.chat_id);
 
-    // сообщение клиенту
-await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    chat_id: data.chat_id,
-    text: "Вы успешно записаны на тренировку ✨\n\nЕсли у Вас есть вопросы, свяжитесь со мной @niginacoach"
-  }),
-});
+    // клиенту
+    await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: data.chat_id,
+        text: "Вы успешно записаны на тренировку ✨\n\nЕсли у Вас есть вопросы, свяжитесь со мной @niginacoach"
+      }),
+    });
 
     res.json({ ok: true });
 
   } catch (e) {
-    console.log(e);
-    res.status(500).json({ error: "занято" });
+    console.log("ERROR:", e.message);
+    res.status(500).json({ error: "Ошибка записи" });
   }
 });
 
+// ================= ПОЛУЧЕНИЕ =================
 app.get("/slots-all", async (req, res) => {
-  const r = await fetch(
-    `${process.env.SUPABASE_URL}/rest/v1/records`,
-    {
-      headers: {
-        apikey: process.env.SUPABASE_KEY,
-        Authorization: `Bearer ${process.env.SUPABASE_KEY}`
-      }
+  const r = await fetch(`${process.env.SUPABASE_URL}/rest/v1/records`, {
+    headers: {
+      apikey: process.env.SUPABASE_KEY,
+      Authorization: `Bearer ${process.env.SUPABASE_KEY}`
     }
-  );
+  });
 
   const data = await r.json();
   res.json(data);
 });
 
+// ================= ROOT =================
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
 });
