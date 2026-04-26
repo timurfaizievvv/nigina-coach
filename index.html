@@ -1239,7 +1239,7 @@ async function renderCalendar() {
     div.innerHTML = `<div>${d}</div>`;
 
     const dateObj = new Date(year, month, d);
-    const dayOfWeek = dateObj.getDay(); // 0 = воскресенье, 6 = суббота
+    const dayOfWeek = dateObj.getDay();
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
     const dayBookings = cachedBookings.filter(b => b.date === full);
@@ -1254,9 +1254,9 @@ async function renderCalendar() {
       dot.classList.add("red");
       div.classList.add("disabled");
     }
-    const TIMES = getTimesByDate(full);
 
-    else if (dayBookings.length >= TIMES.length) {
+    const TIMES = getTimesByDate(full);
+    else if (TIMES.length > 0 && dayBookings.length >= TIMES.length) {
       dot.classList.add("red");
       div.classList.add("disabled");
     }
