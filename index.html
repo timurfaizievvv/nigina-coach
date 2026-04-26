@@ -1157,6 +1157,13 @@ const loadBookings = async () => {
     const res = await fetch("https://nigina-coach.onrender.com/slots-all");
     cachedBookings = await res.json();
     bookingsLoaded = true;
+
+    // 👇 ВОТ СЮДА МЫ ВСТАВИЛИ
+    const active = document.querySelector(".screen.active");
+    if (active && active.id === "step4") {
+      renderCalendar();
+    }
+
   } catch (e) {
     console.log("Ошибка загрузки");
   }
@@ -1218,8 +1225,6 @@ function changeMonth(dir) {
 }
 
 async function renderCalendar() {
-
-  await loadBookings(); // 👈 ВАЖНО
   
   if (isRendering) return;
   isRendering = true;
@@ -1242,14 +1247,14 @@ async function renderCalendar() {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   // 🔥 КЭШ (убирает лаг)
-  if (!cachedBookings.length) {
-    try {
-      const res = await fetch("https://nigina-coach.onrender.com/slots-all");
-      cachedBookings = await res.json();
-    } catch (e) {
-      console.log("Ошибка загрузки");
-    }
-  }
+ // if (!cachedBookings.length) {
+ //   try {
+ //     const res = await fetch("https://nigina-coach.onrender.com/slots-all");
+ //     cachedBookings = await res.json();
+ //   } catch (e) {
+ //     console.log("Ошибка загрузки");
+ //   }
+ // }
 
   for (let i = 0; i < start; i++) {
     grid.appendChild(document.createElement("div"));
@@ -1364,6 +1369,9 @@ async function getAllBookings() {
   
 const tg = window.Telegram.WebApp;
 
+// 🔥 максимально ранняя загрузка
+loadBookings();
+  
 tg.expand();
   
 tg.disableVerticalSwipes();
