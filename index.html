@@ -488,10 +488,9 @@ button:disabled {
 }
 
 .dot {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  margin: 4px auto 0;
 }
 
 .green { background: #4cd964; }
@@ -547,6 +546,29 @@ html, body {
 
 .hidden {
   display: none !important;
+}
+
+.calendar-legend {
+  margin-top: 10px;
+}
+
+.legend-line {
+  height: 1px;
+  background: #2c2c2e;
+  margin: 10px 0;
+}
+
+.legend-items {
+  display: flex;
+  gap: 20px;
+  font-size: 13px;
+  color: #8e8e93;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
   
 </style>
@@ -1135,6 +1157,19 @@ html, body {
     </div>
 
     <div id="calendarGrid"></div>
+
+    <div class="calendar-legend">
+  <div class="legend-line"></div>
+
+  <div class="legend-items">
+    <div class="legend-item">
+      <span class="dot green"></span> Свободно
+    </div>
+    <div class="legend-item">
+      <span class="dot red"></span> Занято
+    </div>
+  </div>
+</div>
 
   </div>
 
