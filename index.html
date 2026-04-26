@@ -1693,6 +1693,8 @@ document.getElementById("confirmBtn").onclick = async () => {
   btn.disabled = true;
 
   try {
+    bookingData.chat_id = Telegram.WebApp.initDataUnsafe.user.id;
+
     await fetch("https://nigina-coach.onrender.com/book", {
       method: "POST",
       headers: {
