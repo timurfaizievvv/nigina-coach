@@ -1689,7 +1689,7 @@ console.log("ОТПРАВКА", bookingData);
 document.getElementById("confirmBtn").onclick = async () => {
 
   const btn = document.getElementById("confirmBtn");
-  btn.innerText = "Отправка...";
+  btn.innerText = "Записываю...";
   btn.disabled = true;
 
   try {
@@ -1703,7 +1703,7 @@ document.getElementById("confirmBtn").onclick = async () => {
       body: JSON.stringify(bookingData)
     });
 
-    alert("Запись подтверждена");
+    alert("Запись подтверждена, до встречи!");
 
     cachedBookings.push({
       date: bookingData.date,
