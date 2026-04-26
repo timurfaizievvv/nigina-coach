@@ -389,9 +389,13 @@ button:disabled {
 .studio-card {
   background: #1c1c1e;
   border: 1px solid #2c2c2e;
-  border-radius: 12px;
-  padding: 14px;
-  margin-bottom: 14px;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .studio-title {
@@ -402,20 +406,23 @@ button:disabled {
 
 .studio-item {
   background: #2c2c2e;
-  border-radius: 10px;
-  padding: 10px;
-  margin-bottom: 8px;
+  border-radius: 12px;
+  padding: 12px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .studio-name {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
 }
 
 .studio-time {
   font-size: 13px;
   color: #8e8e93;
-  margin-top: 4px;
+  line-height: 1.4;
 }
 
 .studio-address {
@@ -439,7 +446,22 @@ button:disabled {
 }
 
 .studio-card button {
-  margin-top: 12px;
+  margin-top: 4px;
+}
+
+.studio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.studio-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.studio-actions button {
+  flex: 1;
 }
 
 .fade-in {
@@ -653,7 +675,10 @@ html, body {
   </div>
 
 <div class="studio-card">
+  
   <div class="studio-title">Forma</div>
+
+  <div class="studio-group">
 
   <!-- РАСПИСАНИЕ БОКСАМИ -->
   <div class="studio-item">
@@ -695,13 +720,18 @@ html, body {
 -->
 
   <!-- КНОПКА В САМОМ КОНЦЕ -->
-  <button class="secondary" onclick="openForma()">Записаться</button>
-  <button class="secondary" onclick="openFormaMap()">Открыть адрес</button>
+  <div class="studio-actions">
+  <button class="secondary">Записаться</button>
+  <button class="secondary">Открыть адрес</button>
+  </div>
 </div>
 
 <!-- ===== TS FITNESS ===== -->
 <div class="studio-card">
+  
   <div class="studio-title">TS Fitness</div>
+
+    <div class="studio-group">
 
   <div class="studio-item">
     <div class="studio-name">Здоровая спина</div>
@@ -737,8 +767,10 @@ html, body {
   Подробнее про направления можно прочитать в разделе FAQ. Для новых клиентов скидка 10% по промокоду #niginats. 
   </div>
   
-  <button class="secondary" onclick="openTS()">Записаться</button>
-  <button class="secondary" onclick="openTSMap()">Открыть адрес</button>
+  <div class="studio-actions">
+  <button class="secondary">Записаться</button>
+  <button class="secondary">Открыть адрес</button>
+  </div>
   </div>
 
 </div>
