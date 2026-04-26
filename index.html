@@ -638,6 +638,12 @@ html, body {
   align-items: center;
   gap: 6px;
 }
+
+.disabled-btn {
+  opacity: 0.4;
+  pointer-events: none;
+  filter: grayscale(0.3);
+}
   
 </style>
 </head>
@@ -649,9 +655,8 @@ html, body {
   <div class="title home-title">Главная страница</div>
   <div class="menu-btn" onclick="openScreen('step1')">Индивидуальные занятия</div>
   <div class="menu-btn" onclick="openScreen('studio')">Занятия в студии</div>
-  <div class="menu-btn hidden" onclick="openScreen('lessons')">Уроки</div>
-  <div class="menu-btn hidden" onclick="openScreen('faq')">FAQ</div>
-
+  <div class="menu-btn disabled-btn">Уроки</div>
+  <div class="menu-btn disabled-btn">FAQ</div>
   <div class="menu-btn" onclick="openConsult()">Консультация</div>
   <div class="note">Если Вы не нашли ответ на вопрос в разделе FAQ,<br>напишите мне</div>
   <button class="secondary instagram" onclick="openInstagram()">Instagram</button>
