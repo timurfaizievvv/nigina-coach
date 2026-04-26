@@ -726,9 +726,9 @@ button.disabled-btn {
 
   <!-- КНОПКА В САМОМ КОНЦЕ -->
   <div class="studio-actions">
-  <button class="secondary">Записаться</button>
-  <button class="secondary">Открыть адрес</button>
-  </div>
+  <button class="secondary" onclick="openForma()">Записаться</button>
+  <button class="secondary" onclick="openFormaMap()">Открыть адрес</button>
+</div>
 </div>
 
 <!-- ===== TS FITNESS ===== -->
@@ -773,9 +773,9 @@ button.disabled-btn {
   </div>
   
   <div class="studio-actions">
-  <button class="secondary">Записаться</button>
-  <button class="secondary">Открыть адрес</button>
-  </div>
+  <button class="secondary" onclick="openTS()">Записаться</button>
+  <button class="secondary" onclick="openTSMap()">Открыть адрес</button>
+</div>
   </div>
 
 </div>
@@ -1628,8 +1628,8 @@ function sendForm() {
     contact: contactInput.value,
     training: trainingInput.value,
     format: formatInput.value,
-    date: document.getElementById("dateText").innerText,
-    time: document.getElementById("timeText").innerText
+    date: bookingData.date,
+    time: bookingData.time
   };
 
   tg.sendData(JSON.stringify(data));
@@ -1844,6 +1844,8 @@ document.getElementById("confirmBtn").onclick = async () => {
 
   try {
     bookingData.chat_id = Telegram.WebApp.initDataUnsafe.user.id;
+
+    console.log("SAVE", bookingData);
 
     await fetch("https://nigina-coach.onrender.com/book", {
       method: "POST",
