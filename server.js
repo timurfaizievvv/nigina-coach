@@ -82,11 +82,11 @@ app.post("/book", async (req, res) => {
     await save(data);
 
     await sendTG(`
-🗓️ Новая запись:
+🗓️ У тебя новая запись
 👤 ${data.name}
-▫️ ${data.contact}
-▫️ ${data.training}
-▫️ ${data.format}
+☎️ ${data.contact}
+✨ ${data.training}
+📍 ${data.format}
 📆 ${data.date} ${data.time}
     `);
     scheduleReminder(data.date, data.time, data.chat_id);
