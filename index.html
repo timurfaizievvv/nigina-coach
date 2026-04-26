@@ -537,6 +537,10 @@ html, body {
 #step4 {
   padding-bottom: 20px;
 }
+
+.hidden {
+  display: none !important;
+}
   
 </style>
 </head>
@@ -548,8 +552,8 @@ html, body {
   <div class="title home-title">Главная страница</div>
   <div class="menu-btn" onclick="openScreen('studio')">Занятия в студии</div>
   <div class="menu-btn" onclick="openScreen('step1')">Индивидуальные занятия</div>
-  <div class="menu-btn" onclick="openScreen('lessons')">Уроки</div>
-  <div class="menu-btn" onclick="openScreen('faq')">FAQ</div>
+  <div class="menu-btn hidden" onclick="openScreen('lessons')">Уроки</div>
+  <div class="menu-btn hidden" onclick="openScreen('faq')">FAQ</div>
 
   <div class="menu-btn" onclick="openConsult()">Консультация</div>
   <div class="note">Если Вы не нашли ответ на вопрос в разделе FAQ,<br>напишите мне</div>
@@ -1049,30 +1053,30 @@ html, body {
 
   <div class="grid">
 
-    <div class="category" onclick="selectTraining('Пилатес')">
+    <div class="category" onclick="selectTraining('Рельефное тело | Силовая & Пилатес')">
       <div>
-        <div>Пилатес</div>
+        <div>Рельефное тело<br>Силовая & Пилатес</div>
         <div class="sub">55 минут</div>
       </div>
     </div>
 
-    <div class="category" onclick="selectTraining('Акро')">
+    <div class="category" onclick="selectTraining('Стретчинг | Растяжка & Мобильность')">
       <div>
-        <div>Акро</div>
+        <div>Стретчинг<br>Растяжка & Мобильность</div>
         <div class="sub">55 минут</div>
       </div>
     </div>
 
-    <div class="category" onclick="selectTraining('Стретчинг')">
+    <div class="category" onclick="selectTraining('Здоровая спина | Гибкость & Осанка')">
       <div>
-        <div>Стретчинг</div>
+        <div>Здоровая спина<br>Гибкость & Осанка</div>
         <div class="sub">55 минут</div>
       </div>
     </div>
 
-    <div class="category" onclick="selectTraining('Осанка')">
+    <div class="category" onclick="selectTraining('Акробатика')">
       <div>
-        <div>Осанка</div>
+        <div>Акробатика</div>
         <div class="sub">55 минут</div>
       </div>
     </div>
