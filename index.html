@@ -1247,29 +1247,29 @@ async function renderCalendar() {
     const dot = document.createElement("div");
     dot.classList.add("dot");
 
-    if (isPast) {
-      div.classList.add("disabled");
-    }
-    else if (isWeekend) {
-      dot.classList.add("red");
-      div.classList.add("disabled");
-    }
+const TIMES = getTimesByDate(full);
 
-    const TIMES = getTimesByDate(full);
-    else if (TIMES.length > 0 && dayBookings.length >= TIMES.length) {
-      dot.classList.add("red");
-      div.classList.add("disabled");
-    }
-    else {
-      dot.classList.add("green");
+if (isPast) {
+  div.classList.add("disabled");
+}
+else if (isWeekend) {
+  dot.classList.add("red");
+  div.classList.add("disabled");
+}
+else if (TIMES.length > 0 && dayBookings.length >= TIMES.length) {
+  dot.classList.add("red");
+  div.classList.add("disabled");
+}
+else {
+  dot.classList.add("green");
 
-      div.onclick = () => {
-        document.querySelectorAll(".day").forEach(el => el.classList.remove("active"));
-        div.classList.add("active");
+  div.onclick = () => {
+    document.querySelectorAll(".day").forEach(el => el.classList.remove("active"));
+    div.classList.add("active");
 
-        loadSlots(full);
-      };
-    }
+    loadSlots(full);
+  };
+}
 
     div.appendChild(dot);
     grid.appendChild(div);
