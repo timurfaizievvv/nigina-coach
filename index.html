@@ -690,7 +690,6 @@ html, body {
     <select id="format">
       <option value="">Формат тренировки</option>
       <option>Онлайн</option>
-      <option>Оффлайн</option>
       <option>Выезд на дом</option>
     </select>
   </div>
@@ -1092,7 +1091,7 @@ html, body {
     Онлайн
   </div>
 
-  <div class="menu-btn" onclick="selectFormat('Оффлайн')">
+  <div class="menu-btn" onclick="selectFormat('Выезд на дом')">
     Выезд на дом
   </div>
 
@@ -1144,10 +1143,21 @@ const step1Btn = document.getElementById("step1Btn");
 
 let bookingData = {};
 
-const TIMES = [
-  "10:00","11:00","12:00","13:00",
-  "14:00","15:00","16:00","17:00"
-];
+function getTimesByDate(date) {
+  const day = new Date(date).getDay();
+
+  // Пн, Ср, Пт
+  if (day === 1 || day === 3 || day === 5) {
+    return ["14:00","15:00","16:00","17:00","18:00","19:00"];
+  }
+
+  // Вт, Чт
+  if (day === 2 || day === 4) {
+    return ["17:00","18:00","19:00"];
+  }
+
+  return []; // выходные
+}
   
 step1Btn.onclick = () => {
   if (step1Btn.classList.contains("disabled")) return;
@@ -1229,7 +1239,8 @@ async function renderCalendar() {
     div.innerHTML = `<div>${d}</div>`;
 
     const dateObj = new Date(year, month, d);
-    const isSunday = dateObj.getDay() === 0;
+    const dayOfWeek = dateObj.getDay(); // 0 = воскресенье, 6 = суббота
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
     const dayBookings = cachedBookings.filter(b => b.date === full);
 
@@ -1239,10 +1250,12 @@ async function renderCalendar() {
     if (isPast) {
       div.classList.add("disabled");
     }
-    else if (isSunday) {
+    else if (isWeekend) {
       dot.classList.add("red");
       div.classList.add("disabled");
     }
+    const TIMES = getTimesByDate(full);
+
     else if (dayBookings.length >= TIMES.length) {
       dot.classList.add("red");
       div.classList.add("disabled");
@@ -1272,6 +1285,8 @@ async function loadSlots(date) {
 
   const container = document.getElementById("slots");
   container.innerHTML = "";
+
+  const TIMES = getTimesByDate(date);
 
   TIMES.forEach(time => {
     const busy = dayBookings.some(b => b.time === time);
