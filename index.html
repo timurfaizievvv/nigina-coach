@@ -16,6 +16,34 @@
   --sub: #8e8e93;
 }
 
+/* ===== ТИПОГРАФИКА ===== */
+
+.h1 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.h2 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.text {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.subtext {
+  font-size: 13px;
+  color: #8e8e93;
+  font-weight: 500;
+}
+
+.small {
+  font-size: 12px;
+  color: #8e8e93;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -46,6 +74,13 @@ body {
 
 .title {
   text-align: center;
+}
+
+.title::before {
+  content: "";
+}
+
+.title {
   font-size: 20px;
   font-weight: 600;
 }
@@ -98,8 +133,7 @@ html {
 
 .faq-question {
   font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 6px;
+  font-weight: 500;
 }
 
 .faq-answer {
@@ -204,9 +238,9 @@ button:active {
 
 .note {
   font-size: 13px;
-  color: var(--sub);
-  text-align: center;
-  margin-top: 8px;
+  color: #8e8e93;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .menu-btn {
@@ -226,10 +260,15 @@ button:active {
   opacity: 0.7;
 }
 
+.menu-btn {
+  font-size: 16px;
+  font-weight: 500;
+}
+
 .spacer { height: 20px; }
 
 .value {
-  font-size: 16px;
+  font-size: 13px;
   color: #8e8e93;
 }
 
@@ -264,8 +303,7 @@ button:active {
 .lesson-desc {
   font-size: 13px;
   color: #8e8e93;
-  padding: 0 12px 12px 12px;
-  margin: 0;
+  font-weight: 500;
   line-height: 1.4;
 }
 
@@ -291,7 +329,7 @@ button:active {
   justify-content: center;
 
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
   text-align: center;
   cursor: pointer;
 }
@@ -310,8 +348,8 @@ button:active {
 .sub {
   font-size: 13px;
   color: #8e8e93;
-  margin-top: 4px;
   font-weight: 500;
+  line-height: 1.4;
 }
   
 body {
@@ -389,14 +427,15 @@ button:disabled {
 .studio-desc {
   font-size: 13px;
   color: #8e8e93;
-  margin-top: 6px;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .studio-text {
   font-size: 13px;
   color: #8e8e93;
-  line-height: 1.6;
-  margin-top: 10px;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .studio-card button {
@@ -475,7 +514,9 @@ button:disabled {
   border-radius: 12px;
   background: #2c2c2e;
 
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 500;
+  gap: 2px;
 }
 
 .day.active {
@@ -485,6 +526,11 @@ button:disabled {
 
 .day.disabled {
   opacity: 0.3;
+}
+
+.day-number {
+  font-size: 17px;
+  font-weight: 500;
 }
 
 .dot {
@@ -600,7 +646,7 @@ html, body {
 
   <div class="header">
   <div class="back-btn" onclick="goBack()">←</div>
-  <div class="title">Занятия в студии</div>
+  <div class="title h1">Занятия в студии</div>
   </div>
 
 <div class="studio-card">
@@ -698,7 +744,7 @@ html, body {
 <div id="form" class="screen">
   <div class="header">
   <div class="back-btn" onclick="goBack()">←</div>
-  <div class="title">Форма заполнения</div>
+  <div class="title h1">Форма заполнения</div>
   </div>
 
   <div class="block">
@@ -752,7 +798,7 @@ html, body {
 <div id="faq" class="screen">
   <div class="header">
   <div class="back-btn" onclick="goBack()">←</div>
-  <div class="title">FAQ</div>
+  <div class="title h1">FAQ</div>
   </div>
 
   <div class="menu-btn" onclick="openScreen('faq1')">Общие вопросы</div>
@@ -769,7 +815,7 @@ html, body {
 <div id="faq1" class="screen">
     <div class="header">
   <div class="back-btn" onclick="goBack()">←</div>
-  <div class="title">Общие вопросы</div>
+  <div class="title h1">Общие вопросы</div>
 </div>
   
   <div class="faq-item">
@@ -814,7 +860,7 @@ html, body {
 <div id="faq2" class="screen">
     <div class="header">
   <div class="back-btn" onclick="goBack()">←</div>
-  <div class="title">Здоровье и противопоказания</div>
+  <div class="title h1">Здоровье и противопоказания</div>
 </div>
 
 
@@ -862,7 +908,7 @@ html, body {
 <div id="faq3" class="screen">
     <div class="header">
   <div class="back-btn" onclick="goBack()">←</div>
-  <div class="title">Беременность и после родов</div>
+  <div class="title h1">Беременность и после родов</div>
 </div>
 
   <div class="faq-item">
@@ -911,7 +957,7 @@ html, body {
 <div id="faq4" class="screen">
     <div class="header">
   <div class="back-btn" onclick="goBack()">←</div>
-  <div class="title">Травмы и восстановление</div>
+  <div class="title h1">Травмы и восстановление</div>
 </div>
 
   <div class="faq-item">
@@ -948,7 +994,7 @@ html, body {
 <div id="faq5" class="screen">
     <div class="header">
   <div class="back-btn" onclick="goBack()">←</div>
-  <div class="title">Формат занятий</div>
+  <div class="title h1">Формат занятий</div>
 </div>
 
   <div class="faq-item">
@@ -980,7 +1026,7 @@ html, body {
 <div id="faq6" class="screen">
     <div class="header">
   <div class="back-btn" onclick="goBack()">←</div>
-  <div class="title">Результаты</div>
+  <div class="title h1">Результаты</div>
 </div>
   
   <div class="faq-item">
@@ -995,7 +1041,7 @@ html, body {
 <div id="faq7" class="screen">
     <div class="header">
   <div class="back-btn" onclick="goBack()">←</div>
-  <div class="title">Безопасность</div>
+  <div class="title h1">Безопасность</div>
 </div>
 
   <div class="faq-item">
@@ -1024,7 +1070,7 @@ html, body {
 <div id="faq8" class="screen">
     <div class="header">
   <div class="back-btn" onclick="goBack()">←</div>
-  <div class="title">Доп. вопросы</div>
+  <div class="title h1">Доп. вопросы</div>
 </div>
   
   <div class="faq-item">
@@ -1048,7 +1094,7 @@ html, body {
 
     <div class="header">
   <div class="back-btn" onclick="goBack()">←</div>
-  <div class="title">Выберите тренировку</div>
+  <div class="title h1">Выберите тренировку</div>
 </div>
 
   <div class="grid" id="categoriesGrid"></div>
@@ -1058,7 +1104,7 @@ html, body {
 
   <div class="header">
     <div class="back-btn" onclick="goBack()">←</div>
-    <div class="title">Ваши данные</div>
+    <div class="title h1">Ваши данные</div>
   </div>
 
   <div class="block">
@@ -1077,7 +1123,7 @@ html, body {
 
   <div class="header">
     <div class="back-btn" onclick="goBack()">←</div>
-    <div class="title">Выберите тренировку</div>
+    <div class="title h1">Выберите тренировку</div>
   </div>
 
   <div class="grid">
@@ -1117,7 +1163,7 @@ html, body {
 
   <div class="header">
     <div class="back-btn" onclick="goBack()">←</div>
-    <div class="title">Формат тренировки</div>
+    <div class="title h1">Формат тренировки</div>
   </div>
 
   <div class="menu-btn" onclick="selectFormat('Онлайн')">
@@ -1140,7 +1186,7 @@ html, body {
 
   <div class="header">
     <div class="back-btn" onclick="goBack()">←</div>
-    <div class="title">Дата и время</div>
+    <div class="title h1">Дата и время</div>
   </div>
 
   <div class="calendar-box">
@@ -1308,7 +1354,7 @@ async function renderCalendar() {
 
     const div = document.createElement("div");
     div.className = "day";
-    div.innerHTML = `<div>${d}</div>`;
+    div.innerHTML = `<div class="day-number">${d}</div>`;
 
     const dateObj = new Date(year, month, d);
     const dayOfWeek = dateObj.getDay();
@@ -1693,7 +1739,7 @@ function openCategory(name) {
 screen.innerHTML = `
   <div class="header">
     <div class="back-btn" onclick="goBack()">←</div>
-    <div class="title">${name}</div>
+    <div class="title h1">${name}</div>
   </div>
 
     ${lessons.map(l => `
