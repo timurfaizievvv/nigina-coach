@@ -735,11 +735,14 @@ button.disabled-btn {
 }
 
 .date-box {
-  width: 54px;
-  min-width: 54px;
-  height: 54px;
+  width: 60px;
+  min-width: 60px;
+  height: 60px;
   border-radius: 14px;
-  background: #1c1c1e;
+
+  background: #2c2c2e; /* чуть светлее */
+  border: 1px solid #3a3a3c; /* тонкая рамка */
+
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -747,9 +750,8 @@ button.disabled-btn {
 }
 
 .date-day {
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1;
+  font-size: 24px;
+  font-weight: 800;
 }
 
 .date-month {
@@ -1587,10 +1589,7 @@ function renderList(list, type) {
 
 </div>
   </div>
-
-  <div class="booking-title">${b.training}</div>
-  <div class="booking-sub">${b.format}</div>
-
+  
   ${
     b.status === "cancelled"
       ? `
