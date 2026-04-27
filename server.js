@@ -135,6 +135,30 @@ app.get("/slots-all", async (req, res) => {
   res.json(data);
 });
 
+// ================= МОИ ЗАПИСИ =================
+app.get("/my-bookings/:chat_id", async (req, res) => {
+  const chat_id = req.params.chat_id;
+
+  try {
+    const r = await fetch(
+      `${process.env.SUPABASE_URL}/rest/v1/records?chat_id=eq.${chat_id}&order=date.asc`,
+      {
+        headers: {
+          apikey: process.env.SUPABASE_KEY,
+          Authorization: `Bearer ${process.env.SUPABASE_KEY}`
+        }
+      }
+    );
+
+    const data = await r.json();
+    res.json(data);
+
+  } catch (e) {
+    console.log("ERROR MY BOOKINGS:", e);
+    res.status(500).json({ error: "Ошибка получения записей" });
+  }
+});
+
 // ================= ROOT =================
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
