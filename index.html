@@ -1340,22 +1340,21 @@ async function cancelBooking(id) {
 
   try {
     await fetch("https://nigina-coach.onrender.com/cancel", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({ id })
-});
-
-// 🔥 обновляем кеш
-cachedBookings = cachedBookings.map(b =>
-  b.id === id ? { ...b, status: "cancelled" } : b
-);
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ id })
+    });
 
     alert("Запись отменена");
 
-// 🔥 просто перезагружаем с сервера
-await openMyBookings(); // перезагрузка списка
+    // 🔥 ОБНОВЛЯЕМ КАЛЕНДАРЬ
+    bookingsLoaded = false;
+    await loadBookings();
+
+    // 🔥 обновляем экран
+    await openMyBookings();
 
   } catch (e) {
     console.log("Ошибка отмены");
