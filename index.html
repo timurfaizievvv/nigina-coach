@@ -2288,6 +2288,7 @@ document.getElementById("confirmBtn").onclick = async () => {
   try {
     bookingData.chat_id = Telegram.WebApp.initDataUnsafe.user.id;
 
+    console.log("FRONT CHAT_ID:", bookingData.chat_id);
     console.log("SAVE", bookingData);
 
     await fetch("https://nigina-coach.onrender.com/book", {
