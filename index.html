@@ -704,6 +704,28 @@ button.disabled-btn {
   font-size: 13px;
   padding: 10px;
 }
+
+.booking-top {
+  margin-bottom: 10px;
+}
+
+.booking-date {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.booking-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.booking-sub {
+  font-size: 13px;
+  color: #8e8e93;
+  margin-bottom: 6px;
+}
   
 </style>
 </head>
@@ -1491,9 +1513,14 @@ function renderList(list, type) {
     card.className = "studio-card fade-in";
 
     card.innerHTML = `
-  <div class="studio-name">${b.training}</div>
-  <div class="studio-time">${b.format}</div>
-  <div class="studio-time">${b.date} ${b.time}</div>
+  <div class="booking-top">
+    <div class="booking-date">
+      ${formatDate(b.date, b.time)}
+    </div>
+  </div>
+
+  <div class="booking-title">${b.training}</div>
+  <div class="booking-sub">${b.format}</div>
 
   ${
     b.status === "cancelled"
@@ -1515,15 +1542,15 @@ function renderList(list, type) {
         </button>
       `
       : `
-  <div class="status">
-    <div class="status-dot gray"></div>
-    Ожидание
-  </div>
+        <div class="status">
+          <div class="status-dot gray"></div>
+          Ожидание
+        </div>
 
-  <button class="secondary" onclick="cancelBooking('${b.id}')">
-    Отменить запись
-  </button>
-`
+        <button class="secondary" onclick="cancelBooking('${b.id}')">
+          Отменить запись
+        </button>
+      `
   }
 `;
 
@@ -1531,6 +1558,14 @@ function renderList(list, type) {
   });
 }
 
+function formatDate(date, time) {
+  const d = new Date(date);
+
+  const day = d.getDate();
+  const month = d.toLocaleString("ru", { month: "long" });
+
+  return `${day} ${month}, ${time}`;
+}
 
 function setActiveTab(active) {
   const tabs = ["upcoming", "past", "cancelled"];
