@@ -183,8 +183,6 @@ setInterval(async () => {
       if (b.status === "cancelled") continue;
 
       if (!b.date || !b.time || !b.chat_id) continue;
-
-      await sendReminder(b.chat_id, "🧪 ТЕСТ СЕЙЧАС");
       
       console.log("CHAT_ID:", b.chat_id);
 
