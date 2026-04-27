@@ -1349,12 +1349,12 @@ async function cancelBooking(id) {
 
     alert("Запись отменена");
 
-    // 🔥 ОБНОВЛЯЕМ КАЛЕНДАРЬ
-    bookingsLoaded = false;
-    await loadBookings();
+// 🔥 ОБНОВЛЯЕМ КАЛЕНДАРЬ
+bookingsLoaded = false;
+await loadBookings();
 
-    // 🔥 обновляем экран
-    await openMyBookings();
+// 🔥 обновляем экран
+await openMyBookings();
 
   } catch (e) {
     console.log("Ошибка отмены");
@@ -1706,7 +1706,9 @@ else {
 async function loadSlots(date) {
   bookingData.date = date;
 
-  const dayBookings = cachedBookings.filter(b => b.date === date);
+  const dayBookings = cachedBookings.filter(
+  b => b.date === date && b.status !== "cancelled"
+);
 
   const container = document.getElementById("slots");
   container.innerHTML = "";
@@ -2131,9 +2133,10 @@ document.getElementById("confirmBtn").onclick = async () => {
     alert("Запись подтверждена, до встречи!");
 
     cachedBookings.push({
-      date: bookingData.date,
-      time: bookingData.time
-    });
+  date: bookingData.date,
+  time: bookingData.time,
+  status: "active"
+});
 
     // очистка
     bookingData = {};
