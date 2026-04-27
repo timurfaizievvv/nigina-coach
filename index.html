@@ -215,6 +215,10 @@ button {
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
+button.secondary {
+  width: 100%;
+}
+
 button:active {
   transform: scale(0.97);
   opacity: 0.7;
@@ -804,6 +808,15 @@ button.disabled-btn {
   gap: 6px;
   font-size: 12px;
   color: #8e8e93;
+}
+
+.status-bottom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #8e8e93;
+  margin-top: 6px;
 }
   
 </style>
@@ -1600,52 +1613,49 @@ card.innerHTML = `
     <div class="date-month">${getMonth(b.date)}</div>
   </div>
 
-  <div class="booking-main">
+  <div class="booking-info">
 
-    <div class="booking-head">
-      <div class="booking-title">${b.training}</div>
-
-      <div class="status-inline">
-        <div class="status-dot ${
-          b.status === "cancelled"
-            ? "red"
-            : type === "past"
-            ? "green"
-            : "gray"
-        }"></div>
-
-        ${
-          b.status === "cancelled"
-            ? "Отменено"
-            : type === "past"
-            ? "Завершено"
-            : "Ожидание"
-        }
-      </div>
-    </div>
-
+    <div class="booking-title">${b.training}</div>
     <div class="booking-sub">${b.format}</div>
     <div class="booking-time">${b.time}</div>
 
-    ${
-      b.status === "cancelled"
-        ? ``
-        : type === "past"
-        ? `
-          <button class="secondary" onclick="openScreen('step1')">
-            Записаться снова
-          </button>
-        `
-        : `
-          <button class="secondary" onclick="cancelBooking('${b.id}')">
-            Отменить запись
-          </button>
-        `
-    }
+    <div class="status-bottom">
+      <div class="status-dot ${
+        b.status === "cancelled"
+          ? "red"
+          : type === "past"
+          ? "green"
+          : "gray"
+      }"></div>
+
+      ${
+        b.status === "cancelled"
+          ? "Отменено"
+          : type === "past"
+          ? "Завершено"
+          : "Ожидание"
+      }
+    </div>
 
   </div>
 
 </div>
+
+${
+  b.status === "cancelled"
+    ? ``
+    : type === "past"
+    ? `
+      <button class="secondary" onclick="openScreen('step1')">
+        Записаться снова
+      </button>
+    `
+    : `
+      <button class="secondary" onclick="cancelBooking('${b.id}')">
+        Отменить запись
+      </button>
+    `
+}
 
 `;
 
