@@ -1638,12 +1638,24 @@ card.innerHTML = `
       }"></div>
 
       ${
-        b.status === "cancelled"
-          ? "Отменено"
-          : type === "past"
-          ? "Завершено"
-          : "Ожидание"
-      }
+  b.status === "cancelled"
+    ? `
+      <button class="secondary" onclick="openScreen('step1')">
+        Записаться снова
+      </button>
+    `
+    : type === "past"
+    ? `
+      <button class="secondary" onclick="openScreen('step1')">
+        Записаться снова
+      </button>
+    `
+    : `
+      <button class="secondary" onclick="cancelBooking('${b.id}')">
+        Отменить запись
+      </button>
+    `
+}
     </div>
 
   </div>
