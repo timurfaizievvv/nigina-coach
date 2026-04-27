@@ -1320,6 +1320,27 @@ button.disabled-btn {
   
 <script>
 
+async function cancelBooking(id) {
+  if (!confirm("Отменить запись?")) return;
+
+  try {
+    await fetch("https://nigina-coach.onrender.com/cancel", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ id })
+    });
+
+    alert("Запись отменена");
+
+    openMyBookings(); // перезагрузка списка
+
+  } catch (e) {
+    console.log("Ошибка отмены");
+  }
+}
+  
 async function openMyBookings() {
   const user = Telegram.WebApp.initDataUnsafe.user;
 
@@ -1400,25 +1421,36 @@ function renderList(list, type) {
     card.className = "studio-card fade-in";
 
     card.innerHTML = `
-      <div class="studio-name">${b.training}</div>
-      <div class="studio-time">${b.format}</div>
-      <div class="studio-time">${b.date} ${b.time}</div>
+  <div class="studio-name">${b.training}</div>
+  <div class="studio-time">${b.format}</div>
+  <div class="studio-time">${b.date} ${b.time}</div>
 
-      ${
-        type === "past"
-  ? `
-    <div class="status">
-      <div class="status-dot green"></div>
-      Завершено
-    </div>
+  ${
+    b.status === "cancelled"
+      ? `
+        <div class="status">
+          <div class="status-dot red"></div>
+          Отменена
+        </div>
+      `
+      : type === "past"
+      ? `
+        <div class="status">
+          <div class="status-dot green"></div>
+          Завершено
+        </div>
 
-    <button class="secondary" onclick="openScreen('step1')">
-      Записаться снова
-    </button>
-  `
-  : ""
-      }
-    `;
+        <button class="secondary" onclick="openScreen('step1')">
+          Записаться снова
+        </button>
+      `
+      : `
+        <button class="secondary" onclick="cancelBooking('${b.id}')">
+          Отменить запись
+        </button>
+      `
+  }
+`;
 
     container.appendChild(card);
   });
@@ -1576,7 +1608,9 @@ async function renderCalendar() {
     const dayOfWeek = dateObj.getDay();
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
 
-    const dayBookings = cachedBookings.filter(b => b.date === full);
+    const dayBookings = cachedBookings.filter(b => 
+  b.date === full && b.status !== "cancelled"
+);
 
     const dot = document.createElement("div");
     dot.classList.add("dot");
