@@ -264,7 +264,7 @@ app.post("/cancel", async (req, res) => {
 
     // ❌ БЛОКИРОВКА ОТМЕНЫ МЕНЕЕ ЧЕМ ЗА 2 ЧАСА
 const now = new Date();
-const trainingDate = new Date(booking.date + "T" + booking.time);
+const trainingDate = new Date(booking.date + "T" + booking.time + ":00+05:00");
 
 const diffMs = trainingDate - now;
 const diffMinutes = diffMs / (1000 * 60);
@@ -277,12 +277,16 @@ if (diffMinutes < 120) {
 
     // 🔥 УДАЛЯЕМ запись (вместо cancelled)
     await fetch(`${process.env.SUPABASE_URL}/rest/v1/records?id=eq.${id}`, {
-      method: "DELETE",
-      headers: {
-        apikey: process.env.SUPABASE_KEY,
-        Authorization: `Bearer ${process.env.SUPABASE_KEY}`
-      }
-    });
+  method: "PATCH",
+  headers: {
+    "Content-Type": "application/json",
+    apikey: process.env.SUPABASE_KEY,
+    Authorization: `Bearer ${process.env.SUPABASE_KEY}`
+  },
+  body: JSON.stringify({
+    status: "cancelled"
+  })
+});
 
     // ✅ клиенту
     await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
