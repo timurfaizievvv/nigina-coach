@@ -247,17 +247,48 @@ app.post("/cancel", async (req, res) => {
   const { id } = req.body;
 
   try {
+    // 🔍 получаем запись
+    const r = await fetch(
+      `${process.env.SUPABASE_URL}/rest/v1/records?id=eq.${id}`,
+      {
+        headers: {
+          apikey: process.env.SUPABASE_KEY,
+          Authorization: `Bearer ${process.env.SUPABASE_KEY}`
+        }
+      }
+    );
+
+    const data = await r.json();
+    const booking = data[0];
+
+    // 🔥 УДАЛЯЕМ запись (вместо cancelled)
     await fetch(`${process.env.SUPABASE_URL}/rest/v1/records?id=eq.${id}`, {
-      method: "PATCH",
+      method: "DELETE",
       headers: {
-        "Content-Type": "application/json",
         apikey: process.env.SUPABASE_KEY,
         Authorization: `Bearer ${process.env.SUPABASE_KEY}`
-      },
-      body: JSON.stringify({
-        status: "cancelled"
-      })
+      }
     });
+
+    // ✅ клиенту
+    await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: booking.chat_id,
+        text: "Вы успешно отменили тренировку ❌"
+      }),
+    });
+
+    // ✅ в группу
+    await sendTG(`
+❌ Заявка отменена
+👤 ${booking.name}
+☎️ ${booking.contact}
+✨ ${booking.training}
+📍 ${booking.format}
+📆 ${booking.date} ${booking.time}
+    `);
 
     res.json({ ok: true });
 
