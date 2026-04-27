@@ -726,6 +726,64 @@ button.disabled-btn {
   color: #8e8e93;
   margin-bottom: 6px;
 }
+
+.booking-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.date-box {
+  width: 54px;
+  min-width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  background: #1c1c1e;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.date-day {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.date-month {
+  font-size: 11px;
+  color: #8e8e93;
+  text-transform: capitalize;
+}
+
+.booking-info {
+  flex: 1;
+}
+
+.booking-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.booking-sub {
+  font-size: 12px;
+  color: #8e8e93;
+  margin-bottom: 2px;
+}
+
+.booking-time {
+  font-size: 12px;
+  color: #ffffff;
+}
+
+.card {
+  padding: 14px;
+  border-radius: 16px;
+  margin-bottom: 10px;
+}
   
 </style>
 </head>
@@ -1514,9 +1572,20 @@ function renderList(list, type) {
 
     card.innerHTML = `
   <div class="booking-top">
-    <div class="booking-date">
-      ${formatDate(b.date, b.time)}
-    </div>
+    <div class="booking-row">
+
+  <div class="date-box">
+    <div class="date-day">${getDay(b.date)}</div>
+    <div class="date-month">${getMonth(b.date)}</div>
+  </div>
+
+  <div class="booking-info">
+    <div class="booking-title">${b.training}</div>
+    <div class="booking-sub">${b.format}</div>
+    <div class="booking-time">${b.time}</div>
+  </div>
+
+</div>
   </div>
 
   <div class="booking-title">${b.training}</div>
@@ -1558,6 +1627,14 @@ function renderList(list, type) {
   });
 }
 
+function getDay(date) {
+  return new Date(date).getDate();
+}
+
+function getMonth(date) {
+  return new Date(date).toLocaleString("ru", { month: "long" });
+}
+  
 function formatDate(date, time) {
   const d = new Date(date);
 
