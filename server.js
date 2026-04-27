@@ -200,7 +200,7 @@ setInterval(async () => {
 
         await sendReminder(
           b.chat_id,
-          `Напоминаю, что завтра тренировка в ${b.time} ✨`
+          `Доброго времени суток!\nНапоминаю, что завтра Вы записаны ко мне на тренировку в ${b.time} ✨`
         );
 
         await markReminder(b.id, "reminded_24h");
@@ -213,7 +213,7 @@ setInterval(async () => {
 
         await sendReminder(
           b.chat_id,
-          `Через 2 часа тренировка ✨`
+          `Доброго времени суток!\nНапоминаю, что через 2 часа состоится наша тренировка ✨`
         );
 
         await markReminder(b.id, "reminded_2h");
