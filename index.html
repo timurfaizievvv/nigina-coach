@@ -1452,7 +1452,7 @@ function renderMyBookings(data) {
   });
 
   document.getElementById("tabUpcoming").innerText = `Активные (${upcoming.length})`;
-document.getElementById("tabPast").innerText = `Завершённые (${past.length})`;
+document.getElementById("tabPast").innerText = `История (${past.length})`;
 document.getElementById("tabCancelled").innerText = `Отменённые (${cancelled.length})`;
 
   renderList(upcoming, "upcoming");
