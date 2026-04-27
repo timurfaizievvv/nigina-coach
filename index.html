@@ -688,6 +688,10 @@ button.disabled-btn {
 .status-dot.gray {
   background: #8e8e93;
 }
+
+.status-dot.red {
+  background: #ff3b30;
+}
   
 </style>
 </head>
@@ -1350,7 +1354,8 @@ cachedBookings = cachedBookings.map(b =>
 
     alert("Запись отменена");
 
-    openMyBookings(); // перезагрузка списка
+// 🔥 просто перезагружаем с сервера
+await openMyBookings(); // перезагрузка списка
 
   } catch (e) {
     console.log("Ошибка отмены");
