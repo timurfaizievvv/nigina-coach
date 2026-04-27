@@ -221,6 +221,31 @@ async function markReminder(id, field) {
   });
 }
 
+// ================= ОТМЕНА ЗАПИСИ =================
+app.post("/cancel", async (req, res) => {
+  const { id } = req.body;
+
+  try {
+    await fetch(`${process.env.SUPABASE_URL}/rest/v1/records?id=eq.${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: process.env.SUPABASE_KEY,
+        Authorization: `Bearer ${process.env.SUPABASE_KEY}`
+      },
+      body: JSON.stringify({
+        status: "cancelled"
+      })
+    });
+
+    res.json({ ok: true });
+
+  } catch (e) {
+    console.log("CANCEL ERROR", e);
+    res.status(500).json({ error: "Ошибка отмены" });
+  }
+});
+
 // ================= ROOT =================
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
