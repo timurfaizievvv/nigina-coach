@@ -262,6 +262,19 @@ app.post("/cancel", async (req, res) => {
     const data = await r.json();
     const booking = data[0];
 
+    // ❌ БЛОКИРОВКА ОТМЕНЫ МЕНЕЕ ЧЕМ ЗА 2 ЧАСА
+const now = new Date();
+const trainingDate = new Date(booking.date + "T" + booking.time);
+
+const diffMs = trainingDate - now;
+const diffMinutes = diffMs / (1000 * 60);
+
+if (diffMinutes < 120) {
+  return res.status(400).json({
+    error: "Слишком поздно отменять"
+  });
+}
+
     // 🔥 УДАЛЯЕМ запись (вместо cancelled)
     await fetch(`${process.env.SUPABASE_URL}/rest/v1/records?id=eq.${id}`, {
       method: "DELETE",
