@@ -159,6 +159,65 @@ app.get("/my-bookings/:chat_id", async (req, res) => {
   }
 });
 
+// ================= CRON НАПОМИНАНИЯ =================
+setInterval(async () => {
+  try {
+    const r = await fetch(`${process.env.SUPABASE_URL}/rest/v1/records`, {
+      headers: {
+        apikey: process.env.SUPABASE_KEY,
+        Authorization: `Bearer ${process.env.SUPABASE_KEY}`
+      }
+    });
+
+    const bookings = await r.json();
+    const now = new Date();
+
+    for (const b of bookings) {
+      const trainingDate = new Date(b.date + "T" + b.time);
+
+      const diff = trainingDate - now;
+
+      const hours = diff / (1000 * 60 * 60);
+
+      // 🔔 за 24 часа
+      if (hours > 23.9 && hours < 24.1 && !b.reminded_24h) {
+        await sendReminder(b.chat_id, `Напоминаю, что завтра тренировка в ${b.time} ✨`);
+        await markReminder(b.id, "reminded_24h");
+      }
+
+      // 🔔 за 2 часа
+      if (hours > 1.9 && hours < 2.1 && !b.reminded_2h) {
+        await sendReminder(b.chat_id, `Через 2 часа тренировка ✨`);
+        await markReminder(b.id, "reminded_2h");
+      }
+    }
+
+  } catch (e) {
+    console.log("CRON ERROR", e);
+  }
+}, 60 * 1000); // каждую минуту
+
+// ================= REMINDER HELPERS =================
+async function sendReminder(chat_id, text) {
+  await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id, text }),
+  });
+}
+
+async function markReminder(id, field) {
+  await fetch(`${process.env.SUPABASE_URL}/rest/v1/records?id=eq.${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      apikey: process.env.SUPABASE_KEY,
+      Authorization: `Bearer ${process.env.SUPABASE_KEY}`
+    },
+    body: JSON.stringify({ [field]: true })
+  });
+}
+
 // ================= ROOT =================
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
