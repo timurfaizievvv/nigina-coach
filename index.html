@@ -722,18 +722,18 @@ button.disabled-btn {
 .booking-title {
   font-size: 15px;
   font-weight: 600;
-  margin-bottom: 1px;
+  margin-bottom: 2px;
 }
 
 .booking-sub {
   font-size: 13px;
   color: #8e8e93;
-  margin-bottom: 6px;
+  margin-bottom: 2px;
 }
 
 .booking-row {
   display: flex;
-  align-items: flex-end; /* ВАЖНО */
+  align-items: flex-end;
   gap: 10px;
   margin-bottom: 6px;
 }
@@ -766,8 +766,12 @@ button.disabled-btn {
 
 .booking-info {
   flex: 1;
-  position: relative; /* ВАЖНО */
-  padding-right: 80px; /* место под статус справа */
+  position: relative;
+  padding-right: 80px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* центрируем текст */
 }
 
 .booking-sub {
