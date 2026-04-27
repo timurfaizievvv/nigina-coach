@@ -85,6 +85,7 @@ async function sendTG(text) {
 // ================= BOOK =================
 app.post("/book", async (req, res) => {
   const data = req.body;
+  data.status = "active";
 
   console.log("NEW BOOKING:", data); // 🔥 лог входящих данных
 
