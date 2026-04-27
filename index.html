@@ -692,6 +692,18 @@ button.disabled-btn {
 .status-dot.red {
   background: #ff3b30;
 }
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.tabs button {
+  flex: 1;
+  font-size: 13px;
+  padding: 10px;
+}
   
 </style>
 </head>
@@ -1323,9 +1335,9 @@ button.disabled-btn {
   </div>
 
   <div class="tabs">
-  <button id="tabUpcoming" class="primary">Предстоящие (0)</button>
-  <button id="tabPast" class="secondary">Прошедшие (0)</button>
-  <button id="tabCancelled" class="secondary">Отмененные (0)</button>
+  <button id="tabUpcoming" class="primary">Активные (0)</button>
+<button id="tabPast" class="secondary">Завершённые (0)</button>
+<button id="tabCancelled" class="secondary">Отменённые (0)</button>
 </div>
 
   <div id="bookingsList"></div>
@@ -1439,9 +1451,9 @@ function renderMyBookings(data) {
     }
   });
 
-  document.getElementById("tabUpcoming").innerText = `Предстоящие (${upcoming.length})`;
-  document.getElementById("tabPast").innerText = `Прошедшие (${past.length})`;
-  document.getElementById("tabCancelled").innerText = `Отмененные (${cancelled.length})`;
+  document.getElementById("tabUpcoming").innerText = `Активные (${upcoming.length})`;
+document.getElementById("tabPast").innerText = `Завершённые (${past.length})`;
+document.getElementById("tabCancelled").innerText = `Отменённые (${cancelled.length})`;
 
   renderList(upcoming, "upcoming");
 
