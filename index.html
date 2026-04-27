@@ -384,7 +384,7 @@ button:disabled {
 }
 
 .studio-card button {
-  margin-top: 10px;
+  margin-top: 6px; /* было 10 — уменьшаем */
 }
 
 
@@ -394,12 +394,12 @@ button:disabled {
   background: #1c1c1e;
   border: 1px solid #2c2c2e;
   border-radius: 16px;
-  padding: 16px;
+  padding: 14px; /* было 16 */
   margin-bottom: 16px;
 
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 8px; /* было 14 — это и создает "дырку" */
 }
 
 .studio-title {
@@ -720,9 +720,9 @@ button.disabled-btn {
 }
 
 .booking-title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
-  margin-bottom: 4px;
+  margin-bottom: 1px;
 }
 
 .booking-sub {
@@ -733,9 +733,9 @@ button.disabled-btn {
 
 .booking-row {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
+  align-items: flex-start; /* ВАЖНО */
+  gap: 10px;
+  margin-bottom: 6px;
 }
 
 .date-box {
@@ -767,12 +767,6 @@ button.disabled-btn {
 .booking-info {
   flex: 1;
   margin-bottom: 4px; /* 👈 добавили маленький отступ */
-}
-
-.booking-title {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 2px;
 }
 
 .booking-sub {
@@ -816,7 +810,7 @@ button.disabled-btn {
   gap: 6px;
   font-size: 12px;
   color: #8e8e93;
-  margin-top: 6px;
+  margin-top: 2px; /* было 6 — уменьшаем */
 }
   
 </style>
