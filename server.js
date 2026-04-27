@@ -194,7 +194,7 @@ setInterval(async () => {
       console.log("ПРОВЕРКА:", b.date, b.time, "минут до:", minutes);
 
       // 🔔 24 часа (1440 минут)
-      if (minutes <= 1440 && minutes > 1200 && !b.reminded_24h) {
+      if (minutes <= 1440 && minutes > 1000 && !b.reminded_24h) {
 
         console.log("🔥 ОТПРАВКА 24ч:", b.time);
 
@@ -207,7 +207,7 @@ setInterval(async () => {
       }
 
       // 🔔 2 часа (120 минут)
-      if (minutes <= 120 && minutes > 0 && !b.reminded_2h) {
+      if (minutes <= 120 && minutes > -10 && !b.reminded_2h) {
 
         console.log("🔥 ОТПРАВКА 2ч:", b.time);
 
