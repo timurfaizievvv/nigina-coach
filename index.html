@@ -821,6 +821,54 @@ button.disabled-btn {
   font-size: 12px;
   color: #8e8e93;
 }
+
+/* ===== FORMA GRID ===== */
+
+.forma-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.day-card {
+  background: #2c2c2e;
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* если 3 карточки — последняя на всю ширину */
+.day-card:nth-child(3) {
+  grid-column: span 2;
+}
+
+.day-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.day-card:active {
+  transform: scale(0.98);
+}
+
+.day-block {
+  background: #1c1c1e;
+  border-radius: 10px;
+  padding: 8px;
+}
+
+.type {
+  font-size: 12px;
+  color: #8e8e93;
+  margin-bottom: 4px;
+}
+
+.times {
+  font-size: 14px;
+  font-weight: 500;
+}
   
 </style>
 </head>
@@ -863,25 +911,54 @@ button.disabled-btn {
   <div class="studio-group">
 
   <!-- РАСПИСАНИЕ БОКСАМИ -->
-  <div class="studio-item">
-    <div class="studio-name">Пилатес на реформере</div>
-    <div class="studio-time">Вт, Чт — 9:00 • 10:00 • 14:00 | Группу</div>
+  <div class="studio-group forma-grid">
+
+  <!-- ВТОРНИК -->
+  <div class="day-card">
+    <div class="day-title">Вт</div>
+
+    <div class="day-block">
+      <div class="type">Группа</div>
+      <div class="times">9:00 • 10:00 • 14:00</div>
+    </div>
+
+    <div class="day-block">
+      <div class="type">Персонально / Сплит</div>
+      <div class="times">15:00 • 16:00</div>
+    </div>
   </div>
 
-  <div class="studio-item">
-    <div class="studio-name">Пилатес на реформере</div>
-    <div class="studio-time">Вт, Чт — 15:00 • 16:00 | Персонально / Сплит</div>
+  <!-- ЧЕТВЕРГ -->
+  <div class="day-card">
+    <div class="day-title">Чт</div>
+
+    <div class="day-block">
+      <div class="type">Группа</div>
+      <div class="times">9:00 • 10:00 • 14:00</div>
+    </div>
+
+    <div class="day-block">
+      <div class="type">Персонально / Сплит</div>
+      <div class="times">15:00 • 16:00</div>
+    </div>
   </div>
 
-  <div class="studio-item">
-    <div class="studio-name">Пилатес на реформере</div>
-    <div class="studio-time">Сб — 14:00 | Группа</div>
+  <!-- СУББОТА -->
+  <div class="day-card">
+    <div class="day-title">Сб</div>
+
+    <div class="day-block">
+      <div class="type">Группа</div>
+      <div class="times">14:00</div>
+    </div>
+
+    <div class="day-block">
+      <div class="type">Персонально / Сплит</div>
+      <div class="times">15:00 • 16:00</div>
+    </div>
   </div>
 
-  <div class="studio-item">
-    <div class="studio-name">Пилатес на реформере</div>
-    <div class="studio-time">Сб — 15:00 • 16:00 | Персонально / Сплит</div>
-  </div>
+</div>
 </div>
   <!-- ОПИСАНИЕ НАПРАВЛЕНИЯ -->
   <div class="studio-desc">
