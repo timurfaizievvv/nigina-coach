@@ -172,24 +172,46 @@ setInterval(async () => {
     const bookings = await r.json();
     const now = new Date();
 
+    console.log("CRON RUN:", new Date().toLocaleString());
+    console.log("ВСЕГО ЗАПИСЕЙ:", bookings.length);
+
     for (const b of bookings) {
+
+      // ❗ ПРОПУСКАЕМ ОТМЕНЕННЫЕ
+      if (b.status === "cancelled") continue;
+
+      if (!b.date || !b.time || !b.chat_id) continue;
+
       const trainingDate = new Date(b.date + "T" + b.time);
       const diff = trainingDate - now;
-      const hours = diff / (1000 * 60 * 60);
 
-      // 🔔 за 24 часа
-      if (hours <= 24 && hours > 23 && !b.reminded_24h) {
-        console.log("ОТПРАВКА 24 ЧАСА:", b.time);
+      const minutes = diff / (1000 * 60);
 
-        await sendReminder(b.chat_id, `Напоминаю, что завтра тренировка в ${b.time} ✨`);
+      console.log("ПРОВЕРКА:", b.date, b.time, "минут до:", minutes);
+
+      // 🔔 24 часа (1440 минут)
+      if (minutes <= 1440 && minutes > 1380 && !b.reminded_24h) {
+
+        console.log("🔥 ОТПРАВКА 24ч:", b.time);
+
+        await sendReminder(
+          b.chat_id,
+          `Напоминаю, что завтра тренировка в ${b.time} ✨`
+        );
+
         await markReminder(b.id, "reminded_24h");
       }
 
-      // 🔔 за 2 часа
-      if (hours <= 2 && hours > 1.5 && !b.reminded_2h) {
-        console.log("ОТПРАВКА 2 ЧАСА:", b.time);
+      // 🔔 2 часа (120 минут)
+      if (minutes <= 120 && minutes > 90 && !b.reminded_2h) {
 
-        await sendReminder(b.chat_id, `Через 2 часа тренировка ✨`);
+        console.log("🔥 ОТПРАВКА 2ч:", b.time);
+
+        await sendReminder(
+          b.chat_id,
+          `Через 2 часа тренировка ✨`
+        );
+
         await markReminder(b.id, "reminded_2h");
       }
     }
@@ -197,7 +219,7 @@ setInterval(async () => {
   } catch (e) {
     console.log("CRON ERROR", e);
   }
-}, 60 * 1000); // каждую минуту
+}, 60 * 1000);
 
 // ================= REMINDER HELPERS =================
 async function sendReminder(chat_id, text) {
