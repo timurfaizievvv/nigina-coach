@@ -88,6 +88,7 @@ app.post("/book", async (req, res) => {
   data.status = "active";
 
   console.log("NEW BOOKING:", data); // 🔥 лог входящих данных
+  console.log("SAVING CHAT_ID:", data.chat_id);
 
   try {
     await save(data);
@@ -103,7 +104,7 @@ app.post("/book", async (req, res) => {
     `);
 
     // напоминания
-    // scheduleReminder(data.date, data.time, data.chat_id);
+    scheduleReminder(data.date, data.time, data.chat_id);
 
     // клиенту
     await fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`, {
@@ -182,8 +183,9 @@ setInterval(async () => {
       if (b.status === "cancelled") continue;
 
       if (!b.date || !b.time || !b.chat_id) continue;
+      console.log("CHAT_ID:", b.chat_id);
 
-      const trainingDate = new Date(b.date + "T" + b.time);
+      const trainingDate = new Date(b.date + "T" + b.time + ":00+05:00");
       const diff = trainingDate - now;
 
       const minutes = diff / (1000 * 60);
@@ -191,7 +193,7 @@ setInterval(async () => {
       console.log("ПРОВЕРКА:", b.date, b.time, "минут до:", minutes);
 
       // 🔔 24 часа (1440 минут)
-      if (minutes <= 1440 && minutes > 1380 && !b.reminded_24h) {
+      if (minutes <= 1440 && minutes > 1200 && !b.reminded_24h) {
 
         console.log("🔥 ОТПРАВКА 24ч:", b.time);
 
@@ -204,7 +206,7 @@ setInterval(async () => {
       }
 
       // 🔔 2 часа (120 минут)
-      if (minutes <= 120 && minutes > 90 && !b.reminded_2h) {
+      if (minutes <= 120 && minutes > 0 && !b.reminded_2h) {
 
         console.log("🔥 ОТПРАВКА 2ч:", b.time);
 
