@@ -678,6 +678,16 @@ button.disabled-btn {
 .status-dot.green {
   background: #4cd964;
 }
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-dot.gray {
+  background: #8e8e93;
+}
   
 </style>
 </head>
@@ -1309,9 +1319,10 @@ button.disabled-btn {
   </div>
 
   <div class="tabs">
-    <button id="tabUpcoming" class="primary">Предстоящие (0)</button>
-    <button id="tabPast" class="secondary">Прошедшие (0)</button>
-  </div>
+  <button id="tabUpcoming" class="primary">Предстоящие (0)</button>
+  <button id="tabPast" class="secondary">Прошедшие (0)</button>
+  <button id="tabCancelled" class="secondary">Отмененные (0)</button>
+</div>
 
   <div id="bookingsList"></div>
 
@@ -1325,12 +1336,17 @@ async function cancelBooking(id) {
 
   try {
     await fetch("https://nigina-coach.onrender.com/cancel", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ id })
-    });
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ id })
+});
+
+// 🔥 обновляем кеш
+cachedBookings = cachedBookings.map(b =>
+  b.id === id ? { ...b, status: "cancelled" } : b
+);
 
     alert("Запись отменена");
 
@@ -1351,7 +1367,15 @@ async function openMyBookings() {
 
   const chat_id = user.id;
 
-  // 🔥 сразу очищаем и показываем загрузку
+  // 👉 СБРОС ВСЕГО СОСТОЯНИЯ
+  setActiveTab("upcoming");
+
+  document.getElementById("tabUpcoming").classList.add("primary");
+  document.getElementById("tabUpcoming").classList.remove("secondary");
+
+  document.getElementById("tabPast").classList.add("secondary");
+  document.getElementById("tabPast").classList.remove("primary");
+
   document.getElementById("bookingsList").innerHTML = `
     <div class="sub" style="text-align:center; margin-top:40px;">
       Загрузка...
@@ -1361,13 +1385,26 @@ async function openMyBookings() {
   openScreen("myBookings");
 
   try {
-    const res = await fetch(`https://nigina-coach.onrender.com/my-bookings/${chat_id}`);
+    const controller = new AbortController();
+setTimeout(() => controller.abort(), 7000);
+
+const res = await fetch(
+  `https://nigina-coach.onrender.com/my-bookings/${chat_id}`,
+  { signal: controller.signal }
+);
+
+    if (!res.ok) throw new Error();
+
     const data = await res.json();
 
     renderMyBookings(data);
 
   } catch (e) {
-    console.log("Ошибка загрузки записей");
+    document.getElementById("bookingsList").innerHTML = `
+      <div class="sub" style="text-align:center; margin-top:40px;">
+        Ошибка загрузки
+      </div>
+    `;
   }
 }
 
@@ -1376,8 +1413,14 @@ function renderMyBookings(data) {
 
   const upcoming = [];
   const past = [];
+  const cancelled = [];
 
   data.forEach(b => {
+    if (b.status === "cancelled") {
+      cancelled.push(b);
+      return;
+    }
+
     const d = new Date(`${b.date} ${b.time}`);
 
     if (d >= now) {
@@ -1389,18 +1432,24 @@ function renderMyBookings(data) {
 
   document.getElementById("tabUpcoming").innerText = `Предстоящие (${upcoming.length})`;
   document.getElementById("tabPast").innerText = `Прошедшие (${past.length})`;
+  document.getElementById("tabCancelled").innerText = `Отмененные (${cancelled.length})`;
 
   renderList(upcoming, "upcoming");
 
   document.getElementById("tabUpcoming").onclick = () => {
-  setActiveTab("upcoming");
-  renderList(upcoming, "upcoming");
-};
+    setActiveTab("upcoming");
+    renderList(upcoming, "upcoming");
+  };
 
-document.getElementById("tabPast").onclick = () => {
-  setActiveTab("past");
-  renderList(past, "past");
-};
+  document.getElementById("tabPast").onclick = () => {
+    setActiveTab("past");
+    renderList(past, "past");
+  };
+
+  document.getElementById("tabCancelled").onclick = () => {
+    setActiveTab("cancelled");
+    renderList(cancelled, "cancelled");
+  };
 }
 
 function renderList(list, type) {
@@ -1445,10 +1494,15 @@ function renderList(list, type) {
         </button>
       `
       : `
-        <button class="secondary" onclick="cancelBooking('${b.id}')">
-          Отменить запись
-        </button>
-      `
+  <div class="status">
+    <div class="status-dot gray"></div>
+    Ожидание
+  </div>
+
+  <button class="secondary" onclick="cancelBooking('${b.id}')">
+    Отменить запись
+  </button>
+`
   }
 `;
 
@@ -1458,22 +1512,21 @@ function renderList(list, type) {
 
 
 function setActiveTab(active) {
-  const upcomingBtn = document.getElementById("tabUpcoming");
-  const pastBtn = document.getElementById("tabPast");
+  const tabs = ["upcoming", "past", "cancelled"];
 
-  if (active === "upcoming") {
-    upcomingBtn.classList.add("primary");
-    upcomingBtn.classList.remove("secondary");
+  tabs.forEach(t => {
+    const el = document.getElementById("tab" + t.charAt(0).toUpperCase() + t.slice(1));
 
-    pastBtn.classList.add("secondary");
-    pastBtn.classList.remove("primary");
-  } else {
-    pastBtn.classList.add("primary");
-    pastBtn.classList.remove("secondary");
+    if (!el) return;
 
-    upcomingBtn.classList.add("secondary");
-    upcomingBtn.classList.remove("primary");
-  }
+    if (t === active) {
+      el.classList.add("primary");
+      el.classList.remove("secondary");
+    } else {
+      el.classList.add("secondary");
+      el.classList.remove("primary");
+    }
+  });
 }
   
 let cachedBookings = [];
@@ -1656,21 +1709,27 @@ async function loadSlots(date) {
 
   const TIMES = getTimesByDate(date);
 
-  TIMES.forEach(time => {
-    const busy = dayBookings.some(b => b.time === time);
+  const now = new Date();
 
-    const div = document.createElement("div");
-    div.className = "slot";
-    div.innerText = time;
+TIMES.forEach(time => {
+  const busy = dayBookings.some(b => b.time === time);
 
-    if (busy) {
-      div.classList.add("busy");
-    } else {
-      div.onclick = () => selectTime(time, div);
-    }
+  const slotDate = new Date(`${date} ${time}`);
 
-    container.appendChild(div);
-  });
+  const isPastTime = slotDate < now;
+
+  const div = document.createElement("div");
+  div.className = "slot";
+  div.innerText = time;
+
+  if (busy || isPastTime) {
+    div.classList.add("busy");
+  } else {
+    div.onclick = () => selectTime(time, div);
+  }
+
+  container.appendChild(div);
+});
 }
 
 function selectTime(time, el) {
