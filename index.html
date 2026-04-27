@@ -649,6 +649,16 @@ button.disabled-btn {
   opacity: 0.5;
   pointer-events: none;
 }
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tabs button {
+  flex: 1;
+}
   
 </style>
 </head>
@@ -659,6 +669,7 @@ button.disabled-btn {
 <div id="home" class="screen active">
   <div class="title home-title">Главная страница</div>
   <div class="menu-btn" onclick="openScreen('step1')">Индивидуальные занятия</div>
+  <div class="menu-btn" onclick="openMyBookings()">Ваши записи</div>
   <div class="menu-btn" onclick="openScreen('studio')">Занятия в студии</div>
   <div class="menu-btn disabled-btn">Уроки</div>
   <div class="menu-btn disabled-btn">FAQ</div>
@@ -1265,8 +1276,113 @@ button.disabled-btn {
   </button>
 
 </div>
+
+<!-- МОИ ЗАПИСИ -->
+<div id="myBookings" class="screen">
+
+  <div class="header">
+    <div class="back-btn" onclick="goBack()">←</div>
+    <div class="title h1">Мои записи</div>
+  </div>
+
+  <div class="tabs">
+    <button id="tabUpcoming" class="primary">Предстоящие (0)</button>
+    <button id="tabPast" class="secondary">Прошедшие (0)</button>
+  </div>
+
+  <div id="bookingsList"></div>
+
+</div>
+
   
 <script>
+
+async function openMyBookings() {
+  openScreen("myBookings");
+
+  const user = Telegram.WebApp.initDataUnsafe.user;
+
+  if (!user) {
+    alert("Ошибка пользователя");
+    return;
+  }
+
+  const chat_id = user.id;
+
+  try {
+    const res = await fetch(`https://nigina-coach.onrender.com/my-bookings/${chat_id}`);
+    const data = await res.json();
+
+    renderMyBookings(data);
+
+  } catch (e) {
+    console.log("Ошибка загрузки записей");
+  }
+}
+
+function renderMyBookings(data) {
+  const now = new Date();
+
+  const upcoming = [];
+  const past = [];
+
+  data.forEach(b => {
+    const d = new Date(`${b.date} ${b.time}`);
+
+    if (d >= now) {
+      upcoming.push(b);
+    } else {
+      past.push(b);
+    }
+  });
+
+  document.getElementById("tabUpcoming").innerText = `Предстоящие (${upcoming.length})`;
+  document.getElementById("tabPast").innerText = `Прошедшие (${past.length})`;
+
+  renderList(upcoming, "upcoming");
+
+  document.getElementById("tabUpcoming").onclick = () => {
+    renderList(upcoming, "upcoming");
+  };
+
+  document.getElementById("tabPast").onclick = () => {
+    renderList(past, "past");
+  };
+}
+
+function renderList(list, type) {
+  const container = document.getElementById("bookingsList");
+  container.innerHTML = "";
+
+  if (list.length === 0) {
+    container.innerHTML = `
+      <div class="sub" style="text-align:center; margin-top:40px;">
+        Нет записей
+      </div>
+    `;
+    return;
+  }
+
+  list.forEach(b => {
+    const card = document.createElement("div");
+    card.className = "studio-card fade-in";
+
+    card.innerHTML = `
+      <div class="studio-name">${b.training}</div>
+      <div class="studio-time">${b.format}</div>
+      <div class="studio-time">${b.date} ${b.time}</div>
+
+      ${
+        type === "past"
+          ? `<button class="secondary" onclick="openScreen('step1')">Записаться снова</button>
+             <div class="small">✔ Завершено</div>`
+          : ""
+      }
+    `;
+
+    container.appendChild(card);
+  });
+}
 
 let cachedBookings = [];
 let bookingsLoaded = false;
