@@ -1298,8 +1298,6 @@ button.disabled-btn {
 <script>
 
 async function openMyBookings() {
-  openScreen("myBookings");
-
   const user = Telegram.WebApp.initDataUnsafe.user;
 
   if (!user) {
@@ -1308,6 +1306,15 @@ async function openMyBookings() {
   }
 
   const chat_id = user.id;
+
+  // 🔥 сразу очищаем и показываем загрузку
+  document.getElementById("bookingsList").innerHTML = `
+    <div class="sub" style="text-align:center; margin-top:40px;">
+      Загрузка...
+    </div>
+  `;
+
+  openScreen("myBookings");
 
   try {
     const res = await fetch(`https://nigina-coach.onrender.com/my-bookings/${chat_id}`);
@@ -1342,12 +1349,14 @@ function renderMyBookings(data) {
   renderList(upcoming, "upcoming");
 
   document.getElementById("tabUpcoming").onclick = () => {
-    renderList(upcoming, "upcoming");
-  };
+  setActiveTab("upcoming");
+  renderList(upcoming, "upcoming");
+};
 
-  document.getElementById("tabPast").onclick = () => {
-    renderList(past, "past");
-  };
+document.getElementById("tabPast").onclick = () => {
+  setActiveTab("past");
+  renderList(past, "past");
+};
 }
 
 function renderList(list, type) {
@@ -1384,6 +1393,26 @@ function renderList(list, type) {
   });
 }
 
+
+function setActiveTab(active) {
+  const upcomingBtn = document.getElementById("tabUpcoming");
+  const pastBtn = document.getElementById("tabPast");
+
+  if (active === "upcoming") {
+    upcomingBtn.classList.add("primary");
+    upcomingBtn.classList.remove("secondary");
+
+    pastBtn.classList.add("secondary");
+    pastBtn.classList.remove("primary");
+  } else {
+    pastBtn.classList.add("primary");
+    pastBtn.classList.remove("secondary");
+
+    upcomingBtn.classList.add("secondary");
+    upcomingBtn.classList.remove("primary");
+  }
+}
+  
 let cachedBookings = [];
 let bookingsLoaded = false;
 
