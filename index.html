@@ -1339,13 +1339,18 @@ async function cancelBooking(id) {
   if (!confirm("Отменить запись?")) return;
 
   try {
-    await fetch("https://nigina-coach.onrender.com/cancel", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ id })
-    });
+    const res = await fetch("https://nigina-coach.onrender.com/cancel", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ id })
+});
+
+if (!res.ok) {
+  alert("Нельзя отменить запись менее чем за 2 часа");
+  return;
+}
 
     alert("Запись отменена");
 
